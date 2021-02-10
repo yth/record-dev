@@ -5,12 +5,12 @@
 #define RCRD_RCRD_H
 
 /**
- * This function creates or loads a collection of values.
+ * This function creates or loads a storage for a collection of values.
  * @method record_init
  * @param  file_name   char* that should be the storage name; file for now
  * @return             SEXP that represent the collection
  */
-SEXP record_init(SEXP file_name);
+SEXP record_init(SEXP path_name);
 
 
 /**
