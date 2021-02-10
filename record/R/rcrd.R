@@ -1,5 +1,5 @@
-record_init <- function(file_name) {
-	.Call(RCRD_record_init(file_name))
+record_init <- function(path_name) {
+	.Call(RCRD_record_init, path_name)
 }
 
 # r2c <- function(r_object, storage) {
