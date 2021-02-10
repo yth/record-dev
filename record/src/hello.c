@@ -1,16 +1,15 @@
 #include "hello.h"
 
 
-#include <string.h>
 #include <R_ext/RS.h>
 
 
-#include <stdio.h>
+#include <string.h>
 
 
 SEXP hello(SEXP name) {
 	// Recover the input as a char*
-	char* c_name = CHAR(STRING_ELT(name, 0));
+	const char* c_name = CHAR(STRING_ELT(name, 0));
 
 	size_t l = strlen(c_name);
 
