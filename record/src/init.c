@@ -8,11 +8,13 @@
 
 
 #include "hello.h"
+#include "rcrd.h"
 
 
 static const R_CallMethodDef callMethods[] = {
 	//name, casted pointer to function, # of arg?
 	{"hello", (DL_FUNC) &hello, 1},
+	{"record_init", (DL_FUNC) &record_init, 1},
 	{NULL, NULL, 0} // Required?
 };
 
