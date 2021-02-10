@@ -20,7 +20,7 @@ SEXP record_init(SEXP path_name);
  * @param  storage  SEXP that represents the storage
  * @return          SEXP that can act as a hash for the value in the store
  */
-// SEXP r2c(SEXP r_object, SEXP storage);
+SEXP r2c(SEXP r_object, SEXP storage);
 
 
 /**

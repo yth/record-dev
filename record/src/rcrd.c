@@ -51,14 +51,14 @@ SEXP record_init(SEXP path_name) {
  * @param  storage  SEXP that represents the storage
  * @return          SEXP that can act as a hash for the value in the store
  */
-// SEXP r2c(SEXP r_object, SEXP storage) {
-// 	const char* res = "wrong result";
-// 	SEXP r_res = PROTECT(allocVector(STRSXP, 1));
-// 	SET_STRING_ELT(r_res, 0, mkChar(res));
-// 	UNPROTECT(1);
-//
-// 	return r_res;
-// }
+SEXP r2c(SEXP r_object, SEXP storage) {
+	const char* res = "wrong result";
+	SEXP r_res = PROTECT(allocVector(STRSXP, 1));
+	SET_STRING_ELT(r_res, 0, mkChar(res));
+	UNPROTECT(1);
+
+	return r_res;
+}
 
 
 /**
