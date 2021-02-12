@@ -98,7 +98,7 @@ SEXP r2c(SEXP r_string_object, SEXP storage) {
 
 	const char* c_string = CHAR(STRING_ELT(r_string_object, 0));
 	printf("c_string: %s\n", c_string);
-	FILE* f = fopen("tmp.txt", "rw");
+	FILE* f = fopen("tmp.txt", "w+");
 	if (f == NULL) {
 	  Rf_error("Unable to open tmp.txt\n");
 	}
