@@ -1,4 +1,6 @@
 #include "rcrd.h"
+#include "R_ext/Error.h"
+#include "R_ext/Print.h"
 
 
 #include <R_ext/RS.h>
@@ -98,7 +100,7 @@ SEXP r2c(SEXP r_string_object, SEXP storage) {
 	printf("c_string: %s\n", c_string);
 	FILE* f = fopen("tmp.txt", "rw");
 	if (f == NULL) {
-		perror("Could not open file");
+	  Rf_error("Unable to open tmp.txt\n");
 	}
 	fprintf(f, "%s", c_string);
 	fclose(f);
