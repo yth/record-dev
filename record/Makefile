@@ -1,6 +1,6 @@
-.PHONY: all build check document test
+.PHONY: all build check document test write
 
-all: document build check
+all: document build # check
 
 build: document
 	R CMD build .
@@ -13,15 +13,20 @@ clean:
 	-rm -fr record.Rcheck
 	-rm -rf src/*.o src/*.so
 	-rm -rf tests/testthat/tmp.txt
+	-rm -f trace
 
 document:
 	Rscript -e 'devtools::document()'
 
 test:
-	Rscript -e 'devtools::test()'
+	strace Rscript -e 'devtools::test()' 2> trace
 
 lintr:
 	R --slave -e "lintr::lint_package()"
 
 install: clean
 	R CMD INSTALL .
+
+write:
+	cat trace | grep -w "write"
+
