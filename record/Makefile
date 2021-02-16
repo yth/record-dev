@@ -12,14 +12,14 @@ clean:
 	-rm -f record*tar.gz
 	-rm -fr record.Rcheck
 	-rm -rf src/*.o src/*.so
-	-rm -rf tests/testthat/tmp.txt
+	-rm -rf tests/testthat/tmp.db
 	-rm -f trace
 
 document:
 	Rscript -e 'devtools::document()'
 
 test:
-	strace Rscript -e 'devtools::test()' 2> trace
+	Rscript -e 'devtools::test()'
 
 lintr:
 	R --slave -e "lintr::lint_package()"

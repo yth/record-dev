@@ -6,135 +6,62 @@
 #include <R_ext/RS.h>
 
 
-#include <sys/mman.h> // mmap related facilities
-#include <stdint.h> // uint64_t
-#include <assert.h> // assert
+// #include <sys/mman.h> // mmap related facilities
+// #include <stdint.h> // uint64_t
+// #include <assert.h> // assert
+//
+// #include <sys/types.h> // open
+// #include <sys/stat.h> // open
+// #include <fcntl.h> // open
+// #include <unistd.h> // close
+// #include <assert.h> // assert
 
-#include <sys/types.h> // open
-#include <sys/stat.h> // open
-#include <fcntl.h> // open
-#include <unistd.h> // close
-#include <assert.h> // assert
-
-#include <stdio.h> // printf
+#include <stdio.h> // FILE, fopen, close, fprintf
 
 
-
-// Global Variable
-char* STORAGE;
-int fd;
+const char *db_file_name = "tmp.db";
 
 
 /**
- * This function creates or loads a storage for a collection of values.
+ * This function creates a database for a collection of values.
  * @method record_init
- * @param  file_name   char* that should be the storage name; file for now
- * @return             SEXP that represent the collection
+ * @return file pointer wrapped as a R external pointer
  */
-SEXP record_init(SEXP path_name) {
-	// TODO: Raw file for now, in the future should be handled by an object.
-	// const char* path = CHAR(STRING_ELT(path_name, 0));
-	// fd = open(path, O_RDWR);
-	// if (fd < 0) {
-	// 	fd = open("./tmp.txt", O_CREAT | O_RDWR, S_IRWXU); // No O_TMPFILE
-	// 	assert(fd > -1);
-	// }
-
-	// No physical page error
-	// STORAGE = (char*) mmap(NULL, // Don't care where
-	// 						1024 * 1024, // 1 MB
-	// 						PROT_READ | PROT_WRITE, // Read/writable
-	// 						MAP_SHARED, // Make changes visible
-	// 						fd, // the file descriptor we just created
-	// 						0); // Start from the start of the file
-
-	// Simplest test
-	STORAGE = (char*) malloc(1024 * 1024);
-	printf("Storage: %p\n", STORAGE);
-	//                   12345678911234
-	const char* cster = "random string";
-	memcpy(STORAGE, cster, 14);
-	STORAGE[14] = '\0';
-
-	// uint64_t memory_ptr = reinterpret_cast<uint64_t>(memory_file);
-	uint64_t memory_ptr = (uint64_t) STORAGE;
-	SEXP r_res = PROTECT(allocVector(REALSXP, 1));
-	SET_REAL_ELT(r_res, 0, memory_ptr);
-	UNPROTECT(1);
-
-	// return Rf_ScalarInteger(memory_ptr); // Try this later
-	return r_res;
+SEXP record_init() {
+	FILE *db = fopen(db_file_name, "w+");
+	if (db == NULL) {
+		printf("Could not start the database.");
+	}
+	return R_MakeExternalPtr(db, R_NilValue, R_NilValue);
 }
 
 
 /**
- * This function adds an R value to the specified storage
- * @method r2c
- * @param  r_object SEXP that represents an R object
- * @param  storage  SEXP that represents the storage
- * @return          SEXP that can act as a hash for the value in the store
+ * This function closes a database.
+ * @method record_close
+ * @param  file_ptr     wrapped FILE pointer
  */
-SEXP r2c(SEXP r_string_object, SEXP storage) {
-	// TODO: Generalize what kind of R objects can be passed in
-
-	// TODO: Find a way to not clobbering other values
-	//		 Solution is probably creating an object that manages storage
-
-		// uint64_t memory_ptr = (uint64_t) REAL0(storage);
-	// char* memory_file = STORAGE; // (char*) memory_ptr;
-
-	// int i = 0;
-	// while (c_string[i] != '\0') {
-	// 	memory_file[i] = c_string[i];
-	// 	++i;
-	// }
-	// assert(i > 0);
-	// free(STORAGE);
-
-	// int fd2 = open("tmp.txt", O_CREAT | O_APPEND | O_RDWR, (mode_t) 0777);
-	// if (fd2 < 0) {
-	// 	perror("Could not open/create a file");
-	// }
-
-	const char* c_string = CHAR(STRING_ELT(r_string_object, 0));
-	printf("c_string: %s\n", c_string);
-	FILE* f = fopen("tmp.txt", "w+");
-	if (f == NULL) {
-	  Rf_error("Unable to open tmp.txt\n");
+SEXP record_close(SEXP file_ptr) {
+	FILE *file = R_ExternalPtrAddr(file_ptr);
+	if (fclose(file)) {
+		printf("Could not close the database.");
 	}
-	fprintf(f, "%s", c_string);
-	fclose(f);
+	R_ClearExternalPtr(file_ptr);
+	return R_NilValue;
+}
 
-	// printf("printf: %s\n", c_string);
-	// for (int j = 0; c_string[j] != '\0'; ++j) {
-	// 	write(fd2, c_string + j, 1);
-	// 	write(0, c_string + j, 1);
-	// 	write(1, c_string + j, 1);
-	// 	write(2, c_string + j, 1);
-	// }
 
-	// Write test
-	// const char* cster = "random string";
-	// printf("\nprintf: %s\n", STORAGE);
-	// for (int j = 0; STORAGE + j != '\0'; ++j) {
-	// 	write(fd2, STORAGE + j, 1);
-	// 	write(0, STORAGE + j, 1);
-	// 	write(1, STORAGE + j, 1);
-	// 	write(2, STORAGE + j, 1);
-	// }
-
-	// if (close(fd2) < 0) {
-	// 	perror("Could not close file descriptor");
-	// }
-
-	// // Don't unmapp in future
-	// if (msync(memory_file, 100, MS_SYNC) < 0) {
-	// 	perror("Could not write to disk");
-	// } // Try MS_ASYNC in future
-	//
-	// if (munmap(memory_file, 1024 * 1024) < 0) {
-	// 	perror("Could not unmap");
-	// }
+/**
+ * This functions directly adds an R value to the specified storage.
+ * @method r2cd
+ * @param  r_object [description]
+ * @param  storage  [description]
+ * @return          [description]
+ */
+SEXP r2cd(SEXP r_string_object, SEXP file_ptr) {
+	const char* c_string = CHAR(STRING_ELT(r_string_object, 0));
+	FILE *file = R_ExternalPtrAddr(file_ptr);
+	fprintf(file, "%s\n", c_string);
 
 	SEXP r_res = PROTECT(allocVector(STRSXP, 1));
 	SET_STRING_ELT(r_res, 0, mkChar(c_string));
@@ -142,6 +69,17 @@ SEXP r2c(SEXP r_string_object, SEXP storage) {
 
 	return r_res;
 }
+
+// R_serialize(value, R_NULL, R_FALSE, R_TRUE, R_NULL, R_NULL);
+
+/**
+ * This function adds an R value to the C layer.
+ * @method r2c
+ * @param  r_object SEXP that represents an R object
+ * @param  storage  SEXP that represents the storage
+ * @return          SEXP that can act as a hash for the value in the store
+ */
+// SEXP r2c(SEXP r_object, SEXP storage);
 
 
 /**
