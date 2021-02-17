@@ -6,6 +6,12 @@
 #include <R_ext/RS.h>
 
 
+#include <string.h>
+
+
+// #include "io_helper.c"
+
+
 // #include <sys/mman.h> // mmap related facilities
 // #include <stdint.h> // uint64_t
 // #include <assert.h> // assert
@@ -19,7 +25,7 @@
 #include <stdio.h> // FILE, fopen, close, fprintf
 
 
-const char *db_file_name = "tmp.db";
+const char *db_file_name = "tmp.txt";
 
 
 /**
@@ -61,12 +67,14 @@ SEXP record_close(SEXP file_ptr) {
 SEXP r2cd(SEXP r_string_object, SEXP file_ptr) {
 	const char* c_string = CHAR(STRING_ELT(r_string_object, 0));
 	FILE *file = R_ExternalPtrAddr(file_ptr);
-	fwrite(c_string, 1, strlen(c_string), file);
-	fwrite("\n", 1, 1, file);
 
-	SEXP r_res = PROTECT(allocVector(STRSXP, 1));
-	SET_STRING_ELT(r_res, 0, mkChar(c_string));
-	UNPROTECT(1);
+	if (strlen(c_string) != fwrite(c_string, 1, strlen(c_string), file)) {
+		return R_NilValue;
+	}
+
+	if (1 != fwrite("\n", 1, 1, file)) {
+		return R_NilValue;
+	}
 
 	return r_string_object;
 }
