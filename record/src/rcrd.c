@@ -61,13 +61,14 @@ SEXP record_close(SEXP file_ptr) {
 SEXP r2cd(SEXP r_string_object, SEXP file_ptr) {
 	const char* c_string = CHAR(STRING_ELT(r_string_object, 0));
 	FILE *file = R_ExternalPtrAddr(file_ptr);
-	fprintf(file, "%s\n", c_string);
+	fwrite(c_string, 1, strlen(c_string), file);
+	fwrite("\n", 1, 1, file);
 
 	SEXP r_res = PROTECT(allocVector(STRSXP, 1));
 	SET_STRING_ELT(r_res, 0, mkChar(c_string));
 	UNPROTECT(1);
 
-	return r_res;
+	return r_string_object;
 }
 
 // R_serialize(value, R_NULL, R_FALSE, R_TRUE, R_NULL, R_NULL);
