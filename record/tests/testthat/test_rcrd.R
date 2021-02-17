@@ -12,6 +12,6 @@ test_that("test_rcrd_r2cd_1", {
 	s = "string"
 	expect_equal(add_value(s, file), s)
 	expect_equal(close_db(file), NULL)
-	f = read.delim("tmp.db")
+	f = read.delim("tmp.txt")
 	expect_equal(colnames(f), s)
 })
