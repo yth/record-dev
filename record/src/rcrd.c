@@ -1,4 +1,6 @@
 #include "rcrd.h"
+
+
 #include "R_ext/Error.h"
 #include "R_ext/Print.h"
 
@@ -6,10 +8,7 @@
 #include <R_ext/RS.h>
 
 
-#include <string.h>
-
-
-// #include "io_helper.c"
+#include <string.h> //strlen
 
 
 // #include <sys/mman.h> // mmap related facilities
@@ -22,7 +21,7 @@
 // #include <unistd.h> // close
 // #include <assert.h> // assert
 
-#include <stdio.h> // FILE, fopen, close, fprintf
+#include <stdio.h> // FILE, fopen, close, fwrite
 
 
 const char *db_file_name = "tmp.txt";
@@ -60,9 +59,10 @@ SEXP record_close(SEXP file_ptr) {
 /**
  * This functions directly adds an R value to the specified storage.
  * @method r2cd
- * @param  r_object [description]
- * @param  storage  [description]
- * @return          [description]
+ * @param  r_string_object SEXP that contains at least a single string
+ * @param  file_ptr        SEXP that contains a FILE ptr pointing to an opened
+ *                         filed
+ * @return                 r_string_object on success
  */
 SEXP r2cd(SEXP r_string_object, SEXP file_ptr) {
 	const char* c_string = CHAR(STRING_ELT(r_string_object, 0));
