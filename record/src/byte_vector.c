@@ -26,6 +26,7 @@ byte_vector_t make_vector(size_t capacity) {
 	unsigned char *ptr = (unsigned char*) malloc(capacity);
 	if (ptr == NULL) {
 		perror("Could not malloc.");
+		free(v);
 		return NULL;
 	}
 
@@ -40,6 +41,14 @@ void free_vector(byte_vector_t vector) {
 	if (vector) {
 		free(vector->buf);
 		free(vector);
+	}
+}
+
+void free_content(byte_vector_t vector) {
+	if (vector) {
+		free(vector->buf);
+		vector->size = 0;
+		vector->capacity = 0;
 	}
 }
 

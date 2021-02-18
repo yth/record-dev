@@ -11,6 +11,9 @@
 #include <string.h> //strlen
 
 
+#include "byte_vector.h"
+
+
 // #include <sys/mman.h> // mmap related facilities
 // #include <stdint.h> // uint64_t
 // #include <assert.h> // assert
@@ -65,16 +68,27 @@ SEXP record_close(SEXP file_ptr) {
  * @return                 r_string_object on success
  */
 SEXP r2cd(SEXP r_string_object, SEXP file_ptr) {
-	const char* c_string = CHAR(STRING_ELT(r_string_object, 0));
+	// const char* c_string = CHAR(STRING_ELT(r_string_object, 0));
 	FILE *file = R_ExternalPtrAddr(file_ptr);
 
-	if (strlen(c_string) != fwrite(c_string, 1, strlen(c_string), file)) {
+	struct R_outpstream_st out;
+	R_outpstream_t stream = &out;
+
+	byte_vector_t vector = make_vector(100);
+
+	R_InitOutPStream(stream, (R_pstream_data_t) vector,
+						R_pstream_binary_format, 3,
+						outchar, outbytes,
+						NULL, R_NilValue);
+
+	R_Serialize(r_string_object, stream);
+
+	if (vector->size != fwrite(vector->buf, 1, vector->size, file)) {
 		return R_NilValue;
 	}
 
-	if (1 != fwrite("\n", 1, 1, file)) {
-		return R_NilValue;
-	}
+	// TODO: Consider reuse
+	free_vector(vector);
 
 	return r_string_object;
 }
