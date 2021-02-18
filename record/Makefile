@@ -1,4 +1,4 @@
-.PHONY: all build check document test write
+.PHONY: all build check document test write trace
 
 all: document build # check
 
@@ -20,6 +20,9 @@ document:
 
 test:
 	Rscript -e 'devtools::test()'
+
+trace:
+	strace Rscript -e 'devtools::test()' 2> trace
 
 lintr:
 	R --slave -e "lintr::lint_package()"
