@@ -1,12 +1,10 @@
 #include "rcrd.h"
 #include "R_ext/Error.h"
 #include "R_ext/Print.h"
-
-
+#include "byte_vector.h"
 #include <R_ext/RS.h>
-
-
 #include <string.h>
+#include <stdio.h> // FILE, fopen, close, fprintf
 
 
 // #include "io_helper.c"
@@ -22,19 +20,30 @@
 // #include <unistd.h> // close
 // #include <assert.h> // assert
 
-#include <stdio.h> // FILE, fopen, close, fprintf
 
 
 const char *db_file_name = "tmp.txt";
+
+SEXP testthis(SEXP rstring){
+  const char* cstring = CHAR(STRING_ELT(rstring, 0));
+
+  // printf("%s", cstring);
+  return R_NilValue;
+}
 
 
 /**
  * This function creates a database for a collection of values.
  * @method record_init
+ * @param filename 
  * @return file pointer wrapped as a R external pointer
  */
-SEXP record_init() {
-	FILE *db = fopen(db_file_name, "w+");
+SEXP record_init(SEXP filename) {
+  const char* name = CHAR(STRING_ELT(filename, 0));
+  // printf("%s", name);
+
+	/* FILE *db = fopen(name, "w+"); */
+  FILE *db = fopen(name, "w+");
 	if (db == NULL) {
 		printf("Could not start the database.");
 	}
@@ -48,11 +57,11 @@ SEXP record_init() {
  * @param  file_ptr     wrapped FILE pointer
  */
 SEXP record_close(SEXP file_ptr) {
-	FILE *file = R_ExternalPtrAddr(file_ptr);
-	if (fclose(file)) {
-		printf("Could not close the database.");
-	}
-	R_ClearExternalPtr(file_ptr);
+/* 	FILE *file = R_ExternalPtrAddr(file_ptr); */
+/* 	if (fclose(file)) { */
+/* 		printf("Could not close the database."); */
+/* 	} */
+/* 	R_ClearExternalPtr(file_ptr); */
 	return R_NilValue;
 }
 
