@@ -1,7 +1,6 @@
 #include "rcrd.h"
 #include "R_ext/Error.h"
 #include "R_ext/Print.h"
-#include "byte_vector.h"
 #include <R_ext/RS.h>
 #include <string.h>
 #include <stdio.h> // FILE, fopen, close, fprintf
@@ -57,11 +56,11 @@ SEXP record_init(SEXP filename) {
  * @param  file_ptr     wrapped FILE pointer
  */
 SEXP record_close(SEXP file_ptr) {
-/* 	FILE *file = R_ExternalPtrAddr(file_ptr); */
-/* 	if (fclose(file)) { */
-/* 		printf("Could not close the database."); */
-/* 	} */
-/* 	R_ClearExternalPtr(file_ptr); */
+	FILE *file = R_ExternalPtrAddr(file_ptr);
+	if (fclose(file)) {
+		printf("Could not close the database.");
+	}
+	R_ClearExternalPtr(file_ptr);
 	return R_NilValue;
 }
 
