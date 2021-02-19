@@ -2,7 +2,6 @@ tmp <- "tmp.txt"
 
 test_that("test_open_db_1", {
 	expect_silent(open_db_for_write(tmp))
-  close_db(file)
 })
 
 test_that("test_close_bd_1", {
