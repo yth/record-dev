@@ -1,12 +1,15 @@
 #include "rcrd.h"
+
+
 #include "R_ext/Error.h"
 #include "R_ext/Print.h"
 #include <R_ext/RS.h>
-#include <string.h>
-#include <stdio.h> // FILE, fopen, close, fprintf
 
 
-// #include "io_helper.c"
+#include <string.h> //strlen
+
+
+#include "byte_vector.h"
 
 
 // #include <sys/mman.h> // mmap related facilities
@@ -19,16 +22,11 @@
 // #include <unistd.h> // close
 // #include <assert.h> // assert
 
+#include <stdio.h> // FILE, fopen, close, fwrite
+
 
 
 const char *db_file_name = "tmp.txt";
-
-SEXP testthis(SEXP rstring){
-  const char* cstring = CHAR(STRING_ELT(rstring, 0));
-
-  // printf("%s", cstring);
-  return R_NilValue;
-}
 
 
 /**
@@ -37,7 +35,7 @@ SEXP testthis(SEXP rstring){
  * @param filename 
  * @return file pointer wrapped as a R external pointer
  */
-SEXP record_init(SEXP filename) {
+SEXP open_db(SEXP filename) {
   const char* name = CHAR(STRING_ELT(filename, 0));
   // printf("%s", name);
 
@@ -55,7 +53,7 @@ SEXP record_init(SEXP filename) {
  * @method record_close
  * @param  file_ptr     wrapped FILE pointer
  */
-SEXP record_close(SEXP file_ptr) {
+SEXP close_db(SEXP file_ptr) {
 	FILE *file = R_ExternalPtrAddr(file_ptr);
 	if (fclose(file)) {
 		printf("Could not close the database.");
@@ -68,21 +66,33 @@ SEXP record_close(SEXP file_ptr) {
 /**
  * This functions directly adds an R value to the specified storage.
  * @method r2cd
- * @param  r_object [description]
- * @param  storage  [description]
- * @return          [description]
+ * @param  r_string_object SEXP that contains at least a single string
+ * @param  file_ptr        SEXP that contains a FILE ptr pointing to an opened
+ *                         filed
+ * @return                 r_string_object on success
  */
-SEXP r2cd(SEXP r_string_object, SEXP file_ptr) {
-	const char* c_string = CHAR(STRING_ELT(r_string_object, 0));
+SEXP add_value(SEXP r_string_object, SEXP file_ptr) {
+	// const char* c_string = CHAR(STRING_ELT(r_string_object, 0));
 	FILE *file = R_ExternalPtrAddr(file_ptr);
 
-	if (strlen(c_string) != fwrite(c_string, 1, strlen(c_string), file)) {
+	struct R_outpstream_st out;
+	R_outpstream_t stream = &out;
+
+	byte_vector_t vector = make_vector(100);
+
+	R_InitOutPStream(stream, (R_pstream_data_t) vector,
+						R_pstream_binary_format, 3,
+						outchar, outbytes,
+						NULL, R_NilValue);
+
+	R_Serialize(r_string_object, stream);
+
+	if (vector->size != fwrite(vector->buf, 1, vector->size, file)) {
 		return R_NilValue;
 	}
 
-	if (1 != fwrite("\n", 1, 1, file)) {
-		return R_NilValue;
-	}
+	// TODO: Consider reuse
+	free_vector(vector);
 
 	return r_string_object;
 }

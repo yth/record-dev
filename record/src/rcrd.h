@@ -5,14 +5,12 @@
 #define RCRD_RCRD_H
 
 
-SEXP testthis(SEXP rstring);
-
 /**
  * This function creates a database for a collection of values.
  * @method record_init
  * @return FILE pointer wrapped as a R external pointer
  */
-SEXP record_init(SEXP filename);
+SEXP open_db(SEXP filename);
 
 
 /**
@@ -21,7 +19,7 @@ SEXP record_init(SEXP filename);
  * @param  file_ptr     wrapped FILE pointer
  * @return R_NilValue on success
  */
-SEXP record_close(SEXP file_ptr);
+SEXP close_db(SEXP file_ptr);
 
 
 /**
@@ -31,7 +29,7 @@ SEXP record_close(SEXP file_ptr);
  * @param  storage  [description]
  * @return          [description]
  */
-SEXP r2cd(SEXP r_string_object, SEXP file_ptr);
+SEXP add_value(SEXP r_string_object, SEXP file_ptr);
 
 
 /**

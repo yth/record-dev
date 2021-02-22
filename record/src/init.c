@@ -14,10 +14,9 @@
 static const R_CallMethodDef callMethods[] = {
 	//name, casted pointer to function, # of arg?
 	{"hello", (DL_FUNC) &hello, 1},
-	{"record_init", (DL_FUNC) &record_init, 1},
-	{"record_close", (DL_FUNC) &record_close, 1},
-	{"r2cd", (DL_FUNC) &r2cd, 2},
-  {"testthis", (DL_FUNC) &testthis, 1},
+	{"open_db", (DL_FUNC) &open_db, 1},
+	{"close_db", (DL_FUNC) &close_db, 1},
+	{"add_value", (DL_FUNC) &add_value, 2},
 	// {"c2r", (DL_FUNC) &c2r, 2},
 	{NULL, NULL, 0} // Required?
 };
