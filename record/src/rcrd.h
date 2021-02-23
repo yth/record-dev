@@ -54,7 +54,7 @@ SEXP add_value(SEXP val);
 // SEXP c2r(SEXP hash, SEXP storage);
 
 #ifdef __cplusplus
-}; // extern "C"
+} // extern "C"
 #endif
 
 #endif // RCRD_RCRD_H

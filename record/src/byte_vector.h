@@ -24,7 +24,7 @@ void append_byte(R_outpstream_t stream, int c);
 void append_buf(R_outpstream_t stream, void *buf, int length);
 
 #ifdef __cplusplus
-}; // extern "C"
+} // extern "C"
 #endif
 
 #endif // RCRD_BYTE_VECTOR_H

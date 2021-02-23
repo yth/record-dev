@@ -11,7 +11,7 @@ extern "C" {
 SEXP hello(SEXP name);
 
 #ifdef __cplusplus
-}; // extern "C"
+} // extern "C"
 #endif
 
 #endif // RCRD_HELLO_H
