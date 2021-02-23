@@ -4,6 +4,9 @@
 #ifndef RCRD_RCRD_H
 #define RCRD_RCRD_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * This function creates a database for a collection of values.
@@ -49,5 +52,9 @@ SEXP add_value(SEXP val);
  * TODO: HANDLE HASH COLLISION OR CREATE ANOTHER TYPE OF UNIQUE IDENTIFIER
  */
 // SEXP c2r(SEXP hash, SEXP storage);
+
+#ifdef __cplusplus
+}; // extern "C"
+#endif
 
 #endif // RCRD_RCRD_H
