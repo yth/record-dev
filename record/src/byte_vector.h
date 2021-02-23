@@ -14,9 +14,9 @@ byte_vector_t make_vector(size_t capacity);
 void free_vector(byte_vector_t vector);
 
 // Required for make use of a R_outpstream_t
-void outchar(R_outpstream_t stream, int c);
+void append_byte(R_outpstream_t stream, int c);
 
 // Required for make use of a R_outpstream_t
-void outbytes(R_outpstream_t stream, void *buf, int length);
+void append_buf(R_outpstream_t stream, void *buf, int length);
 
 #endif // RCRD_BYTE_VECTOR_H

@@ -35,7 +35,7 @@ const char *db_file_name = "tmp.txt";
  * @method record_init
  * @return file pointer wrapped as a R external pointer
  */
-SEXP record_init() {
+SEXP open_db(SEXP file_name) {
 	FILE *db = fopen(db_file_name, "w+");
 	if (db == NULL) {
 		printf("Could not start the database.");
@@ -49,7 +49,7 @@ SEXP record_init() {
  * @method record_close
  * @param  file_ptr     wrapped FILE pointer
  */
-SEXP record_close(SEXP file_ptr) {
+SEXP close_db() {
 	FILE *file = R_ExternalPtrAddr(file_ptr);
 	if (fclose(file)) {
 		printf("Could not close the database.");
@@ -67,7 +67,7 @@ SEXP record_close(SEXP file_ptr) {
  *                         filed
  * @return                 r_string_object on success
  */
-SEXP r2cd(SEXP r_string_object, SEXP file_ptr) {
+SEXP add_value(SEXP val) {
 	// const char* c_string = CHAR(STRING_ELT(r_string_object, 0));
 	FILE *file = R_ExternalPtrAddr(file_ptr);
 
@@ -78,19 +78,18 @@ SEXP r2cd(SEXP r_string_object, SEXP file_ptr) {
 
 	R_InitOutPStream(stream, (R_pstream_data_t) vector,
 						R_pstream_binary_format, 3,
-						outchar, outbytes,
+						append_byte, append_buf,
 						NULL, R_NilValue);
 
-	R_Serialize(r_string_object, stream);
+	R_Serialize(val, stream);
 
 	if (vector->size != fwrite(vector->buf, 1, vector->size, file)) {
-		return R_NilValue;
+		// TODO: Consider reuse;
+		free_vector(vector);
+		Rf_error("Could not write out.");
 	}
 
-	// TODO: Consider reuse
-	free_vector(vector);
-
-	return r_string_object;
+	return val;
 }
 
 // R_serialize(value, R_NULL, R_FALSE, R_TRUE, R_NULL, R_NULL);

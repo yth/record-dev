@@ -83,14 +83,22 @@ void append_buf(byte_vector_t vector, void *buf, int length) {
 }
 
 // Required for make use of a R_outpstream_t
-void outchar(R_outpstream_t stream, int c) {
+void append_byte(R_outpstream_t stream, int c) {
 	byte_vector_t vector = (byte_vector_t) stream->data;
-	append_byte(vector, c);
+	if (vector->size == vector->capacity) {
+		grow_vector(vector);
+	}
+	vector->buf[vector->size] = c;
+	vector->size += 1;
 }
 
 // Required for make use of a R_outpstream_t
-void outbytes(R_outpstream_t stream, void *buf, int length) {
+void append_buf(R_outpstream_t stream, void *buf, int length) {
 	byte_vector_t vector = (byte_vector_t) stream->data;
-	append_buf(vector, buf, length);
+	if (vector->size == vector->capacity) {
+		grow_vector(vector);
+	}
+	vector->buf[vector->size] = c;
+	vector->size += 1;
 }
 
