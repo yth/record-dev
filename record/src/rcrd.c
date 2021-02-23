@@ -3,8 +3,6 @@
 
 #include "R_ext/Error.h"
 #include "R_ext/Print.h"
-
-
 #include <R_ext/RS.h>
 
 
@@ -27,16 +25,22 @@
 #include <stdio.h> // FILE, fopen, close, fwrite
 
 
+
 const char *db_file_name = "tmp.txt";
 
 
 /**
  * This function creates a database for a collection of values.
  * @method record_init
+ * @param filename
  * @return file pointer wrapped as a R external pointer
  */
-SEXP open_db(SEXP file_name) {
-	FILE *db = fopen(db_file_name, "w+");
+SEXP open_db(SEXP filename) {
+  const char* name = CHAR(STRING_ELT(filename, 0));
+  // printf("%s", name);
+
+	/* FILE *db = fopen(name, "w+"); */
+  FILE *db = fopen(name, "w+");
 	if (db == NULL) {
 		printf("Could not start the database.");
 	}

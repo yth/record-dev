@@ -9,7 +9,7 @@ test_that("test_close_bd_1", {
 
 test_that("test_rcrd_r2cd_1", {
 	file = open_db_for_write()
-	s = "string"
+	s = "hello"
 	expect_equal(add_value(s, file), s)
 	expect_equal(close_db(file), NULL)
 	f = file("tmp.txt", "rb")
