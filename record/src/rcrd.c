@@ -25,8 +25,7 @@
 #include <stdio.h> // FILE, fopen, close, fwrite
 
 
-
-const char *db_file_name = "tmp.txt";
+FILE *file;
 
 
 /**
@@ -42,9 +41,12 @@ SEXP open_db(SEXP filename) {
 	/* FILE *db = fopen(name, "w+"); */
   FILE *db = fopen(name, "w+");
 	if (db == NULL) {
-		printf("Could not start the database.");
+		Rf_error("Could not start the database.");
 	}
-	return R_MakeExternalPtr(db, R_NilValue, R_NilValue);
+
+	file = db;
+
+	return R_NilValue;
 }
 
 
@@ -54,11 +56,10 @@ SEXP open_db(SEXP filename) {
  * @param  file_ptr     wrapped FILE pointer
  */
 SEXP close_db() {
-	FILE *file = R_ExternalPtrAddr(file_ptr);
 	if (fclose(file)) {
-		printf("Could not close the database.");
+		Rf_error("Could not close the database.");
 	}
-	R_ClearExternalPtr(file_ptr);
+	file = NULL;
 	return R_NilValue;
 }
 
@@ -72,9 +73,6 @@ SEXP close_db() {
  * @return                 r_string_object on success
  */
 SEXP add_value(SEXP val) {
-	// const char* c_string = CHAR(STRING_ELT(r_string_object, 0));
-	FILE *file = R_ExternalPtrAddr(file_ptr);
-
 	struct R_outpstream_st out;
 	R_outpstream_t stream = &out;
 

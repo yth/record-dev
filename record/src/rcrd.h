@@ -8,7 +8,7 @@
 /**
  * This function creates a database for a collection of values.
  * @method record_init
- * @return FILE pointer wrapped as a R external pointer
+ * @return R_NilValue; File pointer is kept in the C layer
  */
 SEXP open_db(SEXP filename);
 
@@ -16,20 +16,18 @@ SEXP open_db(SEXP filename);
 /**
  * This function closes a database.
  * @method record_close
- * @param  file_ptr     wrapped FILE pointer
  * @return R_NilValue on success
  */
-SEXP close_db(SEXP file_ptr);
+SEXP close_db();
 
 
 /**
  * This functions directly adds an R value to the specified storage.
  * @method r2cd
- * @param  r_object [description]
- * @param  storage  [description]
- * @return          [description]
+ * @param  val      R value in form of SEXP
+ * @return          R value on success
  */
-SEXP add_value(SEXP r_string_object, SEXP file_ptr);
+SEXP add_value(SEXP val);
 
 
 /**

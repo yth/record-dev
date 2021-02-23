@@ -3,11 +3,11 @@ open_db_for_write <- function(filename = "tmp.txt") {
 }
 
 close_db <- function(file) {
-	.Call(RCRD_close_db, file)
+	.Call(RCRD_close_db)
 }
 
-add_value <- function(r_string_object, file) {
-	.Call(RCRD_add_value, r_string_object, file)
+add_value <- function(value) {
+	.Call(RCRD_add_value, value)
 }
 
 # get_random_value <- function() {

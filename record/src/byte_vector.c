@@ -65,22 +65,22 @@ void grow_vector(byte_vector_t vector) {
 }
 
 // TODO: Add mechanism to not go over a max size
-void append_byte(byte_vector_t vector, unsigned char c) {
-	if (vector->size == vector->capacity) {
-		grow_vector(vector);
-	}
-	vector->buf[vector->size] = c;
-	vector->size += 1;
-}
-
+// void append_byte(byte_vector_t vector, unsigned char c) {
+// 	if (vector->size == vector->capacity) {
+// 		grow_vector(vector);
+// 	}
+// 	vector->buf[vector->size] = c;
+// 	vector->size += 1;
+// }
+//
 // TODO: Add mechanism to not go over a max size
 // TODO: Vectorize
-void append_buf(byte_vector_t vector, void *buf, int length) {
-	unsigned char* cbuf = (unsigned char*) buf;
-	for (int i = 0; i < length; ++i) {
-		append_byte(vector, cbuf[i]);
-	}
-}
+// void append_buf(byte_vector_t vector, void *buf, int length) {
+// 	unsigned char* cbuf = (unsigned char*) buf;
+// 	for (int i = 0; i < length; ++i) {
+// 		append_byte(vector, cbuf[i]);
+// 	}
+// }
 
 // Required for make use of a R_outpstream_t
 void append_byte(R_outpstream_t stream, int c) {
@@ -94,11 +94,9 @@ void append_byte(R_outpstream_t stream, int c) {
 
 // Required for make use of a R_outpstream_t
 void append_buf(R_outpstream_t stream, void *buf, int length) {
-	byte_vector_t vector = (byte_vector_t) stream->data;
-	if (vector->size == vector->capacity) {
-		grow_vector(vector);
+	unsigned char* cbuf = (unsigned char*) buf;
+	for (int i = 0; i < length; ++i) {
+		append_byte(stream, cbuf[i]);
 	}
-	vector->buf[vector->size] = c;
-	vector->size += 1;
 }
 
