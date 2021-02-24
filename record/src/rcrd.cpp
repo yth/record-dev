@@ -6,10 +6,12 @@
 #include <R_ext/RS.h>
 
 
-#include <string.h> //strlen
+#include <string> // std::string, strlen
+#include <map> // std::map
 
 
 #include "byte_vector.h"
+#include "sha1.h"
 
 
 // #include <sys/mman.h> // mmap related facilities
@@ -26,6 +28,7 @@
 
 
 FILE *file;
+std::map<std::string, uint32_t> *gbov;
 
 
 /**
@@ -85,6 +88,9 @@ SEXP add_value(SEXP val) {
 
 	R_Serialize(val, stream);
 
+
+
+	// TODO: Make sure fwrite writes enough bytes every time
 	if (vector->size != fwrite(vector->buf, 1, vector->size, file)) {
 		// TODO: Consider reuse;
 		free_vector(vector);
