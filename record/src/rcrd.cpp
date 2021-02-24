@@ -38,16 +38,17 @@ std::map<std::string, uint32_t> *gbov;
  * @return file pointer wrapped as a R external pointer
  */
 SEXP open_db(SEXP filename) {
-  const char* name = CHAR(STRING_ELT(filename, 0));
-  // printf("%s", name);
+	const char* name = CHAR(STRING_ELT(filename, 0));
+	// printf("%s", name);
 
 	/* FILE *db = fopen(name, "w+"); */
-  FILE *db = fopen(name, "w+");
+	FILE *db = fopen(name, "w+");
 	if (db == NULL) {
 		Rf_error("Could not start the database.");
 	}
-
 	file = db;
+
+	gbov = new std::map<std::string, uint32_t>;
 
 	return R_NilValue;
 }
@@ -64,6 +65,11 @@ SEXP close_db() {
 	}
 	file = NULL;
 	return R_NilValue;
+
+	std::map<std::string, uint32_t>::iterator map_iter;
+	for(map_iter = gbov->begin(); map_iter != gbov->end(); ++map_iter) {
+		delete map_iter;
+	}
 }
 
 
