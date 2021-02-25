@@ -1,20 +1,8 @@
 #include "byte_vector.h"
 
 
-#include <stdlib.h>
+#include <stdlib.h> //size_t
 
-
-//
-// static void InitMemOutPStream(R_outpstream_t stream, membuf_t mb,
-// 			      R_pstream_format_t type, int version,
-// 			      SEXP (*phook)(SEXP, SEXP), SEXP pdata)
-// {
-//     mb->count = 0;
-//     mb->size = 0;
-//     mb->buf = NULL;
-//     R_InitOutPStream(stream, (R_pstream_data_t) mb, type, version,
-// 		     OutCharMem, OutBytesMem, phook, pdata);
-// }
 
 byte_vector_t make_vector(size_t capacity) {
 	byte_vector_t v = (byte_vector_t) malloc(sizeof(struct byte_vector_st));
@@ -44,6 +32,7 @@ void free_vector(byte_vector_t vector) {
 	}
 }
 
+// For potential reuse
 void free_content(byte_vector_t vector) {
 	if (vector) {
 		free(vector->buf);
@@ -64,24 +53,6 @@ void grow_vector(byte_vector_t vector) {
 	}
 }
 
-// TODO: Add mechanism to not go over a max size
-// void append_byte(byte_vector_t vector, unsigned char c) {
-// 	if (vector->size == vector->capacity) {
-// 		grow_vector(vector);
-// 	}
-// 	vector->buf[vector->size] = c;
-// 	vector->size += 1;
-// }
-//
-// TODO: Add mechanism to not go over a max size
-// TODO: Vectorize
-// void append_buf(byte_vector_t vector, void *buf, int length) {
-// 	unsigned char* cbuf = (unsigned char*) buf;
-// 	for (int i = 0; i < length; ++i) {
-// 		append_byte(vector, cbuf[i]);
-// 	}
-// }
-
 // Required for make use of a R_outpstream_t
 void append_byte(R_outpstream_t stream, int c) {
 	byte_vector_t vector = (byte_vector_t) stream->data;
@@ -99,4 +70,3 @@ void append_buf(R_outpstream_t stream, void *buf, int length) {
 		append_byte(stream, cbuf[i]);
 	}
 }
-

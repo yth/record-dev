@@ -99,7 +99,7 @@ SEXP add_value(SEXP val) {
 		sprintf(hash + i * 2, "%02x", sha1sum[i] );
 	}
 
-	(*gbov)[hash] = 1;
+	(*gbov)[hash] = offset;
 
 	// TODO: Make sure fwrite writes enough bytes every time
 	if (vector->size != fwrite(vector->buf, 1, vector->size, file)) {
@@ -107,6 +107,8 @@ SEXP add_value(SEXP val) {
 		free_vector(vector);
 		Rf_error("Could not write out.");
 	}
+
+	// Modify offset here7777777
 
 	return val;
 }
