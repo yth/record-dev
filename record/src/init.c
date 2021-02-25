@@ -17,7 +17,7 @@ static const R_CallMethodDef callMethods[] = {
 	{"open_db", (DL_FUNC) &open_db, 1},
 	{"close_db", (DL_FUNC) &close_db, 0},
 	{"add_value", (DL_FUNC) &add_value, 1},
-	// {"c2r", (DL_FUNC) &c2r, 2},
+	{"has_value", (DL_FUNC) &has_value, 1},
 	{NULL, NULL, 0} // Required?
 };
 

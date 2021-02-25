@@ -34,24 +34,12 @@ SEXP add_value(SEXP val);
 
 
 /**
- * This function adds an R value to the C layer.
- * @method r2c
- * @param  r_object SEXP that represents an R object
- * @param  storage  SEXP that represents the storage
- * @return          SEXP that can act as a hash for the value in the store
+ * This function asks if the C layer has seen a R value.
+ * @method has_value
+ * @param  val       R value in form of SEXP
+ * @return           True or False
  */
-//SEXP r2c(SEXP r_object, SEXP storage);
-
-
-/**
- * This function returns an R value from the specified storage based on hash.
- * @method c2r
- * @param  hash    SEXP that can act as a hash for the value in the store
- * @param  storage SEXP that represents the storage
- * @return         SEXP that is the R value specified by the hash
- * TODO: HANDLE HASH COLLISION OR CREATE ANOTHER TYPE OF UNIQUE IDENTIFIER
- */
-// SEXP c2r(SEXP hash, SEXP storage);
+SEXP has_value(SEXP val);
 
 #ifdef __cplusplus
 } // extern "C"

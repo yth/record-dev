@@ -10,6 +10,6 @@ add_value <- function(value) {
 	.Call(RCRD_add_value, value)
 }
 
-# get_random_value <- function() {
-# 	.Call(RCRD_dc2r)
-# }
+has_value <- function(value) {
+	.Call(RCRD_has_value, value)
+}
