@@ -8,26 +8,17 @@
 
 #include <string> // std::string, strlen
 #include <map> // std::map
+#include <stdio.h> // FILE, fopen, close, fwrite
+#include <stdarg.h> // testing
 
 
 #include "byte_vector.h"
 #include "sha1.h"
 
 
-// #include <sys/mman.h> // mmap related facilities
-// #include <stdint.h> // uint64_t
-// #include <assert.h> // assert
-//
-// #include <sys/types.h> // open
-// #include <sys/stat.h> // open
-// #include <fcntl.h> // open
-// #include <unistd.h> // close
-// #include <assert.h> // assert
-
-#include <stdio.h> // FILE, fopen, close, fwrite
-
-
+// Globals
 FILE *file;
+uint32_t offset;
 std::map<std::string, uint32_t> *gbov;
 
 
@@ -39,7 +30,6 @@ std::map<std::string, uint32_t> *gbov;
  */
 SEXP open_db(SEXP filename) {
 	const char* name = CHAR(STRING_ELT(filename, 0));
-	// printf("%s", name);
 
 	/* FILE *db = fopen(name, "w+"); */
 	FILE *db = fopen(name, "w+");
@@ -47,6 +37,8 @@ SEXP open_db(SEXP filename) {
 		Rf_error("Could not start the database.");
 	}
 	file = db;
+
+	offset = 0;
 
 	gbov = new std::map<std::string, uint32_t>;
 
@@ -64,12 +56,10 @@ SEXP close_db() {
 		Rf_error("Could not close the database.");
 	}
 	file = NULL;
-	return R_NilValue;
 
-	std::map<std::string, uint32_t>::iterator map_iter;
-	for(map_iter = gbov->begin(); map_iter != gbov->end(); ++map_iter) {
-		delete map_iter;
-	}
+	delete gbov;
+
+	return R_NilValue;
 }
 
 
@@ -94,7 +84,22 @@ SEXP add_value(SEXP val) {
 
 	R_Serialize(val, stream);
 
+	// TODO: Think about reuse
+	sha1_context ctx;
+	unsigned char sha1sum[20];
+	char hash[41] = { 0 };
 
+	sha1_starts(&ctx);
+	sha1_update(&ctx, (uint8 *)vector->buf, vector->size);
+	sha1_finish( &ctx, sha1sum );
+
+	// TODO: Use the original sha1sum when being readable is no longer wanted
+	// Make readable for easier debugging
+	for(int i = 0; i < 20; ++i) {
+		sprintf(hash + i * 2, "%02x", sha1sum[i] );
+	}
+
+	(*gbov)[hash] = 1;
 
 	// TODO: Make sure fwrite writes enough bytes every time
 	if (vector->size != fwrite(vector->buf, 1, vector->size, file)) {
@@ -106,31 +111,46 @@ SEXP add_value(SEXP val) {
 	return val;
 }
 
-// R_serialize(value, R_NULL, R_FALSE, R_TRUE, R_NULL, R_NULL);
+SEXP has_value(SEXP val) {
+	struct R_outpstream_st out;
+	R_outpstream_t stream = &out;
 
-/**
- * This function adds an R value to the C layer.
- * @method r2c
- * @param  r_object SEXP that represents an R object
- * @param  storage  SEXP that represents the storage
- * @return          SEXP that can act as a hash for the value in the store
- */
-// SEXP r2c(SEXP r_object, SEXP storage);
+	byte_vector_t vector = make_vector(100);
 
+	R_InitOutPStream(stream, (R_pstream_data_t) vector,
+						R_pstream_binary_format, 3,
+						append_byte, append_buf,
+						NULL, R_NilValue);
 
-/**
- * This function returns an R value from the specified storage based on hash
- * @method c2r
- * @param  hash    SEXP that can act as a hash for the value in the store
- * @param  storage SEXP that represents the storage
- * @return         SEXP that is the R value specified by the hash
- * TODO: HANDLE HASH COLLISION OR CREATE ANOTHER TYPE OF UNIQUE IDENTIFIER
- */
-// SEXP c2r(SEXP hash, SEXP storage) {
-// 	const char* res = "wrong result";
-// 	SEXP r_res = PROTECT(allocVector(STRSXP, 1));
-// 	SET_STRING_ELT(r_res, 0, mkChar(res));
-// 	UNPROTECT(1);
-//
-// 	return r_res;
-// }
+	R_Serialize(val, stream);
+
+	sha1_context ctx;
+	unsigned char sha1sum[20];
+	char hash[41] = { 0 };
+
+	sha1_starts(&ctx);
+	sha1_update(&ctx, (uint8 *)vector->buf, vector->size);
+	sha1_finish( &ctx, sha1sum );
+
+	// TODO: Use the original sha1sum when being readable is no longer wanted
+	// Make readable for easier debugging
+	for(int i = 0; i < 20; ++i) {
+		sprintf(hash + i * 2, "%02x", sha1sum[i] );
+	}
+
+	std::map<std::string, uint32_t>::iterator it;
+	it = gbov->find(hash);
+
+	int found = 0;
+	if (it != gbov->end()) {
+		found = 1;
+	}
+
+	SEXP res;
+	R_xlen_t n = 1;
+	PROTECT(res = allocVector(LGLSXP, n));
+	int *res_ptr = LOGICAL(res);
+	res_ptr[0] = found;
+	UNPROTECT(1);
+	return res;
+}
