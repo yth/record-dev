@@ -99,6 +99,7 @@ SEXP add_value(SEXP val) {
 		sprintf(hash + i * 2, "%02x", sha1sum[i] );
 	}
 
+	// TODO: Check if we have seen the value before
 	(*gbov)[hash] = offset;
 
 	// TODO: Make sure fwrite writes enough bytes every time
@@ -108,7 +109,9 @@ SEXP add_value(SEXP val) {
 		Rf_error("Could not write out.");
 	}
 
-	// Modify offset here7777777
+	// Modify offset here
+	// TODO: Check for overflow
+	offset += vector->size;
 
 	return val;
 }
