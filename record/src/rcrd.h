@@ -41,6 +41,15 @@ SEXP add_value(SEXP val);
  */
 SEXP has_value(SEXP val);
 
+
+/**
+ * This function returns a random value from the database
+ * @method get_random_value
+ * @return R value in form of SEXP from the database
+ */
+SEXP get_random_value();
+
+
 #ifdef __cplusplus
 } // extern "C"
 #endif

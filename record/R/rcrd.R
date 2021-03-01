@@ -13,3 +13,7 @@ add_value <- function(value) {
 has_value <- function(value) {
 	.Call(RCRD_has_value, value)
 }
+
+get_random_value <- function() {
+	.Call(RCRD_get_random_value)
+}

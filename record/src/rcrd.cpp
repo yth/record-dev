@@ -159,3 +159,8 @@ SEXP has_value(SEXP val) {
 	UNPROTECT(1);
 	return res;
 }
+
+
+SEXP get_random_value() {
+	return R_NilValue;
+}
