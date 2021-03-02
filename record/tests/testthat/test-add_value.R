@@ -7,4 +7,5 @@ test_that("test_rcrd_add_value_1", {
 	f = file("tmp.txt", "rb")
 	r = readBin(f, n = 1, character())
 	expect_gt(length(r), 0)
+	close(f)
 })
