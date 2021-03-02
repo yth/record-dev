@@ -12,7 +12,7 @@ clean:
 	-rm -f record*tar.gz
 	-rm -fr record.Rcheck
 	-rm -rf src/*.o src/*.so
-	-rm -rf tests/testthat/tmp.txt
+	-rm -rf tests/testthat/*.txt
 	-rm -f trace
 
 document:
