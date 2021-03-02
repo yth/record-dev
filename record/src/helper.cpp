@@ -1,3 +1,5 @@
+#include <cstdio>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
