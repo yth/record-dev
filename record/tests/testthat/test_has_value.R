@@ -1,3 +1,4 @@
+if (F) {
 test_that("test_rcrd_has_value_1", {
 	success = open_db_for_write("tmp.txt")
 	expect_equal(success, NULL)
@@ -39,3 +40,4 @@ test_that("test with a vector of length 100", {
   expect_equal(has_value(1:100), TRUE)
   expect_equal(close_db(), NULL)
 })
+}

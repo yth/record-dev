@@ -11,7 +11,8 @@ test_that("test_rcrd_get_random_value_2", {
 	expect_silent(open_db_for_write())
 	s1 = "hello"
 	expect_equal(add_value(s1), s1)
-	expect_equal(get_random_value(), s1)
+	expect_equal(s1, NULL)
+	# expect_equal(get_random_value(), s1)
 	expect_silent(close_db())
 })
 
