@@ -31,7 +31,6 @@ std::map<std::string, uint32_t> *gbov;
 SEXP open_db(SEXP filename) {
 	const char* name = CHAR(STRING_ELT(filename, 0));
 
-	/* FILE *db = fopen(name, "w+"); */
 	FILE *db = fopen(name, "w+");
 	if (db == NULL) {
 		Rf_error("Could not start the database.");
@@ -58,7 +57,7 @@ SEXP close_db() {
 	}
 	file = NULL;
 
-	delete gbov;
+n	delete gbov;
 
 	return R_NilValue;
 }
@@ -163,3 +162,4 @@ SEXP has_value(SEXP val) {
 SEXP get_random_value() {
 	return R_NilValue;
 }
+
