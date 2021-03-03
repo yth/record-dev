@@ -1,13 +1,13 @@
-test_that("test_rcrd_has_value_1", {
-	open_db_for_write("hello.txt")
+test_that("has hello", {
+	open_db_for_write("has-hello.txt")
 	s = "hello"
 	add_value(s)
 	expect_equal(has_value(s), T)
 	close_db()
 })
 
-test_that("test_rcrd_has_value_2", {
-  open_db_for_write("hello-goodbye.txt")
+test_that("has hello and good bye", {
+  open_db_for_write("has-hello-goodbye.txt")
 	s1 = "hello"
 	s2 = "good bye"
 	add_value(s1)
@@ -17,8 +17,8 @@ test_that("test_rcrd_has_value_2", {
 	close_db()
 })
 
-test_that("test_rcrd_has_value_3", {
-	open_db_for_write("three-string-vals.txt")
+test_that("has 3 string vals", {
+	open_db_for_write("has-3-vals.txt")
 	s1 = "hello"
 	s2 = "good bye"
 	s3 = "arrivederci"
@@ -30,7 +30,7 @@ test_that("test_rcrd_has_value_3", {
 	close_db()
 })
 
-test_that("test with a vector of length 100", {
+test_that("has 100 int vals", {
   open_db_for_write("has-100-value.txt")
   add_value(1:100)
   expect_equal(has_value(1:100), TRUE)
