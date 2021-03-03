@@ -1,10 +1,10 @@
-test_that("test_rcrd_add_value_simple", {
-	success = open_db_for_write("tmp.txt")
-	expect_equal(success, NULL)
+test_that("add_hello", {
+	open_db_for_write("hello.txt")
 	s = "hello"
 	expect_equal(add_value(s), s)
-	expect_equal(close_db(), NULL)
-	f = file("tmp.txt", "rb")
+	close_db()
+
+	f = file("hello.txt", "rb")
 	r = readBin(f, n = 1, character())
 	expect_gt(length(r), 0)
 	close(f)
@@ -22,7 +22,7 @@ test_that("test_rcrd_add_value_larger_1", {
 	expect_equal(close_db(), NULL)
 })
 
-test_that("test_rcrd_add_value_larger_1", {
+test_that("test_rcrd_add_value_larger_2", {
 	open_db_for_write("test_add_larger_vector_2.txt")
 	alphabet = c("a", "b", "c", "d", "e", "f", "g", "h", "i")
 	alphabet = c(alphabet, "j", "k", "l", "m", "n", "o", "p")
