@@ -17,8 +17,8 @@ test_that("has hello and good bye", {
 	close_db()
 })
 
-test_that("has 3 string vals", {
-	open_db_for_write("has-3-vals.txt")
+test_that("not have not added value", {
+	open_db_for_write("not-has.txt")
 	s1 = "hello"
 	s2 = "good bye"
 	s3 = "arrivederci"
@@ -36,3 +36,11 @@ test_that("has 100 int vals", {
   expect_equal(has_value(1:100), TRUE)
   close_db()
 })
+
+## test_that("has alphabet", {
+##   open_db_for_write("has-alphabet.txt")
+##   alphabet <- c("a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z")
+##   add_value(alphabet)
+##   expect_equal(has_value(alphabet), TRUE)
+##   close_db()
+## })

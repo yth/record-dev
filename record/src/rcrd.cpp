@@ -65,11 +65,9 @@ SEXP close_db() {
 
 /**
  * This functions directly adds an R value to the specified storage.
- * @method r2cd
- * @param  r_string_object SEXP that contains at least a single string
- * @param  file_ptr        SEXP that contains a FILE ptr pointing to an opened
- *                         filed
- * @return                 r_string_object on success
+ * @method add_value
+ * @param  val arbitrary R value
+ * @return val same as input val
  */
 SEXP add_value(SEXP val) {
 	struct R_outpstream_st out;

@@ -33,8 +33,20 @@ print(paste0("recording ", toString(length(values_list)), " values."))
 
 values <- lapply(values_list, function(x) x[[3]])
 
-lapply(values, add_value)
-lapply(values, has_value)
+for(value in values) {
+  add_value(value)
+  print(paste0(toString(value), " recorded."))
+
+  if(has_value(value)) {
+    print(paste0(toString(value), " found."))
+  } else {
+    print(paste0(toString(value), " not found."))
+  }
+}
+
+
+## lapply(values, add_value)
+## lapply(values, has_value)
 
 
 if(is.null(close_db())) {
