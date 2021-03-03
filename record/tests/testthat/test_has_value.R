@@ -1,4 +1,3 @@
-if (F) {
 test_that("test_rcrd_has_value_1", {
 	success = open_db_for_write("tmp.txt")
 	expect_equal(success, NULL)
@@ -8,6 +7,7 @@ test_that("test_rcrd_has_value_1", {
 	expect_equal(close_db(), NULL)
 })
 
+if (T) {
 test_that("test_rcrd_has_value_2", {
 	success = open_db_for_write("tmp.txt")
 	expect_equal(success, NULL)

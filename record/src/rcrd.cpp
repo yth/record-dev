@@ -52,6 +52,7 @@ SEXP open_db(SEXP filename) {
  * @param  file_ptr     wrapped FILE pointer
  */
 SEXP close_db() {
+	fflush(file);
 	if (fclose(file)) {
 		Rf_error("Could not close the database.");
 	}
@@ -100,7 +101,7 @@ SEXP add_value(SEXP val) {
 	}
 
 	// TODO: Check if we have seen the value before
-	(*gbov)[hash] = offset;
+	(*gbov)[std::string(hash, 40)] = offset;
 
 	// TODO: Make sure fwrite writes enough bytes every time
 	if (vector->size != fwrite(vector->buf, 1, vector->size, file)) {
@@ -144,7 +145,7 @@ SEXP has_value(SEXP val) {
 	}
 
 	std::map<std::string, uint32_t>::iterator it;
-	it = gbov->find(hash);
+	it = gbov->find(std::string(hash, 40));
 
 	int found = 0;
 	if (it != gbov->end()) {
