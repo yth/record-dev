@@ -1,36 +1,42 @@
 test_that("add_hello", {
-	open_db_for_write("add-hello.txt")
+	open_db_for_write("hello.txt")
 	s = "hello"
 	expect_equal(add_value(s), s)
 	close_db()
 
-	f = file("add-hello.txt", "rb")
+	f = file("hello.txt", "rb")
 	r = readBin(f, n = 1, character())
 	expect_gt(length(r), 0)
 	close(f)
 })
 
-test_that("add 10 vals", {
-	open_db_for_write("add-10.txt")
-  print("successfully opened add-10.txt")
-	expect_equal(length(add_value(1:10)), 10)
-  print("successfully added 10 values.")
-	close_db()
+test_that("test_rcrd_add_value_vector", {
+	open_db_for_write("test_add_vector.txt")
+	add_value(1:10)
+	expect_equal(close_db(), NULL)
 })
 
-test_that("add 100 vals", {
-	open_db_for_write("add-100.txt")
-  print("successfully opened add-100.txt")
-	expect_equal(length(add_value(1:100)), 100)
-  print("successfully added 100 values.")
-	close_db()
+test_that("test_rcrd_add_value_larger_1", {
+	open_db_for_write("test_add_larger_vector_1.txt")
+	add_value(1:100)
+	expect_equal(close_db(), NULL)
 })
 
-test_that("add alphabet", {
-	open_db_for_write("add-alphabet.txt")
-  print("successfully opened add-alphabet.txt")
-  ## alphabet <- c("a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z")
-	## expect_equal(length(add_value(alphabet)), 26)
-  ## print("successfully added alphabet.")
-	close_db()
+test_that("test_rcrd_add_value_larger_2", {
+	open_db_for_write("test_add_larger_vector_2.txt")
+	alphabet = c("a", "b", "c", "d", "e", "f", "g", "h", "i")
+	alphabet = c(alphabet, "j", "k", "l", "m", "n", "o", "p")
+	alphabet = c(alphabet, "q", "r", "s", "t", "u", "v", "w")
+	alphabet = c(alphabet, "x", "y", "z")
+
+	alphabets = c(alphabet, alphabet)
+
+	add_value(alphabets)
+	expect_equal(close_db(), NULL)
+})
+
+test_that("test_rcrd_add_value_large", {
+	open_db_for_write("test_add_large.txt")
+	add_value(c(1:500, 600:100000))
+	expect_equal(close_db(), NULL)
 })

@@ -1,17 +1,20 @@
 #include "byte_vector.h"
 
 
+#include <R_ext/RS.h> // R's allocations
+
+
 #include <stdlib.h> //size_t
 
 
 byte_vector_t make_vector(size_t capacity) {
-	byte_vector_t v = (byte_vector_t) malloc(sizeof(struct byte_vector_st));
+	byte_vector_t v = (byte_vector_t) Calloc(1, struct byte_vector_st);
 	if (v == NULL) {
 		perror("Could not malloc.");
 		return NULL;
 	}
 
-	unsigned char *ptr = (unsigned char*) malloc(capacity);
+	unsigned char *ptr = (unsigned char*) Calloc(capacity, char);
 	if (ptr == NULL) {
 		perror("Could not malloc.");
 		free(v);
@@ -27,15 +30,15 @@ byte_vector_t make_vector(size_t capacity) {
 
 void free_vector(byte_vector_t vector) {
 	if (vector) {
-		free(vector->buf);
-		free(vector);
+		Free(vector->buf);
+		Free(vector);
 	}
 }
 
 // For potential reuse
 void free_content(byte_vector_t vector) {
 	if (vector) {
-		free(vector->buf);
+		Free(vector->buf);
 		vector->size = 0;
 		vector->capacity = 0;
 	}
@@ -43,14 +46,12 @@ void free_content(byte_vector_t vector) {
 
 // TODO: Add mechanism to not go over a max size
 void grow_vector(byte_vector_t vector) {
-	unsigned char *ptr;
-	ptr = (unsigned char*)realloc(vector->buf, vector->size * 2);
-	if (ptr) { // if ptr != vector->buf, do I need to free vector-> buf?
-		vector->size *= 2;
-		vector->buf = ptr;
-	} else {
-		perror("Could not realloc.");
+	vector->capacity *= 2;
+	vector->buf = (unsigned char*)Realloc(vector->buf, vector->capacity, char);
+	if (vector->buf) {
+		return;
 	}
+	Rf_error("Could not realloc.");
 }
 
 // Required for make use of a R_outpstream_t

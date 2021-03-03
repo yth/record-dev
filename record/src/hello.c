@@ -14,7 +14,7 @@ SEXP hello(SEXP name) {
 	size_t l = strlen(c_name);
 
 	// "Hello, [name]!" 8 characters outside of [name] and need + 1 for \0
-	char* res = R_Calloc(9 + l, char);
+	char* res = Calloc(9 + l, char);
 
 	// Formate the return value
 	strncpy(res, "Hello, ", 8); // Really 7; 8th is the '\0'

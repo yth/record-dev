@@ -1,4 +1,4 @@
-test_that("has hello", {
+test_that("test_rcrd_has_value_1", {
 	open_db_for_write("has-hello.txt")
 	s = "hello"
 	add_value(s)
@@ -6,8 +6,8 @@ test_that("has hello", {
 	close_db()
 })
 
-test_that("has hello and good bye", {
-  open_db_for_write("has-hello-goodbye.txt")
+test_that("test_rcrd_has_value_2", {
+	open_db_for_write("has-hello-goodbye.txt")
 	s1 = "hello"
 	s2 = "good bye"
 	add_value(s1)
