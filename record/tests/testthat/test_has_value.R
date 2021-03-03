@@ -6,15 +6,8 @@ test_that("test_rcrd_has_value_1", {
 	close_db()
 })
 
-<<<<<<< HEAD
-if (T) {
 test_that("test_rcrd_has_value_2", {
-	success = open_db_for_write("tmp.txt")
-	expect_equal(success, NULL)
-=======
-test_that("test_rcrd_has_value_2", {
-  open_db_for_write("has-hello-goodbye.txt")
->>>>>>> 73207282d9a0fce7534626f8a55d2a72d05cd597
+	open_db_for_write("has-hello-goodbye.txt")
 	s1 = "hello"
 	s2 = "good bye"
 	add_value(s1)
