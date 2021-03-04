@@ -23,5 +23,5 @@ static const R_CallMethodDef callMethods[] = {
 };
 
 void R_init_record(DllInfo* dll) {
-    R_registerRoutines(dll, NULL, callMethods, NULL, NULL);
+	R_registerRoutines(dll, NULL, callMethods, NULL, NULL);
 }

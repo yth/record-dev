@@ -1,4 +1,4 @@
-#include "rcrd.h"
+#include "record.h"
 
 
 #include "R_ext/Error.h"
@@ -14,6 +14,7 @@
 
 #include "byte_vector.h"
 #include "sha1.h"
+#include "helper.h" // write_size_t, read_size_t
 
 
 // Globals
@@ -57,7 +58,7 @@ SEXP close_db() {
 	}
 	file = NULL;
 
-n	delete gbov;
+	delete gbov;
 
 	return R_NilValue;
 }
@@ -100,6 +101,8 @@ SEXP add_value(SEXP val) {
 	// TODO: Check if we have seen the value before
 	(*gbov)[std::string(hash, 40)] = offset;
 
+	write_size_t(file, vector->size);
+
 	// TODO: Make sure fwrite writes enough bytes every time
 	if (vector->size != fwrite(vector->buf, 1, vector->size, file)) {
 		// TODO: Consider reuse;
@@ -107,9 +110,11 @@ SEXP add_value(SEXP val) {
 		Rf_error("Could not write out.");
 	}
 
+	write_size_t(file, 0);
+
 	// Modify offset here
 	// TODO: Check for overflow
-	offset += vector->size;
+	offset += vector->size + sizeof(size_t) + sizeof(size_t);
 
 	return val;
 }
