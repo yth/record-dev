@@ -10,7 +10,7 @@ extern "C" {
 
 /**
  * This function creates a database for a collection of values.
- * @method record_init
+ * @method open_db
  * @return R_NilValue; File pointer is kept in the C layer
  */
 SEXP open_db(SEXP filename);
@@ -18,7 +18,7 @@ SEXP open_db(SEXP filename);
 
 /**
  * This function closes a database.
- * @method record_close
+ * @method close_db
  * @return R_NilValue on success
  */
 SEXP close_db();
@@ -26,28 +26,37 @@ SEXP close_db();
 
 /**
  * This functions directly adds an R value to the specified storage.
- * @method r2cd
+ * @method add_val
  * @param  val      R value in form of SEXP
  * @return          R value on success
  */
-SEXP add_value(SEXP val);
+SEXP add_val(SEXP val);
 
 
 /**
  * This function asks if the C layer has seen a R value.
- * @method has_value
+ * @method has_seen
  * @param  val       R value in form of SEXP
  * @return           True or False
  */
-SEXP has_value(SEXP val);
+SEXP has_seen(SEXP val);
+
+
+/**
+ * This function asks if the C layer has seen a R value.
+ * @method count_val
+ * @param   filename
+ * @return  number of values stored in the file
+ */
+SEXP count_val(SEXP filename);
 
 
 /**
  * This function returns a random value from the database
- * @method get_random_value
+ * @method get_random_val
  * @return R value in form of SEXP from the database
  */
-SEXP get_random_value();
+SEXP get_random_val();
 
 
 #ifdef __cplusplus

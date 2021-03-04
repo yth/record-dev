@@ -20,6 +20,7 @@
 // Globals
 FILE *file;
 uint32_t offset;
+size_t count;
 std::map<std::string, uint32_t> *gbov;
 
 
@@ -39,6 +40,7 @@ SEXP open_db(SEXP filename) {
 	file = db;
 
 	offset = 0;
+  count = 0;
 
 	gbov = new std::map<std::string, uint32_t>;
 
@@ -66,11 +68,11 @@ SEXP close_db() {
 
 /**
  * This functions directly adds an R value to the specified storage.
- * @method add_value
+ * @method add_val
  * @param  val arbitrary R value
  * @return val same as input val
  */
-SEXP add_value(SEXP val) {
+SEXP add_val(SEXP val) {
 	struct R_outpstream_st out;
 	R_outpstream_t stream = &out;
 
@@ -115,11 +117,12 @@ SEXP add_value(SEXP val) {
 	// Modify offset here
 	// TODO: Check for overflow
 	offset += vector->size + sizeof(size_t) + sizeof(size_t);
+  count += 1;
 
 	return val;
 }
 
-SEXP has_value(SEXP val) {
+SEXP has_seen(SEXP val) {
 	struct R_outpstream_st out;
 	R_outpstream_t stream = &out;
 
@@ -163,8 +166,15 @@ SEXP has_value(SEXP val) {
 	return res;
 }
 
+SEXP count_val(SEXP filename) {
+  // sexp ret = protect(allocvector(intsxp, 1));
+  // ret = integer(count);
+  // unprotect(1);
 
-SEXP get_random_value() {
+  return R_NilValue;
+}
+
+SEXP get_random_val() {
 	return R_NilValue;
 }
 
