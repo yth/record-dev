@@ -8,7 +8,7 @@
 
 
 #include "hello.h"
-#include "rcrd.h"
+#include "record.h"
 
 
 static const R_CallMethodDef callMethods[] = {
