@@ -20,7 +20,7 @@
 // Globals
 FILE *file;
 uint32_t offset;
-size_t count;
+int count;
 std::map<std::string, uint32_t> *gbov;
 
 
@@ -166,15 +166,14 @@ SEXP has_seen(SEXP val) {
 	return res;
 }
 
-SEXP count_val(SEXP filename) {
-  // sexp ret = protect(allocvector(intsxp, 1));
-  // ret = integer(count);
-  // unprotect(1);
+SEXP count_val() {
+  SEXP ret = PROTECT(allocVector(INTSXP, 1));
+  INTEGER(ret)[0] = count;
+  UNPROTECT(1);
 
-  return R_NilValue;
+  return ret;
 }
 
 SEXP get_random_val() {
 	return R_NilValue;
 }
-

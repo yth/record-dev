@@ -19,8 +19,8 @@ has_seen <- function(val) {
 }
 
 #' @export
-count_val <- function(filename) {
-	.Call(RCRD_count_val, filename)
+count_val <- function() {
+	.Call(RCRD_count_val)
 }
 
 #' @export

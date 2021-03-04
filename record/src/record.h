@@ -48,7 +48,7 @@ SEXP has_seen(SEXP val);
  * @param   filename
  * @return  number of values stored in the file
  */
-SEXP count_val(SEXP filename);
+SEXP count_val();
 
 
 /**
