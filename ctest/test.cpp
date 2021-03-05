@@ -6,7 +6,11 @@
 int main() {
 	std::cout << "Hello, World\n";
 
-  FILE* file = fopen("test_write_size_t.text", "w+");
+  FILE* file = fopen("test_write_size_t.txt", "w+");
+
+  char c = 'c';
+  fwrite(&c, 1, 1, file);
+
   size_t offset = 0;
   size_t size = sizeof(size_t);
 
