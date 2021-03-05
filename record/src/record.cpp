@@ -10,6 +10,8 @@
 #include <map> // std::map
 #include <stdio.h> // FILE, fopen, close, fwrite
 #include <stdarg.h> // testing
+#include <random> // rand
+#include <iterator> //advance
 
 
 #include "byte_vector.h"
@@ -19,9 +21,9 @@
 
 // Globals
 FILE *file;
-uint32_t offset;
+size_t offset;
 int count;
-std::map<std::string, uint32_t> *gbov;
+std::map<std::string, size_t> *gbov;
 
 
 /**
@@ -42,7 +44,7 @@ SEXP open_db(SEXP filename) {
 	offset = 0;
 	count = 0;
 
-	gbov = new std::map<std::string, uint32_t>;
+	gbov = new std::map<std::string, size_t>;
 
 	return R_NilValue;
 }
@@ -152,7 +154,7 @@ SEXP has_seen(SEXP val) {
 		sprintf(hash + i * 2, "%02x", sha1sum[i] );
 	}
 
-	std::map<std::string, uint32_t>::iterator it;
+	std::map<std::string, size_t>::iterator it;
 	it = gbov->find(std::string(hash, 40));
 
 	int found = 0;
@@ -178,5 +180,58 @@ SEXP count_val() {
 }
 
 SEXP get_random_val() {
-	return R_NilValue;
+	// Specify a random value
+	int random_index = rand() % count;
+	std::map<std::string, size_t>::iterator it;
+	it = gbov->begin();
+	std::advance(it, random_index);
+
+	// Get the specified value
+	size_t* size = (size_t*) read_n(file, offset, it->second, sizeof(size_t));
+	unsigned char* serialized_value = (unsigned char*) read_n(file, offset, it->second + sizeof(size_t), *size);
+
+	// Deserialize the specified value
+
+	// Create an R_inpstream_t of the serialized value
+	struct R_inpstream_st in;
+	R_inpstream_t stream = &in;
+
+	// TODO: Consider reuse
+	byte_vector_t vector = make_vector(0);
+	vector->capacity = *size;
+	vector->buf = serialized_value;
+
+	R_InitInPStream(stream, (R_pstream_data_t) vector,
+						R_pstream_binary_format,
+						get_byte, get_buf,
+						NULL, R_NilValue);
+
+	// Call R_Unserialize(stream) and catch the return value
+	SEXP res = R_Unserialize(stream);
+
+	// Clean Up
+	free(size);
+	free(serialized_value);
+
+	// Return the deserialized value
+	return res;
 }
+
+
+// void
+// R_InitInPStream(R_inpstream_t stream, R_pstream_data_t data,
+// 		R_pstream_format_t type,
+// 		int (*inchar)(R_inpstream_t),
+// 		void (*inbytes)(R_inpstream_t, void *, int),
+// 		SEXP (*phook)(SEXP, SEXP), SEXP pdata)
+// {
+//     stream->data = data;
+//     stream->type = type;
+//     stream->InChar = inchar;
+//     stream->InBytes = inbytes;
+//     stream->InPersistHookFunc = phook;
+//     stream->InPersistHookData = pdata;
+//     stream->native_encoding[0] = 0;
+//     stream->nat2nat_obj = NULL;
+//     stream->nat2utf8_obj = NULL;
+// }
