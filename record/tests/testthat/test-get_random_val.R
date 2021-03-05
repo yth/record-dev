@@ -1,4 +1,3 @@
-if (F) {
 test_that("get_random_val1", {
 	open_db_for_write()
 	s1 = "hello"
@@ -21,10 +20,9 @@ test_that("get_random_val2", {
 		l = append(l, get_random_val())
 	}
 
-	# expect_true(s1 %in% l)
-	# expect_true(s2 %in% l)
-	# expect_true(s3 %in% l)
+	expect_true(s1 %in% l)
+	expect_true(s2 %in% l)
+	expect_true(s3 %in% l)
 
 	close_db()
 })
-}
