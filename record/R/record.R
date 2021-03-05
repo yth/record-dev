@@ -1,6 +1,11 @@
 #' @export
-open_db_for_write <- function(filename = "tmp.txt") {
-	.Call(RCRD_open_db, filename)
+open_db_for_write <- function(dir = ".") {
+	.Call(RCRD_open_db, dir)
+}
+
+#' @export
+open_db_for_read <- function(dir = ".") {
+	.Call(RCRD_open_db, dir)
 }
 
 #' @export
@@ -19,8 +24,13 @@ has_seen <- function(val) {
 }
 
 #' @export
-count_val <- function() {
-	.Call(RCRD_count_val)
+count_vals <- function() {
+	.Call(RCRD_count_vals)
+}
+
+#' @export
+get_vals <- function(from, to) {
+	.Call(RCRD_read_vals, from, to)
 }
 
 #' @export

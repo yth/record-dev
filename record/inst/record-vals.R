@@ -52,9 +52,9 @@ for (i in seq_along(val_files)) {
 }
 
 print(paste0("there were a total of  ", toString(num_total_val), " values."))
-print(paste0("counted  ", toString(count_val()), " many values."))
+print(paste0("counted  ", toString(count_vals()), " many values."))
 
-stopifnot(num_total_val == count_val())
+stopifnot(num_total_val == count_vals())
 
 if(is.null(close_db())) {
   print(paste0(package_name, ".txt", " closed successfully."))

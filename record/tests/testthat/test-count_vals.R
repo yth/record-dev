@@ -1,7 +1,7 @@
 test_that("count one val", {
 	open_db_for_write("count-one.txt")
 	add_val(1:10)
-	expect_equal(count_val(), 1)
+	expect_equal(count_vals(), 1)
   close_db()
 })
 
@@ -9,7 +9,7 @@ test_that("count two vals", {
 	open_db_for_write("count-two.txt")
 	add_val(1:10)
   add_val("hello")
-	expect_equal(count_val(), 2)
+	expect_equal(count_vals(), 2)
   close_db()
 })
 
@@ -19,6 +19,6 @@ test_that("count 101 vals", {
     add_val(i)
   }
   add_val(c("a","b","c"))
-	expect_equal(count_val(), 101)
+	expect_equal(count_vals(), 101)
   close_db()
 })

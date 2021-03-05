@@ -44,11 +44,20 @@ SEXP has_seen(SEXP val);
 
 /**
  * This function asks if the C layer has seen a R value.
- * @method count_val
+ * @method count_vals
  * @param   filename
  * @return  number of values stored in the file
  */
-SEXP count_val();
+SEXP count_vals();
+
+
+/**
+ * This function asks if the C layer has seen a R value.
+ * @method read_vals
+ * @param   from, to
+ * @return  values from to 
+ */
+SEXP read_vals(SEXP from, SEXP to);
 
 
 /**

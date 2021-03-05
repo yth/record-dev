@@ -171,12 +171,17 @@ SEXP has_seen(SEXP val) {
 	return res;
 }
 
-SEXP count_val() {
+SEXP count_vals() {
 	SEXP ret = PROTECT(allocVector(INTSXP, 1));
 	INTEGER(ret)[0] = count;
 	UNPROTECT(1);
 
 	return ret;
+}
+
+SEXP read_vals(SEXP from, SEXP to) {
+  //TODO
+	return R_NilValue;
 }
 
 SEXP get_random_val() {
