@@ -18,7 +18,7 @@ static const R_CallMethodDef callMethods[] = {
 	{"close_db", (DL_FUNC) &close_db, 0},
 	{"add_val", (DL_FUNC) &add_val, 1},
 	{"has_seen", (DL_FUNC) &has_seen, 1},
-  {"count_val", (DL_FUNC) &count_val, 0},
+	{"count_val", (DL_FUNC) &count_val, 0},
 	{"get_random_val", (DL_FUNC) &get_random_val, 0},
 	{NULL, NULL, 0} // Required?
 };

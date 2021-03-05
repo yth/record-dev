@@ -40,7 +40,7 @@ SEXP open_db(SEXP filename) {
 	file = db;
 
 	offset = 0;
-  count = 0;
+	count = 0;
 
 	gbov = new std::map<std::string, uint32_t>;
 
@@ -103,6 +103,7 @@ SEXP add_val(SEXP val) {
 	// TODO: Check if we have seen the value before
 	(*gbov)[std::string(hash, 40)] = offset;
 
+	// Blob size
 	write_size_t(file, vector->size);
 
 	// TODO: Make sure fwrite writes enough bytes every time
@@ -112,12 +113,14 @@ SEXP add_val(SEXP val) {
 		Rf_error("Could not write out.");
 	}
 
+	// Acting as a NULL
+	// Will be used to make the file act as if it had a linked list for duplicates
 	write_size_t(file, 0);
 
 	// Modify offset here
 	// TODO: Check for overflow
 	offset += vector->size + sizeof(size_t) + sizeof(size_t);
-  count += 1;
+	count += 1;
 
 	return val;
 }
@@ -167,11 +170,11 @@ SEXP has_seen(SEXP val) {
 }
 
 SEXP count_val() {
-  SEXP ret = PROTECT(allocVector(INTSXP, 1));
-  INTEGER(ret)[0] = count;
-  UNPROTECT(1);
+	SEXP ret = PROTECT(allocVector(INTSXP, 1));
+	INTEGER(ret)[0] = count;
+	UNPROTECT(1);
 
-  return ret;
+	return ret;
 }
 
 SEXP get_random_val() {
