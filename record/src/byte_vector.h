@@ -23,6 +23,12 @@ void append_byte(R_outpstream_t stream, int c);
 // Required for make use of a R_outpstream_t
 void append_buf(R_outpstream_t stream, void *buf, int length);
 
+// Required for make use of a R_inpstream_t
+int get_byte(R_inpstream_t stream);
+
+// Required for make use of a R_inpstream_t
+void get_buf(R_inpstream_t stream, void *buf, int length);
+
 #ifdef __cplusplus
 } // extern "C"
 #endif
