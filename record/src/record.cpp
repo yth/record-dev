@@ -216,22 +216,3 @@ SEXP get_random_val() {
 	// Return the deserialized value
 	return res;
 }
-
-
-// void
-// R_InitInPStream(R_inpstream_t stream, R_pstream_data_t data,
-// 		R_pstream_format_t type,
-// 		int (*inchar)(R_inpstream_t),
-// 		void (*inbytes)(R_inpstream_t, void *, int),
-// 		SEXP (*phook)(SEXP, SEXP), SEXP pdata)
-// {
-//     stream->data = data;
-//     stream->type = type;
-//     stream->InChar = inchar;
-//     stream->InBytes = inbytes;
-//     stream->InPersistHookFunc = phook;
-//     stream->InPersistHookData = pdata;
-//     stream->native_encoding[0] = 0;
-//     stream->nat2nat_obj = NULL;
-//     stream->nat2utf8_obj = NULL;
-// }
