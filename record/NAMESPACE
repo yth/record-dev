@@ -2,8 +2,10 @@
 
 export(add_val)
 export(close_db)
-export(count_val)
+export(count_vals)
 export(get_random_val)
+export(get_vals)
 export(has_seen)
+export(open_db_for_read)
 export(open_db_for_write)
 useDynLib(record, .registration = TRUE, .fixes = "RCRD_")
