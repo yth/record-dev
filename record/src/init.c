@@ -19,7 +19,7 @@ static const R_CallMethodDef callMethods[] = {
 	{"add_val", (DL_FUNC) &add_val, 1},
 	{"has_seen", (DL_FUNC) &has_seen, 1},
 	{"count_vals", (DL_FUNC) &count_vals, 0},
-  {"get_vals", (DL_FUNC) &read_vals, 2},
+	{"get_vals", (DL_FUNC) &read_vals, 2},
 	{"get_random_val", (DL_FUNC) &get_random_val, 0},
 	{NULL, NULL, 0} // Required?
 };

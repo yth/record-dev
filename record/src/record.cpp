@@ -128,29 +128,45 @@ SEXP add_val(SEXP val) {
 	}
 
 	// TODO: Check if we have seen the value before
-	(*gbov)[std::string(hash, 40)] = offset;
 
-	// Blob size
-	write_size_t(file, vector->size);
-
-	// TODO: Make sure fwrite writes enough bytes every time
-	if (vector->size != fwrite(vector->buf, 1, vector->size, file)) {
-		// TODO: Consider reuse;
-		free_vector(vector);
-		Rf_error("Could not write out.");
+	int have_seen = 0;
+	if (gbov->begin() != gbov->end()) {
+		std::map<std::string, size_t>::iterator it;
+		it = gbov->find(std::string(hash, 40));
+		if (it != gbov->end()) {
+			have_seen = 1;
+		}
 	}
 
-	// Acting as a NULL
-	// Will be used to make the file act as if it had a linked list for duplicates
-	write_size_t(file, 0);
+	if (!have_seen) {
 
-	// Modify offset here
-	// TODO: Check for overflow
-	offset += vector->size + sizeof(size_t) + sizeof(size_t);
-	count += 1;
+		(*gbov)[std::string(hash, 40)] = offset;
 
-	return val;
+		// Write the blob's size
+		write_size_t(file, vector->size);
+
+		// TODO: Make sure fwrite writes enough bytes every time
+		if (vector->size != fwrite(vector->buf, 1, vector->size, file)) {
+			// TODO: Consider reuse;
+			free_vector(vector);
+			Rf_error("Could not write out.");
+		}
+
+		// Acting as a NULL
+		// Will be used to make the file act as if it had a linked list for duplicates
+		write_size_t(file, 0);
+
+		// Modify offset here
+		// TODO: Check for overflow
+		offset += vector->size + sizeof(size_t) + sizeof(size_t);
+		count += 1;
+
+		return val;
+	}
+
+	return R_NilValue;
 }
+
 
 SEXP has_seen(SEXP val) {
 	struct R_outpstream_st out;

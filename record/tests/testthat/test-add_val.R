@@ -43,9 +43,17 @@ test_that("add_large_vals", {
 
 test_that("add_val_twice", {
 	open_db_for_write("add_val_twice.txt")
-  once <- "1"
-  twice <- "2"
+	once <- "1"
+	twice <- "2"
 	expect_equal(add_val(once), "1")
-  expect_equal(add_val(twice), "2")
+	expect_equal(add_val(twice), "2")
 	close_db()
 })
+
+test_that("add_duplicate_simple_val", {
+	open_db_for_write("add_duplicate_simple_val.txt")
+	expect_equal(add_val(1), 1)
+	expect_equal(add_val(1), NULL)
+	close_db()
+})
+

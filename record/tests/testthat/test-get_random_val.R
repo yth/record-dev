@@ -1,5 +1,5 @@
 test_that("get_random_val1", {
-	open_db_for_write()
+	open_db_for_write("test_get_random_1.txt")
 	s1 = "hello"
 	add_val(s1)
 	expect_equal(get_random_val(), s1)
@@ -7,7 +7,7 @@ test_that("get_random_val1", {
 })
 
 test_that("get_random_val2", {
-	open_db_for_write()
+	open_db_for_write("test_get_random_2.txt")
 	s1 = "hello"
 	s2 = "good bye"
 	s3 = "arrivederci"

@@ -13,6 +13,7 @@ clean:
 	-rm -fr record.Rcheck
 	-rm -rf src/*.o src/*.so
 	-rm -rf tests/testthat/*.txt
+	-rm -rf tests/testthat/test_db*
 	-rm -f trace
 
 document:
