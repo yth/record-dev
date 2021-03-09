@@ -12,6 +12,8 @@
 #include <stdarg.h> // testing
 #include <random> // rand
 #include <iterator> //advance
+#include <fcntl.h> //open
+#include <errno.h>
 
 
 #include "byte_vector.h"
@@ -22,31 +24,54 @@
 // Globals
 FILE *file;
 size_t offset;
-int count;
+int count, u_count;
+
 std::map<std::string, size_t> *gbov;
 
 
 /**
  * This function creates a database for a collection of values.
- * @method record_init
+ * @method open_db
  * @param filename
  * @return file pointer wrapped as a R external pointer
  */
-SEXP open_db(SEXP filename) {
-	const char* name = CHAR(STRING_ELT(filename, 0));
+SEXP open_db(SEXP dir) {
+  const char* pathname = CHAR(STRING_ELT(dir, 0));
 
-	FILE *db = fopen(name, "w+");
-	if (db == NULL) {
-		Rf_error("Could not start the database.");
-	}
+  /*mode = an octal expression (leading 0) of the unix file mode. See e.g. the chmod manpage.
+    0644 means the owner can read+write (4+2=6), the group can read (4), and others can read (4)*/
+  int fd = open(pathname, O_CREAT | O_WRONLY | O_EXCL, S_IRUSR | S_IWUSR, 0644);
+  if (fd < 0) {
+    /* failure */
+    if (errno == EEXIST) {
+      /* the file already existed */
+      open_db_for_read(pathname);
+    }
+  } else {
+    /* now you can use the file */
+    open_db_for_write(pathname);
+  }
+
+
+	// FILE *db = fopen(name, "w+");
+	// if (db == NULL) {
+	// 	Rf_error("Could not start the database.");
+	// }
 	file = db;
 
 	offset = 0;
+
 	count = 0;
+  u_count = 0;
 
 	gbov = new std::map<std::string, size_t>;
 
 	return R_NilValue;
+}
+
+SEXP open_db_for_read(char* dir) {
+  
+
 }
 
 

@@ -1,11 +1,19 @@
 #' @export
 open_db_for_write <- function(dir = ".") {
-	.Call(RCRD_open_db, dir)
+  if (!dir.exists(dir)) {
+    dir.create(dir, recursive=TRUE)
+  }
+
+	.Call(RCRD_open, dir)
 }
 
 #' @export
 open_db_for_read <- function(dir = ".") {
-	.Call(RCRD_open_db, dir)
+  if(!dir.exists(dir)) {
+    stop(run_dir, ": no such a directory")
+  }
+
+	.Call(RCRD_open, dir)
 }
 
 #' @export

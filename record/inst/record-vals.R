@@ -5,7 +5,7 @@ library(record)
 
 args <- commandArgs(trailingOnly=TRUE)
 if (length(args) < 1) {
-  message("Usage: merge-gbov.R <dir> [... <fileN>]")
+  message("Usage: record-vals.R <dir> [... <fileN>]")
   q(status=1)
 }
 
@@ -14,7 +14,8 @@ package_name <- args[2]
 
 
 if (!dir.exists(run_dir)) {
-  stop(run_dir, ": no such a directory")
+  stop(run_dir, ": no such a directory")b
+
 }
 
 val_files <- list.files(path = run_dir, pattern = "values.RDS", recursive = TRUE)
