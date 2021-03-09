@@ -42,7 +42,7 @@ char *read_n(FILE* file, size_t file_offset, size_t value_offset, size_t n) {
 
 	if (fread(buf, 1, n, file) != n) {
 		free(buf);
-		perror("Could not read a full size_t.");
+		perror("Could not read a full n bytes.");
 	}
 
 	fseek(file, file_offset, SEEK_SET);
