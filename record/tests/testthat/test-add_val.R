@@ -49,3 +49,11 @@ test_that("add_val_twice", {
 	expect_equal(add_val(twice), "2")
 	close_db()
 })
+
+test_that("add_duplicate_simple_val", {
+	open_db_for_write("add_duplicate_simple_val.txt")
+	expect_equal(add_val(1), 1)
+	expect_equal(add_val(1), NULL)
+	close_db()
+})
+
