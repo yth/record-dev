@@ -37,7 +37,7 @@ SEXP add_val(SEXP val);
  * This function asks if the C layer has seen a R value.
  * @method has_seen
  * @param  val       R value in form of SEXP
- * @return           True or False
+ * @return           R value of True or False as a SEXP
  */
 SEXP has_seen(SEXP val);
 
@@ -55,7 +55,7 @@ SEXP count_vals();
  * This function asks if the C layer has seen a R value.
  * @method read_vals
  * @param   from, to
- * @return  values from to 
+ * @return  values from to
  */
 SEXP read_vals(SEXP from, SEXP to);
 
