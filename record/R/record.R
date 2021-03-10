@@ -1,19 +1,19 @@
 #' @export
-open_db_for_write <- function(dir = ".") {
-  if (!dir.exists(dir)) {
-    dir.create(dir, recursive=TRUE)
-  }
+open_db_for_write <- function(filename = "db.txt") {
+  ## if (!dir.exists(dir)) {
+  ##   dir.create(dir, recursive=TRUE)
+  ## }
 
-	.Call(RCRD_open, dir)
+	.Call(RCRD_open_db, filename)
 }
 
 #' @export
-open_db_for_read <- function(dir = ".") {
-  if(!dir.exists(dir)) {
-    stop(run_dir, ": no such a directory")
-  }
+open_db_for_read <- function(filename = "db.txt") {
+  ## if(!dir.exists(dir)) {
+  ##   stop(dir, ": no such a directory")
+  ## }
 
-	.Call(RCRD_open, dir)
+	.Call(RCRD_open_db, filename)
 }
 
 #' @export
@@ -34,6 +34,11 @@ has_seen <- function(val) {
 #' @export
 count_vals <- function() {
 	.Call(RCRD_count_vals)
+}
+
+#' @export
+size_db <- function() {
+	.Call(RCRD_size_db)
 }
 
 #' @export
