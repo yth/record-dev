@@ -14,7 +14,7 @@ package_name <- args[2]
 
 
 if (!dir.exists(run_dir)) {
-  stop(run_dir, ": no such a directory")b
+  stop(run_dir, ": no such a directory")
 
 }
 
