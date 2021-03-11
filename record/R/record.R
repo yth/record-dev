@@ -19,7 +19,7 @@ open_db_for_read <- function(db = ".") {
 # If create is True, then create the database if one does not exist.
 # Otherwise, quit if the database does not exist.
 # This function will only create the database in the current working directory.
-open_db <- function(db_name = ".", create = False) {
+open_db <- function(db_name = "record_database", create = False) {
 	tryCatch(
 		{
 			setwd(db_name)

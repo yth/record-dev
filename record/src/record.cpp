@@ -71,41 +71,6 @@ SEXP open_db(SEXP filename) {
 
 
 /**
- * This function closes a database.
- * @method record_close
- * @param  file_ptr     wrapped FILE pointer
- */
-SEXP close_db() {
-	fflush(db_file);
-	if (fclose(db_file)) {
-		Rf_error("Could not close the database.");
-	}
-	db_file = NULL;
-
-	if (index_file) {
-		// TODO: Think about ways to reuse rather than overwrite
-		// TODO: Error check
-		fseek(index_file, 0, SEEK_SET);
-		// TODO: Create a write_n function
-		fwrite(&size, sizeof(size_t), 1, index_file);
-		fwrite(&count, sizeof(int), 1, index_file);
-
-		std::map<std::string, size_t>::iterator it;
-		for(it = gbov_map->begin(); it != gbov_map->end(); it++) {
-			fwrite(it->first.c_str(), 1, 40, index_file);
-			fwrite(&(it->second), sizeof(size_t), 1, index_file);
-		}
-		fflush(index_file);
-		fclose(index_file);
-	}
-
-	delete gbov_map;
-
-	return R_NilValue;
-}
-
-
-/**
  * Load the gbov.
  * @method load_gbov
  * @return R_NilValue on success throw and error otherwise
@@ -122,6 +87,12 @@ SEXP load_gbov(SEXP gbov) {
 
 	index_file = NULL;
 
+	offset = 0;
+	count = 0;
+	size = 0;
+
+	gbov_map = new std::map<std::string, size_t>;
+
 	return R_NilValue;
 }
 
@@ -133,16 +104,61 @@ SEXP load_gbov(SEXP gbov) {
  */
 SEXP load_indices(SEXP indices) {
 	const char* name = CHAR(STRING_ELT(indices, 0));
-	FILE *f = fopen(name, "r+");
-	if (f == NULL) {
+	FILE *idx = fopen(name, "r+");
+	if (idx == NULL) {
 		Rf_error("Could not load the database.");
 	}
 
-	index_file = f;
+	index_file = idx;
 
-	// char* index_size = read_n(index_file, sizeof(size_t), sizeof(size_t), );
+	// TODO: Check the return value instead of silence
+	int i = fread(&offset, sizeof(size_t), 1, index_file);
+	i = fread(&size, sizeof(size_t), 1, index_file);
+	i = fread(&count, sizeof(int), 1, index_file);
 
-	// Load into map
+	for (size_t i = 0; i < size; ++i) {
+		size_t start = 0;
+		char hash[40];
+		i = fread(hash, 1, 40, index_file);
+		i = fread(&start, sizeof(size_t), 1, index_file);
+		(*gbov_map)[std::string(hash, 40)] = start;
+	}
+
+	return R_NilValue;
+}
+
+
+/**
+ * This function closes a database.
+ * @method record_close
+ * @param  file_ptr     wrapped FILE pointer
+ */
+SEXP close_db() {
+	fflush(db_file);
+	if (fclose(db_file)) {
+		Rf_error("Could not close the database.");
+	}
+	db_file = NULL;
+
+	if (index_file) {
+		// TODO: Think about ways to reuse rather than overwrite
+		// TODO: Error check
+		fseek(index_file, 0, SEEK_SET);
+		// TODO: Create a write_n function or check success here
+		fwrite(&offset, sizeof(size_t), 1, index_file);
+		fwrite(&size, sizeof(size_t), 1, index_file);
+		fwrite(&count, sizeof(int), 1, index_file);
+
+		std::map<std::string, size_t>::iterator it;
+		for(it = gbov_map->begin(); it != gbov_map->end(); it++) {
+			fwrite(it->first.c_str(), 1, 40, index_file);
+			fwrite(&(it->second), sizeof(size_t), 1, index_file);
+		}
+		fflush(index_file);
+		fclose(index_file);
+	}
+
+	delete gbov_map;
 
 	return R_NilValue;
 }
@@ -165,8 +181,14 @@ SEXP create_gbov(SEXP gbov) {
  * @return R_NilValue on success throw and error otherwise
  */
 SEXP create_indices(SEXP indices) {
-	// TODO: Load the actual values
-	// gbov_map = new std::map<std::string, size_t>;
+	const char* name = CHAR(STRING_ELT(indices, 0));
+	FILE *idx = fopen(name, "r+");
+	if (idx == NULL) {
+		Rf_error("Could not load the database.");
+	}
+
+	index_file = idx;
+
 	return R_NilValue;
 }
 
@@ -178,6 +200,8 @@ SEXP create_indices(SEXP indices) {
  * @return val same as input val
  */
 SEXP add_val(SEXP val) {
+	count += 1;
+
 	struct R_outpstream_st out;
 	R_outpstream_t stream = &out;
 
@@ -189,11 +213,11 @@ SEXP add_val(SEXP val) {
 						NULL, R_NilValue);
 
 	R_Serialize(val, stream);
-	count += 1;
+
 	// TODO: Think about reuse
 	sha1_context ctx;
 	unsigned char sha1sum[20];
-	char hash[41] = { 0 };
+	char hash[41] = { 0 }; // TODO: Do not actually need 41 bytes here
 
 	sha1_starts(&ctx);
 	sha1_update(&ctx, (uint8 *)vector->buf, vector->size);
