@@ -4,8 +4,8 @@ test_that("test_open_close_bd_1", {
 })
 
 test_that("test_open_db_1", {
-	expect_silent(open_db("test_db__dir_1", create = T))
-	expect_silent(close_db())
+	# expect_silent(open_db("test_db__dir_1", create = T))
+	# expect_silent(close_db())
 	setwd("..")
 })
 

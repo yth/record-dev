@@ -22,10 +22,10 @@
 
 
 // Globals
-FILE *file;
+FILE *db_file;
 FILE *index_file;
 size_t offset;
-int count;
+int count; // Maybe better to make this a double
 size_t size;
 std::map<std::string, size_t> *gbov_map;
 
@@ -56,14 +56,50 @@ SEXP open_db(SEXP filename) {
 	if (db == NULL) {
 		Rf_error("Could not start the database.");
 	}
-	file = db;
+	db_file = db;
+
+	index_file = NULL;
 
 	offset = 0;
-
 	count = 0;
 	size = 0;
 
 	gbov_map = new std::map<std::string, size_t>;
+
+	return R_NilValue;
+}
+
+
+/**
+ * This function closes a database.
+ * @method record_close
+ * @param  file_ptr     wrapped FILE pointer
+ */
+SEXP close_db() {
+	fflush(db_file);
+	if (fclose(db_file)) {
+		Rf_error("Could not close the database.");
+	}
+	db_file = NULL;
+
+	if (index_file) {
+		// TODO: Think about ways to reuse rather than overwrite
+		// TODO: Error check
+		fseek(index_file, 0, SEEK_SET);
+		// TODO: Create a write_n function
+		fwrite(&size, sizeof(size_t), 1, index_file);
+		fwrite(&count, sizeof(int), 1, index_file);
+
+		std::map<std::string, size_t>::iterator it;
+		for(it = gbov_map->begin(); it != gbov_map->end(); it++) {
+			fwrite(it->first.c_str(), 1, 40, index_file);
+			fwrite(&(it->second), sizeof(size_t), 1, index_file);
+		}
+		fflush(index_file);
+		fclose(index_file);
+	}
+
+	delete gbov_map;
 
 	return R_NilValue;
 }
@@ -76,12 +112,37 @@ SEXP open_db(SEXP filename) {
  */
 SEXP load_gbov(SEXP gbov) {
 	const char* name = CHAR(STRING_ELT(gbov, 0));
-	FILE *db = fopen(name, "rw");
+	FILE *db = fopen(name, "r+");
 	if (db == NULL) {
 		Rf_error("Could not load the database.");
 	}
 
-	file = db;
+	db_file = db;
+	fseek(db_file, 0, SEEK_END);
+
+	index_file = NULL;
+
+	return R_NilValue;
+}
+
+
+/**
+ * Load the indices associated with the gbov.
+ * @method load_indices
+ * @return R_NilValue on success throw and error otherwise
+ */
+SEXP load_indices(SEXP indices) {
+	const char* name = CHAR(STRING_ELT(indices, 0));
+	FILE *f = fopen(name, "r+");
+	if (f == NULL) {
+		Rf_error("Could not load the database.");
+	}
+
+	index_file = f;
+
+	// char* index_size = read_n(index_file, sizeof(size_t), sizeof(size_t), );
+
+	// Load into map
 
 	return R_NilValue;
 }
@@ -94,7 +155,7 @@ SEXP load_gbov(SEXP gbov) {
  */
 
 SEXP create_gbov(SEXP gbov) {
-	return R_NilValue;
+	return load_gbov(gbov);
 }
 
 
@@ -104,42 +165,8 @@ SEXP create_gbov(SEXP gbov) {
  * @return R_NilValue on success throw and error otherwise
  */
 SEXP create_indices(SEXP indices) {
-	return R_NilValue;
-}
-
-
-/**
- * Load the indices associated with the gbov.
- * @method load_indices
- * @return R_NilValue on success throw and error otherwise
- */
-SEXP load_indices(SEXP indices) {
-	const char* name = CHAR(STRING_ELT(indices, 0));
-	FILE *f = fopen(name, "rw");
-	if (f == NULL) {
-		Rf_error("Could not load the database.");
-	}
-
-	index_file = f;
-
-	return R_NilValue;
-}
-
-
-/**
- * This function closes a database.
- * @method record_close
- * @param  file_ptr     wrapped FILE pointer
- */
-SEXP close_db() {
-	fflush(file);
-	if (fclose(file)) {
-		Rf_error("Could not close the database.");
-	}
-	file = NULL;
-
-	delete gbov_map;
-
+	// TODO: Load the actual values
+	// gbov_map = new std::map<std::string, size_t>;
 	return R_NilValue;
 }
 
@@ -162,7 +189,7 @@ SEXP add_val(SEXP val) {
 						NULL, R_NilValue);
 
 	R_Serialize(val, stream);
-  count += 1;
+	count += 1;
 	// TODO: Think about reuse
 	sha1_context ctx;
 	unsigned char sha1sum[20];
@@ -193,10 +220,10 @@ SEXP add_val(SEXP val) {
 		(*gbov_map)[std::string(hash, 40)] = offset;
 
 		// Write the blob's size
-		write_size_t(file, vector->size);
+		write_size_t(db_file, vector->size);
 
 		// TODO: Make sure fwrite writes enough bytes every time
-		if (vector->size != fwrite(vector->buf, 1, vector->size, file)) {
+		if (vector->size != fwrite(vector->buf, 1, vector->size, db_file)) {
 			// TODO: Consider reuse;
 			free_vector(vector);
 			Rf_error("Could not write out.");
@@ -204,11 +231,13 @@ SEXP add_val(SEXP val) {
 
 		// Acting as a NULL
 		// Will be used to make the file act as if it had a linked list for duplicates
-		write_size_t(file, 0);
+		write_size_t(db_file, 0);
 
 		// Modify offset here
 		// TODO: Check for overflow
 		offset += vector->size + sizeof(size_t) + sizeof(size_t);
+
+		size++;
 
 		return val;
 	}
@@ -290,8 +319,8 @@ SEXP get_random_val() {
 	std::advance(it, random_index);
 
 	// Get the specified value
-	size_t* size = (size_t*) read_n(file, offset, it->second, sizeof(size_t));
-	unsigned char* serialized_value = (unsigned char*) read_n(file, offset, it->second + sizeof(size_t), *size);
+	size_t* size = (size_t*) read_n(db_file, offset, it->second, sizeof(size_t));
+	unsigned char* serialized_value = (unsigned char*) read_n(db_file, offset, it->second + sizeof(size_t), *size);
 
 	// Deserialize the specified value
 
