@@ -69,6 +69,11 @@ count_vals <- function() {
 }
 
 #' @export
+size_db <- function() {
+	.Call(RCRD_size_db)
+}
+
+#' @export
 get_vals <- function(from, to) {
 	.Call(RCRD_read_vals, from, to)
 }

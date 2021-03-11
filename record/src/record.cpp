@@ -12,6 +12,8 @@
 #include <stdarg.h> // testing
 #include <random> // rand
 #include <iterator> //advance
+#include <fcntl.h> //open
+#include <errno.h>
 
 
 #include "byte_vector.h"
@@ -29,13 +31,26 @@ std::map<std::string, size_t> *gbov_map;
 
 /**
  * This function creates a database for a collection of values.
- * @method record_init
+ * @method open_db
  * @param filename
  * @return file pointer wrapped as a R external pointer
  */
 SEXP open_db(SEXP filename) {
-	const char* name = CHAR(STRING_ELT(filename, 0));
+  const char* name = CHAR(STRING_ELT(filename, 0));
 
+  /*mode = an octal expression (leading 0) of the unix file mode. See e.g. the chmod manpage.
+    0644 means the owner can read+write (4+2=6), the group can read (4), and others can read (4)*/
+  // int fd = open(pathname, O_CREAT | O_WRONLY | O_EXCL, S_IRUSR | S_IWUSR, 0644);
+  // if (fd < 0) {
+  //   /* failure */
+  //   if (errno == EEXIST) {
+  //     /* the file already existed */
+  //     open_db_for_read(pathname);
+  //   }
+  // } else {
+  //   /* now you can use the file */
+  //   open_db_for_write(pathname);
+  // }
 	FILE *db = fopen(name, "w+");
 	if (db == NULL) {
 		Rf_error("Could not start the database.");
@@ -43,7 +58,9 @@ SEXP open_db(SEXP filename) {
 	file = db;
 
 	offset = 0;
+
 	count = 0;
+  size = 0;
 
 	gbov_map = new std::map<std::string, size_t>;
 
@@ -144,7 +161,7 @@ SEXP add_val(SEXP val) {
 						NULL, R_NilValue);
 
 	R_Serialize(val, stream);
-
+  count += 1;
 	// TODO: Think about reuse
 	sha1_context ctx;
 	unsigned char sha1sum[20];
@@ -161,7 +178,6 @@ SEXP add_val(SEXP val) {
 	}
 
 	// TODO: Check if we have seen the value before
-
 	int have_seen = 0;
 	if (gbov_map->begin() != gbov_map->end()) {
 		std::map<std::string, size_t>::iterator it;
@@ -192,7 +208,6 @@ SEXP add_val(SEXP val) {
 		// Modify offset here
 		// TODO: Check for overflow
 		offset += vector->size + sizeof(size_t) + sizeof(size_t);
-		count += 1;
 
 		return val;
 	}
@@ -248,6 +263,14 @@ SEXP has_seen(SEXP val) {
 SEXP count_vals() {
 	SEXP ret = PROTECT(allocVector(INTSXP, 1));
 	INTEGER(ret)[0] = count;
+	UNPROTECT(1);
+
+	return ret;
+}
+
+SEXP size_db() {
+	SEXP ret = PROTECT(allocVector(INTSXP, 1));
+	INTEGER(ret)[0] = size;
 	UNPROTECT(1);
 
 	return ret;

@@ -5,7 +5,7 @@ library(record)
 
 args <- commandArgs(trailingOnly=TRUE)
 if (length(args) < 1) {
-  message("Usage: merge-gbov.R <dir> [... <fileN>]")
+  message("Usage: record-vals.R <dir> [... <fileN>]")
   q(status=1)
 }
 
@@ -15,6 +15,7 @@ package_name <- args[2]
 
 if (!dir.exists(run_dir)) {
   stop(run_dir, ": no such a directory")
+
 }
 
 val_files <- list.files(path = run_dir, pattern = "values.RDS", recursive = TRUE)
@@ -34,25 +35,12 @@ for (i in seq_along(val_files)) {
   num_total_val <- num_total_val + length(vals)
 
   lapply(vals, add_val)
-  ## lapply(vals, has_seen)
-
-  ## for(val in vals) {
-  ##   add_val(val)
-  ##   if(typeof(val) == "closure" || typeof(val) == "environment" || typeof(val) == "builtin" || typeof(val) == "special") {
-  ##     print(paste0("special typed value recorded."))
-  ##   } else {
-  ##     print(paste0(toString(val), " recorded."))
-  ##     if(has_seen(val)) {
-  ##       print(paste0(toString(val), " found."))
-  ##     } else {
-  ##       print(paste0(toString(val), " not found."))
-  ##     }
-  ##   }
-  ## }
 }
 
-print(paste0("there were a total of  ", toString(num_total_val), " values."))
-print(paste0("counted  ", toString(count_vals()), " many values."))
+print(paste0("the total number of val encountered is ", toString(num_total_val)))
+
+print(paste0("successfully counted  ", toString(count_vals()), " many values."))
+print(paste0("successfully recorded  ", toString(size_db())))
 
 stopifnot(num_total_val == count_vals())
 
