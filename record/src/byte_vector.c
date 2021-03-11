@@ -84,7 +84,7 @@ int get_byte(R_inpstream_t stream) {
 // Required for make use of a R_inpstream_t
 void get_buf(R_inpstream_t stream, void *buf, int length) {
 	byte_vector_t vector = (byte_vector_t) stream->data;
-	if (vector->size + length >= vector) {
+	if (vector->size + length >= vector->capacity) {
 		perror("GET_BUF: read error");
 	}
 	memcpy(buf, vector->buf + vector->size, length);
