@@ -21,6 +21,10 @@ static const R_CallMethodDef callMethods[] = {
 	{"count_vals", (DL_FUNC) &count_vals, 0},
 	{"get_vals", (DL_FUNC) &read_vals, 2},
 	{"get_random_val", (DL_FUNC) &get_random_val, 0},
+	{"load_gbov", (DL_FUNC) &load_gbov, 1},
+	{"load_indices", (DL_FUNC) &load_indices, 1},
+	{"create_gbov", (DL_FUNC) &create_gbov, 1},
+	{"create_indices", (DL_FUNC) &create_indices, 1},
 	{NULL, NULL, 0} // Required?
 };
 

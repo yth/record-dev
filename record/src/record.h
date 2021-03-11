@@ -25,6 +25,39 @@ SEXP close_db();
 
 
 /**
+ * Load the gbov.
+ * @method load_gbov
+ * @return R_NilValue on success throw and error otherwise
+ */
+SEXP load_gbov(SEXP gbov);
+
+
+/**
+ * Load the indices associated with the gbov.
+ * @method load_indices
+ * @return R_NilValue on success throw and error otherwise
+ */
+SEXP load_indices(SEXP indices);
+
+
+/**
+ * Create the gbov.
+ * @method load_gbov
+ * @return R_NilValue on success throw and error otherwise
+ */
+
+SEXP create_gbov(SEXP gbov);
+
+
+/**
+ * Load the indices associated with the gbov.
+ * @method load_indices
+ * @return R_NilValue on success throw and error otherwise
+ */
+SEXP create_indices(SEXP indices);
+
+
+/**
  * This functions directly adds an R value to the specified storage.
  * @method add_val
  * @param  val      R value in form of SEXP

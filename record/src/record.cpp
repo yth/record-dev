@@ -21,9 +21,10 @@
 
 // Globals
 FILE *file;
+FILE *index_file;
 size_t offset;
 int count;
-std::map<std::string, size_t> *gbov;
+std::map<std::string, size_t> *gbov_map;
 
 
 /**
@@ -44,7 +45,64 @@ SEXP open_db(SEXP filename) {
 	offset = 0;
 	count = 0;
 
-	gbov = new std::map<std::string, size_t>;
+	gbov_map = new std::map<std::string, size_t>;
+
+	return R_NilValue;
+}
+
+
+/**
+ * Load the gbov.
+ * @method load_gbov
+ * @return R_NilValue on success throw and error otherwise
+ */
+SEXP load_gbov(SEXP gbov) {
+	const char* name = CHAR(STRING_ELT(gbov, 0));
+	FILE *db = fopen(name, "rw");
+	if (db == NULL) {
+		Rf_error("Could not load the database.");
+	}
+
+	file = db;
+
+	return R_NilValue;
+}
+
+
+/**
+ * Create the gbov.
+ * @method load_gbov
+ * @return R_NilValue on success throw and error otherwise
+ */
+
+SEXP create_gbov(SEXP gbov) {
+	return R_NilValue;
+}
+
+
+/**
+ * Load the indices associated with the gbov.
+ * @method load_indices
+ * @return R_NilValue on success throw and error otherwise
+ */
+SEXP create_indices(SEXP indices) {
+	return R_NilValue;
+}
+
+
+/**
+ * Load the indices associated with the gbov.
+ * @method load_indices
+ * @return R_NilValue on success throw and error otherwise
+ */
+SEXP load_indices(SEXP indices) {
+	const char* name = CHAR(STRING_ELT(indices, 0));
+	FILE *f = fopen(name, "rw");
+	if (f == NULL) {
+		Rf_error("Could not load the database.");
+	}
+
+	index_file = f;
 
 	return R_NilValue;
 }
@@ -62,7 +120,7 @@ SEXP close_db() {
 	}
 	file = NULL;
 
-	delete gbov;
+	delete gbov_map;
 
 	return R_NilValue;
 }
@@ -105,17 +163,17 @@ SEXP add_val(SEXP val) {
 	// TODO: Check if we have seen the value before
 
 	int have_seen = 0;
-	if (gbov->begin() != gbov->end()) {
+	if (gbov_map->begin() != gbov_map->end()) {
 		std::map<std::string, size_t>::iterator it;
-		it = gbov->find(std::string(hash, 40));
-		if (it != gbov->end()) {
+		it = gbov_map->find(std::string(hash, 40));
+		if (it != gbov_map->end()) {
 			have_seen = 1;
 		}
 	}
 
 	if (!have_seen) {
 
-		(*gbov)[std::string(hash, 40)] = offset;
+		(*gbov_map)[std::string(hash, 40)] = offset;
 
 		// Write the blob's size
 		write_size_t(file, vector->size);
@@ -171,10 +229,10 @@ SEXP has_seen(SEXP val) {
 	}
 
 	std::map<std::string, size_t>::iterator it;
-	it = gbov->find(std::string(hash, 40));
+	it = gbov_map->find(std::string(hash, 40));
 
 	int found = 0;
-	if (it != gbov->end()) {
+	if (it != gbov_map->end()) {
 		found = 1;
 	}
 
@@ -204,7 +262,7 @@ SEXP get_random_val() {
 	// Specify a random value
 	int random_index = rand() % count;
 	std::map<std::string, size_t>::iterator it;
-	it = gbov->begin();
+	it = gbov_map->begin();
 	std::advance(it, random_index);
 
 	// Get the specified value
