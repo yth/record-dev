@@ -26,6 +26,7 @@ FILE *file;
 FILE *index_file;
 size_t offset;
 int count;
+size_t size;
 std::map<std::string, size_t> *gbov_map;
 
 
@@ -60,7 +61,7 @@ SEXP open_db(SEXP filename) {
 	offset = 0;
 
 	count = 0;
-  size = 0;
+	size = 0;
 
 	gbov_map = new std::map<std::string, size_t>;
 
