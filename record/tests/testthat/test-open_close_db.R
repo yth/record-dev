@@ -8,8 +8,8 @@ test_that("test_open_db_1", {
 })
 
 test_that("test_open_db_2", {
-	# expect_silent(open_db("test_db_dir_2", create = T))
-	# expect_silent(close_db())
+	expect_silent(open_db("test_db_dir_2", create = T))
+	expect_silent(close_db())
 })
 
 test_that("test_open_db_3", {
