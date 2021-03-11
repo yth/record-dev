@@ -71,7 +71,7 @@ SEXP open_db(SEXP filename) {
 
 
 /**
- * Load the gbov.
+ * Load the gbov. (Must be called before load_indices)
  * @method load_gbov
  * @return R_NilValue on success throw and error otherwise
  */
@@ -165,7 +165,7 @@ SEXP close_db() {
 
 
 /**
- * Create the gbov.
+ * Create the gbov. (Must be called before create_indices)
  * @method load_gbov
  * @return R_NilValue on success throw and error otherwise
  */
