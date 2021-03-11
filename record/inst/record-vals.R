@@ -2,7 +2,6 @@
 
 library(signatr)
 library(record)
-library(pryr)
 
 args <- commandArgs(trailingOnly=TRUE)
 if (length(args) < 1) {
@@ -25,34 +24,27 @@ if(is.null(open_db_for_write(paste0(package_name, "_db.txt")))) {
   print(paste0(package_name, ".txt", " opened successfully."))
 }
 
-sizes_df <- data.frame(byte = numeric(), type = character(), val = list())
-
 tictoc::tic("Recording started:")
 cat(sprintf("Recording started ...\n\n"))
+
+gbov <- list()
 
 for (i in seq_along(val_files)) {
   val_list <- readRDS(paste0(run_dir, "/", val_files[[i]]))
   vals <- lapply(val_list, function(x) x[[3]])
 
   lapply(vals, add_val)
-
-  bytes = unlist(lapply(vals, function(v) as.numeric(object_size(v))))
-  types = unlist(lapply(vals, typeof))
-  serialized = lapply(vals, function(v) I(list(serialize(v, connection = NULL))))
-
-  for (i in seq_along(vals)) {
-    obs <- data.frame(byte = bytes[[i]], type = types[[i]], val = serialized[[i]])
-    sizes_df <- rbind(sizes_df, obs)
-  }
+  gbov <- append(gbov, vals)
 }
 
-cat(sprintf("Recording %s values done.\n\n", toString(count_vals())))
-tictoc::toc()
+duplicates <- sum(duplicated(gbov))
 
-print(paste0("successfully recorded  ", toString(size_db()), " values."))
+print(paste0(duplicates, " duplicates are found."))
+print(paste0(count_vals(), " - ", size_db(), " = ", count_vals() - size_db()))
 
 if(is.null(close_db())) {
   print(paste0(package_name, ".txt", " closed successfully."))
 }
 
-saveRDS(sizes_df, file = paste0(run_dir, "/size-dist.RDS"))
+cat(sprintf("Recording done.\n\n"))
+tictoc::toc()
