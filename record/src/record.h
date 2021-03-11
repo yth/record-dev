@@ -68,11 +68,11 @@ SEXP add_val(SEXP val);
 
 /**
  * This function asks if the C layer has seen a R value.
- * @method has_seen
+ * @method have_seen
  * @param  val       R value in form of SEXP
  * @return           R value of True or False as a SEXP
  */
-SEXP has_seen(SEXP val);
+SEXP have_seen(SEXP val);
 
 
 /**

@@ -20,6 +20,12 @@ open_db_for_read <- function(db = ".") {
 # Otherwise, quit if the database does not exist.
 # This function will only create the database in the current working directory.
 open_db <- function(db_name = "record_database", create = False) {
+  ## if(dir.exists(db_name)) {
+  ##   load
+  ## } else {
+  ##   create
+  ## }
+
 	tryCatch(
 		{
 			setwd(db_name)
@@ -59,8 +65,8 @@ add_val <- function(val) {
 }
 
 #' @export
-has_seen <- function(val) {
-	.Call(RCRD_has_seen, val)
+have_seen <- function(val) {
+	.Call(RCRD_have_seen, val)
 }
 
 #' @export

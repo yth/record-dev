@@ -270,7 +270,7 @@ SEXP add_val(SEXP val) {
 }
 
 
-SEXP has_seen(SEXP val) {
+SEXP have_seen(SEXP val) {
 	struct R_outpstream_st out;
 	R_outpstream_t stream = &out;
 
