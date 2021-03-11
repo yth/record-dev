@@ -7,9 +7,9 @@ open_db_for_write <- function(db = ".") {
 open_db_for_read <- function(db = ".") {
 	files = list.files(db)
 	if (length(files) == 2 && "gbov.bin" %in% files && "index.bin" %in% files) {
-		print("Opened successfully")
+		print(paste0(db," opened successfully"))
 	} else {
-		stop("The specified database does not exist.")
+		stop(paste0(db, " does not exist."))
 	}
 	# .Call(RCRD_open_db, db)
 }
@@ -19,39 +19,63 @@ open_db_for_read <- function(db = ".") {
 # If create is True, then create the database if one does not exist.
 # Otherwise, quit if the database does not exist.
 # This function will only create the database in the current working directory.
-open_db <- function(db_name = "record_database", create = False) {
-  ## if(dir.exists(db_name)) {
-  ##   load
-  ## } else {
-  ##   create
-  ## }
+open_db <- function(db_path = ".", create = FALSE) {
+  if (!dir.exists(db_path) && !create) {
+    stop(paste0(db_path, " does not exist."))
+  }
 
-	tryCatch(
-		{
-			setwd(db_name)
-			files = list.files()
-			if (length(files) == 2 &&
-				"gbov.bin" %in% files &&
-				"index.bin" %in% files) {
-				.Call(RCRD_load_gbov, "gbov.bin")
-				.Call(RCRD_load_indices, "indices.bin")
-			}
-		},
-		error = function(c) {
-			if (create) {
-				dir.create(db_name)
-				setwd(db_name)
-				file.create("gbov.bin", showWarnings = TRUE)
-				file.create("indices.bin", showWarnings = TRUE)
-				.Call(RCRD_create_gbov, "gbov.bin")
-				.Call(RCRD_create_indices, "indices.bin")
-			} else {
-				stop("Could not find the specified database.")
-			}
-		},
-		warning = function(c) { stop("Got an unexpected warning.") },
-		message = function(c) { stop("Got an unexpected message.") }
-	)
+  if (dir.exists(db_path) && create){
+    stop(paste0(db_path, " already exists."))
+  }
+
+  if (dir.exists(db_path) && !create && !file.exists(paste0(db_path, "/gbov.bin"))){
+    stop(paste0(db_path, " is not a database."))
+  }
+
+  if (!dir.exists(db_path) && create) {
+    dir.create(db_path, recursive = TRUE)
+
+    gbov = paste0(db_path, "/gbov.bin")
+    indices = paste0(db_path, "/indices.bin")
+
+    file.create(gbov, indices,  showWarnings = TRUE)
+
+    .Call(RCRD_create_gbov, gbov)
+    .Call(RCRD_create_indices, indices)
+  }  else {
+    gbov = list.files(path = db_path, pattern = "gbov.bin", recursive = TRUE)
+    indices = list.files(path = db_path, pattern = "indices.bin", recursive = TRUE)
+
+    .Call(RCRD_load_gbov, paste0(db_path, "/", gbov))
+    .Call(RCRD_load_indices, paste0(db_path, "/", indices))
+  }
+
+	## tryCatch(
+	## 	{
+	## 		setwd(db_name)
+	## 		files = list.files()
+	## 		if (length(files) == 2 &&
+	## 			"gbov.bin" %in% files &&
+	## 			"index.bin" %in% files) {
+	## 			.Call(RCRD_load_gbov, "gbov.bin")
+	## 			.Call(RCRD_load_indices, "indices.bin")
+	## 		}
+	## 	},
+	## 	error = function(c) {
+	## 		if (create) {
+	## 			dir.create(db_name)
+	## 			setwd(db_name)
+	## 			file.create("gbov.bin", showWarnings = TRUE)
+	## 			file.create("indices.bin", showWarnings = TRUE)
+	## 			.Call(RCRD_create_gbov, "gbov.bin")
+	## 			.Call(RCRD_create_indices, "indices.bin")
+	## 		} else {
+	## 			stop("Could not find the specified database.")
+	## 		}
+	## 	},
+	## 	warning = function(c) { stop("Got an unexpected warning.") },
+	## 	message = function(c) { stop("Got an unexpected message.") }
+	## )
 }
 
 #' @export
