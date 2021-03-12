@@ -57,3 +57,12 @@ test_that("add_duplicate_simple_val", {
 	close_db()
 })
 
+test_that("add duplicate logicals", {
+	open_db_for_write("logical_db.txt")
+	for(i in 1:10) {
+    add_val(TRUE)
+    add_val(FALSE)
+  }
+  expect_equal(size_db(), 2)
+	close_db()
+})
