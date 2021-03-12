@@ -161,7 +161,9 @@ SEXP close_db() {
 		index_file = NULL;
 	}
 
-	delete gbov_map;
+	if (gbov_map) {
+		delete gbov_map;
+	}
 
 	return R_NilValue;
 }
