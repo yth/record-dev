@@ -112,15 +112,15 @@ SEXP load_indices(SEXP indices) {
 	index_file = idx;
 
 	// TODO: Check the return value instead of silence
-	int i = fread(&offset, sizeof(size_t), 1, index_file);
-	i = fread(&size, sizeof(size_t), 1, index_file);
-	i = fread(&count, sizeof(int), 1, index_file);
+	int _ = fread(&offset, sizeof(size_t), 1, index_file);
+	_ = fread(&size, sizeof(size_t), 1, index_file);
+	_ = fread(&count, sizeof(int), 1, index_file);
 
 	for (size_t i = 0; i < size; ++i) {
 		size_t start = 0;
 		char hash[40];
-		i = fread(hash, 1, 40, index_file);
-		i = fread(&start, sizeof(size_t), 1, index_file);
+		_ = fread(hash, 1, 40, index_file);
+		_ = fread(&start, sizeof(size_t), 1, index_file);
 		(*gbov_map)[std::string(hash, 40)] = start;
 	}
 
