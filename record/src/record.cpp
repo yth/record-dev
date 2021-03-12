@@ -26,7 +26,7 @@ FILE *db_file = NULL;
 FILE *index_file = NULL;
 size_t offset = 0;
 int count = 0; // TODO: Consider: Maybe better to make this a double
-size_t size = 0;
+size_t size = 0; // TODO: Consider: Maybe better to make this a double
 std::map<std::string, size_t> *gbov_map = NULL;
 
 
