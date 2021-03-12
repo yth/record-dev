@@ -61,6 +61,7 @@ test_that("add_value_again_large", {
 test_that("add_duplicate_simple_val_again", {
 	open_db("test_db_add_duplicate_simple_val")
 	expect_equal(add_val(1), NULL)
+	expect_equal(add_val("new value string"), "new value string")
 	close_db()
 })
 
