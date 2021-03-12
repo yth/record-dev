@@ -8,5 +8,5 @@ test_that("open existing db", {
 })
 
 test_that("test open non existing db for read", {
-	expect_error(open_db("non_existing_db", read_only = TRUE))
+	expect_error(open_db("non_existing_db", create = FALSE))
 })
