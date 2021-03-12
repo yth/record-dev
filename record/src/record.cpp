@@ -22,12 +22,12 @@
 
 
 // Globals
-FILE *db_file;
-FILE *index_file;
-size_t offset;
-int count; // Maybe better to make this a double
-size_t size;
-std::map<std::string, size_t> *gbov_map;
+FILE *db_file = NULL;
+FILE *index_file = NULL;
+size_t offset = 0;
+int count = 0; // TODO: Consider: Maybe better to make this a double
+size_t size = 0; // TODO: Consider: Maybe better to make this a double
+std::map<std::string, size_t> *gbov_map = NULL;
 
 
 /**
@@ -112,15 +112,15 @@ SEXP load_indices(SEXP indices) {
 	index_file = idx;
 
 	// TODO: Check the return value instead of silence
-	int i = fread(&offset, sizeof(size_t), 1, index_file);
-	i = fread(&size, sizeof(size_t), 1, index_file);
-	i = fread(&count, sizeof(int), 1, index_file);
+	int _ = fread(&offset, sizeof(size_t), 1, index_file);
+	_ = fread(&size, sizeof(size_t), 1, index_file);
+	_ = fread(&count, sizeof(int), 1, index_file);
 
 	for (size_t i = 0; i < size; ++i) {
 		size_t start = 0;
 		char hash[40];
-		i = fread(hash, 1, 40, index_file);
-		i = fread(&start, sizeof(size_t), 1, index_file);
+		_ = fread(hash, 1, 40, index_file);
+		_ = fread(&start, sizeof(size_t), 1, index_file);
 		(*gbov_map)[std::string(hash, 40)] = start;
 	}
 
@@ -134,11 +134,13 @@ SEXP load_indices(SEXP indices) {
  * @param  file_ptr     wrapped FILE pointer
  */
 SEXP close_db() {
-	fflush(db_file);
-	if (fclose(db_file)) {
-		Rf_error("Could not close the database.");
+	if (db_file) {
+		fflush(db_file);
+		if (fclose(db_file)) {
+			Rf_error("Could not close the database.");
+		}
+		db_file = NULL;
 	}
-	db_file = NULL;
 
 	if (index_file) {
 		// TODO: Think about ways to reuse rather than overwrite
@@ -156,9 +158,12 @@ SEXP close_db() {
 		}
 		fflush(index_file);
 		fclose(index_file);
+		index_file = NULL;
 	}
 
-	delete gbov_map;
+	if (gbov_map) {
+		delete gbov_map;
+	}
 
 	return R_NilValue;
 }

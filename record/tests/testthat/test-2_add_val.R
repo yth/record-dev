@@ -1,29 +1,24 @@
 test_that("add_hello", {
-	open_db_for_write("add_hello.txt")
+	open_db("test_db_add_hello", create = T)
 	s = "hello"
 	expect_equal(add_val(s), s)
 	close_db()
-
-	f = file("add_hello.txt", "rb")
-	r = readBin(f, n = 1, character())
-	expect_gt(length(r), 0)
-	close(f)
 })
 
 test_that("add_10_vals", {
-	open_db_for_write("add_10_vals.txt")
+	open_db("test_db_add_10_vals", create = T)
 	expect_equal(add_val(1:10), 1:10)
 	close_db()
 })
 
 test_that("add_100_vals", {
-	open_db_for_write("add_100_vals.txt")
+	open_db("test_db_add_100_vals", create = T)
 	expect_equal(add_val(1:100), 1:100)
 	close_db()
 })
 
 test_that("add_alphabet", {
-	open_db_for_write("add_alphabet.txt")
+	open_db("test_db_add_alphabet", create = T)
 	alphabet = c("a", "b", "c", "d", "e", "f", "g", "h", "i")
 	alphabet = c(alphabet, "j", "k", "l", "m", "n", "o", "p")
 	alphabet = c(alphabet, "q", "r", "s", "t", "u", "v", "w")
@@ -36,13 +31,13 @@ test_that("add_alphabet", {
 })
 
 test_that("add_large_vals", {
-	open_db_for_write("add_large_vals.txt")
+	open_db("test_db_add_large_vals", create = T)
 	expect_equal(add_val(c(1:500, 600:100000)), c(1:500, 600:100000))
 	close_db()
 })
 
 test_that("add_val_twice", {
-	open_db_for_write("add_val_twice.txt")
+	open_db("test_db_add_val_twice", create = T)
 	once <- "1"
 	twice <- "2"
 	expect_equal(add_val(once), "1")
@@ -51,9 +46,22 @@ test_that("add_val_twice", {
 })
 
 test_that("add_duplicate_simple_val", {
-	open_db_for_write("add_duplicate_simple_val.txt")
+	open_db("test_db_add_duplicate_simple_val", create = T)
 	expect_equal(add_val(1), 1)
 	expect_equal(add_val(1), NULL)
+	close_db()
+})
+
+test_that("add_value_again", {
+	open_db("test_db_add_large_vals")
+	expect_equal(add_val(1), 1)
+	close_db()
+})
+
+test_that("add_duplicate_simple_val_again", {
+	open_db("test_db_add_duplicate_simple_val")
+	expect_equal(add_val(1), NULL)
+	expect_equal(add_val("new value string"), "new value string")
 	close_db()
 })
 
