@@ -22,3 +22,9 @@ test_that("count 101 vals", {
 	expect_equal(count_vals(), 101)
 	close_db()
 })
+
+test_that("count 101 vals again", {
+	open_db("test_db_count-101")
+	expect_equal(count_vals(), 101)
+	close_db()
+})
