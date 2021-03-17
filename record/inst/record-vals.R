@@ -15,12 +15,11 @@ package_name <- args[2]
 
 if (!dir.exists(run_dir)) {
   stop(run_dir, ": no such a directory")
-
 }
 
 val_files <- list.files(path = run_dir, pattern = "values.RDS", recursive = TRUE)
 
-if(is.null(open_db_for_write(paste0(package_name, "_db.txt")))) {
+if(is.null(open_db(paste0(package_name, "_db.txt"), create = TRUE))) {
   print(paste0(package_name, ".txt", " opened successfully."))
 }
 
@@ -38,6 +37,7 @@ for (i in seq_along(val_files)) {
 }
 
 duplicates <- sum(duplicated(gbov))
+## print(pryr::object_size(gbov))
 
 print(paste0(duplicates, " duplicates are found."))
 print(paste0(count_vals(), " - ", size_db(), " = ", count_vals() - size_db()))

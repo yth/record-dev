@@ -19,35 +19,35 @@ open_db_for_read <- function(db = ".") {
 # If create is True, then create the database if one does not exist.
 # Otherwise, quit if the database does not exist.
 # This function will only create the database in the current working directory.
-open_db <- function(db_path = ".", create = FALSE) {
-  if (!dir.exists(db_path) && !create) {
-    stop(paste0(db_path, " does not exist."))
+open_db <- function(db = "default_db", create = FALSE) {
+  if (!dir.exists(db) && !create) {
+    stop(paste0(db, " does not exist."))
   }
 
-  if (dir.exists(db_path) && create){
-    stop(paste0(db_path, " already exists."))
+  if (dir.exists(db) && create){
+    stop(paste0(db, " already exists."))
   }
 
-  if (dir.exists(db_path) && !create && !file.exists(paste0(db_path, "/gbov.bin"))){
-    stop(paste0(db_path, " is not a database."))
+  if (dir.exists(db) && !create && !file.exists(paste0(db, "/gbov.bin"))){
+    stop(paste0(db, " is not a database."))
   }
 
-  if (!dir.exists(db_path) && create) {
-    dir.create(db_path, recursive = TRUE)
+  if (!dir.exists(db) && create) {
+    dir.create(db, recursive = TRUE)
 
-    gbov = paste0(db_path, "/gbov.bin")
-    indices = paste0(db_path, "/indices.bin")
+    gbov = paste0(db, "/gbov.bin")
+    indices = paste0(db, "/indices.bin")
 
     file.create(gbov, indices,  showWarnings = TRUE)
 
     .Call(RCRD_create_gbov, gbov)
     .Call(RCRD_create_indices, indices)
   }  else {
-    gbov = list.files(path = db_path, pattern = "gbov.bin", recursive = TRUE)
-    indices = list.files(path = db_path, pattern = "indices.bin", recursive = TRUE)
+    gbov = list.files(path = db, pattern = "gbov.bin", recursive = TRUE)
+    indices = list.files(path = db, pattern = "indices.bin", recursive = TRUE)
 
-    .Call(RCRD_load_gbov, paste0(db_path, "/", gbov))
-    .Call(RCRD_load_indices, paste0(db_path, "/", indices))
+    .Call(RCRD_load_gbov, paste0(db, "/", gbov))
+    .Call(RCRD_load_indices, paste0(db, "/", indices))
   }
 
 	## tryCatch(
