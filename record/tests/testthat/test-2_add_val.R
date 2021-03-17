@@ -1,24 +1,24 @@
-test_that("add_hello", {
-	open_db("test_db_add_hello", create = T)
+test_that("add hello", {
+	open_db("test_db/add-hello", create = T)
 	s = "hello"
 	expect_equal(add_val(s), s)
 	close_db()
 })
 
-test_that("add_10_vals", {
-	open_db("test_db_add_10_vals", create = T)
+test_that("add 10 vals", {
+	open_db("test_db/add-10-vals", create = T)
 	expect_equal(add_val(1:10), 1:10)
 	close_db()
 })
 
-test_that("add_100_vals", {
-	open_db("test_db_add_100_vals", create = T)
+test_that("add 100 vals", {
+	open_db("test_db/add-100-vals", create = T)
 	expect_equal(add_val(1:100), 1:100)
 	close_db()
 })
 
-test_that("add_alphabet", {
-	open_db("test_db_add_alphabet", create = T)
+test_that("add alphabet", {
+	open_db("test_db/add-alphabet", create = T)
 	alphabet = c("a", "b", "c", "d", "e", "f", "g", "h", "i")
 	alphabet = c(alphabet, "j", "k", "l", "m", "n", "o", "p")
 	alphabet = c(alphabet, "q", "r", "s", "t", "u", "v", "w")
@@ -30,14 +30,14 @@ test_that("add_alphabet", {
 	close_db()
 })
 
-test_that("add_large_vals", {
-	open_db("test_db_add_large_vals", create = T)
+test_that("add large vals", {
+	open_db("test_db/add-large-vals", create = T)
 	expect_equal(add_val(c(1:500, 600:100000)), c(1:500, 600:100000))
 	close_db()
 })
 
-test_that("add_val_twice", {
-	open_db("test_db_add_val_twice", create = T)
+test_that("add val twice", {
+	open_db("test_db/add-val-twice", create = T)
 	once <- "1"
 	twice <- "2"
 	expect_equal(add_val(once), "1")
@@ -45,28 +45,28 @@ test_that("add_val_twice", {
 	close_db()
 })
 
-test_that("add_duplicate_simple_val", {
-	open_db("test_db_add_duplicate_simple_val", create = T)
+test_that("add duplicate simple val", {
+	open_db("test_db/add-duplicate-simple-val", create = T)
 	expect_equal(add_val(1), 1)
 	expect_equal(add_val(1), NULL)
 	close_db()
 })
 
-test_that("add_value_again", {
-	open_db("test_db_add_large_vals")
+test_that("add value again", {
+	open_db("test_db/add-large-vals")
 	expect_equal(add_val(1), 1)
 	close_db()
 })
 
-test_that("add_duplicate_simple_val_again", {
-	open_db("test_db_add_duplicate_simple_val")
+test_that("add duplicate simple val again", {
+	open_db("test_db/add-duplicate-simple-val")
 	expect_equal(add_val(1), NULL)
 	expect_equal(add_val("new value string"), "new value string")
 	close_db()
 })
 
 test_that("add duplicate logicals", {
-	open_db_for_write("logical_db.txt")
+	open_db("test_db/logical", create = TRUE)
 	for(i in 1:10) {
     add_val(TRUE)
     add_val(FALSE)

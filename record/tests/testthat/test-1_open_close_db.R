@@ -1,12 +1,12 @@
 test_that("open a new db and close it", {
-	expect_silent(open_db("test_db_open", create = TRUE))
+	expect_silent(open_db("test_db/open", create = TRUE))
 	expect_silent(close_db())
 })
 
 test_that("open existing db", {
-	expect_error(open_db("test_db_open", create = TRUE))
+	expect_error(open_db("test_db/open", create = TRUE))
 })
 
 test_that("test open non existing db for read", {
-	expect_error(open_db("non_existing_db", create = FALSE))
+	expect_error(open_db("test_db/non_existing_db", create = FALSE))
 })
