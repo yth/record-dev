@@ -48,10 +48,12 @@ test_that("have seen alphabet", {
   close_db()
 })
 
+# real values from stringr::str_detect
+val_list <- readRDS("../resource/values.RDS")
+vals <- lapply(val_list, function(x) x[[3]])
+
 test_that("have seen real vals from stringr::str_detect", {
-  # real values from stringr::str_detect
-  val_list <- readRDS("../resource/values.RDS")
-  vals <- lapply(val_list, function(x) x[[3]])
+
 
   open_db("test_db/str_detect", create = TRUE)
 
@@ -64,7 +66,7 @@ test_that("have seen real vals from stringr::str_detect", {
   close_db()
 })
 
-# test_that("num of unique vals equals to num of values recorded to db", {
-  # u_vals <- unique(vals)
-  # expect_equal(size_db(), length(u_vals))
-# })
+test_that("num of unique vals equals to num of values recorded to db", {
+  u_vals <- unique(vals)
+  expect_equal(size_db(), length(u_vals))
+})
