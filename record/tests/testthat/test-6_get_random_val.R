@@ -27,6 +27,24 @@ test_that("get all three added vals by get_random_val in a loop", {
 	close_db()
 })
 
+test_that("get all three added vals by get_random_val in a loop redux", {
+	open_db("test_db/get_random_2")
+
+	vals_added <- list(TRUE, 1, "hello")
+
+	rand_vals = vector('list', 10)
+	for (i in seq_along(rand_vals)) {
+		val = get_random_val()
+		rand_vals[[i]] <- val
+	}
+
+  for(rand_val in rand_vals) {
+    expect_true(list(rand_val) %in% vals_added)
+  }
+
+	close_db()
+})
+
 if (F) {
 
 test_that("get random val from stringr::str_detect from existing db", {
