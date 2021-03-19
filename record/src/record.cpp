@@ -11,9 +11,10 @@
 #include <stdio.h> // FILE, fopen, close, fwrite
 #include <stdarg.h> // testing
 #include <random> // rand
-#include <iterator> //advance
-#include <fcntl.h> //open
-#include <errno.h>
+#include <iterator> // advance
+#include <fcntl.h> // open
+#include <unistd.h> // close
+#include <sys/mman.h> // mmap, munmap
 
 
 #include "byte_vector.h"
@@ -28,6 +29,15 @@ size_t offset = 0;
 int count = 0; // TODO: Consider: Maybe better to make this a double
 size_t size = 0; // TODO: Consider: Maybe better to make this a double
 std::map<std::string, size_t> *gbov_map = NULL;
+
+// Used for get values
+size_t db_mmap_size = 0;
+char *db_mmap = NULL;
+char *db_path = NULL;
+
+// Used for merging
+int other_fd = -1;
+char *other_mmap = NULL;
 
 
 /**
@@ -52,19 +62,19 @@ SEXP open_db(SEXP filename) {
   //   /* now you can use the file */
   //   open_db_for_write(pathname);
   // }
-	FILE *db = fopen(name, "w+");
-	if (db == NULL) {
-		Rf_error("Could not start the database.");
-	}
-	db_file = db;
-
-	index_file = NULL;
-
-	offset = 0;
-	count = 0;
-	size = 0;
-
-	gbov_map = new std::map<std::string, size_t>;
+	// FILE *db = fopen(name, "w+");
+	// if (db == NULL) {
+	// 	Rf_error("Could not start the database.");
+	// }
+	// db_file = db;
+	//
+	// index_file = NULL;
+	//
+	// offset = 0;
+	// count = 0;
+	// size = 0;
+	//
+	// gbov_map = new std::map<std::string, size_t>;
 
 	return R_NilValue;
 }
@@ -77,6 +87,12 @@ SEXP open_db(SEXP filename) {
  */
 SEXP load_gbov(SEXP gbov) {
 	const char* name = CHAR(STRING_ELT(gbov, 0));
+
+	// Saving the path to the gbov.bin file
+	size_t len = strlen(name);
+	db_path = (char *) malloc(len + 1);
+	strcpy(db_path, name);
+
 	FILE *db = fopen(name, "r+");
 	if (db == NULL) {
 		Rf_error("Could not load the database.");
@@ -135,6 +151,7 @@ SEXP load_indices(SEXP indices) {
  */
 SEXP close_db() {
 	if (db_file) {
+		free(db_path);
 		fflush(db_file);
 		if (fclose(db_file)) {
 			Rf_error("Could not close the database.");
@@ -341,6 +358,21 @@ SEXP read_vals(SEXP from, SEXP to) {
 }
 
 SEXP get_random_val() {
+	if (db_mmap_size < size) {
+		if (db_mmap) {
+			if (munmap(db_mmap, db_mmap_size)) {
+				perror("Could not properly munmap.");
+				exit(1);
+			}
+		}
+
+		int fd = open(db_path, O_RDONLY);
+		db_mmap_size = ((size >> 12) + 1) << 12;
+		db_mmap = (char *) mmap(NULL, db_mmap_size, PROT_READ,
+									MAP_PRIVATE, fd, 0);
+		close(fd);
+	}
+
 	// Specify a random value
 	int random_index = rand() % count;
 	std::map<std::string, size_t>::iterator it;
