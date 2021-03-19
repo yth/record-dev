@@ -278,7 +278,7 @@ SEXP add_val(SEXP val) {
 
 		// Acting as a NULL
 		// Will be used to make the file act as if it had a linked list for duplicates
-		write_size_t(db_file, 0);
+		write_size_t(db_file, (size_t) 0);
 
 		// Modify offset here
 		// TODO: Check for overflow
@@ -418,11 +418,11 @@ SEXP get_random_val() {
 	size_t* obj_size = (size_t*) read_n(db_file, offset, it->second, sizeof(size_t));
 	unsigned char* serialized_value = (unsigned char*) read_n(db_file, offset, it->second + sizeof(size_t), *obj_size);
 	printf("Proper size: %lu\n", *obj_size);
-	printf("===\n");
 
 	// for (size_t i = 0; i < offset; ++i) {
 	// 	printf("%luth bytes: %c (%u)\n", i, db_mmap[i], db_mmap[i]);
 	// }
+	printf("===\n");
 
 
 
