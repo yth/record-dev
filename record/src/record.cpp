@@ -15,6 +15,7 @@
 #include <fcntl.h> // open
 #include <unistd.h> // close
 #include <sys/mman.h> // mmap, munmap
+#include <sys/stat.h> //struct stat, fstat
 
 
 #include "byte_vector.h"
@@ -283,6 +284,9 @@ SEXP add_val(SEXP val) {
 		// TODO: Check for overflow
 		offset += vector->size + sizeof(size_t) + sizeof(size_t);
 
+		// TODO: Slight performance hit?
+		fflush(db_file);
+
 		size++;
 
 		return val;
@@ -358,6 +362,13 @@ SEXP read_vals(SEXP from, SEXP to) {
 }
 
 SEXP get_random_val() {
+	// Make sure everything was written to file
+	if (fflush(db_file)) {
+		perror("Could not flush.");
+		exit(1);
+	}
+
+	// Set up a valid mmap of the file
 	if (db_mmap_size < size) {
 		if (db_mmap) {
 			if (munmap(db_mmap, db_mmap_size)) {
@@ -366,10 +377,26 @@ SEXP get_random_val() {
 			}
 		}
 
-		int fd = open(db_path, O_RDONLY);
+		int fd = open(db_path, O_RDWR);
+		if (fd < 0) {
+			perror("Could not open file.");
+			exit(1);
+		}
+
+		struct stat st;
+		int err = fstat(fd, &st);
+		if (err < 0) {
+			perror("Could not find file stat.");
+			exit(1);
+		}
+
 		db_mmap_size = ((size >> 12) + 1) << 12;
-		db_mmap = (char *) mmap(NULL, db_mmap_size, PROT_READ,
-									MAP_PRIVATE, fd, 0);
+		db_mmap = (char *) mmap(NULL, db_mmap_size, PROT_READ | PROT_WRITE,
+									MAP_SHARED, fd, 0);
+		if (db_mmap == MAP_FAILED) {
+			perror("Could not properly mmap.");
+			exit(1);
+		}
 		close(fd);
 	}
 
@@ -379,9 +406,25 @@ SEXP get_random_val() {
 	it = gbov_map->begin();
 	std::advance(it, random_index);
 
-	// Get the specified value
-	size_t* size = (size_t*) read_n(db_file, offset, it->second, sizeof(size_t));
-	unsigned char* serialized_value = (unsigned char*) read_n(db_file, offset, it->second + sizeof(size_t), *size);
+	// Find the location of the specified value
+	size_t obj_size2 = ((size_t *)(db_mmap + it->second))[0];
+	printf("---\n");
+	printf("first byte location: %lu\n", it->second);
+	printf("Size according to mmap: %lu\n", obj_size2);
+
+	// unsigned char *obj_ptr = (unsigned char *) (db_mmap + it->second + sizeof(size_t));
+
+
+	size_t* obj_size = (size_t*) read_n(db_file, offset, it->second, sizeof(size_t));
+	unsigned char* serialized_value = (unsigned char*) read_n(db_file, offset, it->second + sizeof(size_t), *obj_size);
+	printf("Proper size: %lu\n", *obj_size);
+	printf("===\n");
+
+	// for (size_t i = 0; i < offset; ++i) {
+	// 	printf("%luth bytes: %c (%u)\n", i, db_mmap[i], db_mmap[i]);
+	// }
+
+
 
 	// Deserialize the specified value
 
@@ -391,7 +434,7 @@ SEXP get_random_val() {
 
 	// TODO: Consider reuse
 	byte_vector_t vector = make_vector(0);
-	vector->capacity = *size;
+	vector->capacity = *obj_size;
 	vector->buf = serialized_value;
 
 	R_InitInPStream(stream, (R_pstream_data_t) vector,
@@ -403,8 +446,9 @@ SEXP get_random_val() {
 	SEXP res = R_Unserialize(stream);
 
 	// Clean Up
-	free(size);
+	free(obj_size);
 	free(serialized_value);
+	free(vector);
 
 	// Return the deserialized value
 	return res;

@@ -12,11 +12,12 @@ test_that("get all three added vals by get_random_val in a loop", {
 	add_val(1)
 	add_val("hello")
 
-  vals_added <- list(TRUE, 1, "hello")
+	vals_added <- list(TRUE, 1, "hello")
 
-  rand_vals = vector('list', 100)
+	rand_vals = vector('list', 10)
 	for (i in seq_along(rand_vals)) {
-		rand_vals[[i]] <- get_random_val()
+		val = get_random_val()
+		rand_vals[[i]] <- val
 	}
 
   for(rand_val in rand_vals) {
@@ -25,6 +26,8 @@ test_that("get all three added vals by get_random_val in a loop", {
 
 	close_db()
 })
+
+if (F) {
 
 test_that("get random val from stringr::str_detect from existing db", {
   val_list <- readRDS("../resource/values.RDS")
@@ -43,3 +46,5 @@ test_that("get random val from stringr::str_detect from existing db", {
 
 	close_db()
 })
+
+}
