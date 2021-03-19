@@ -275,6 +275,7 @@ SEXP add_val(SEXP val) {
 			free_vector(vector);
 			Rf_error("Could not write out.");
 		}
+		printf("Blob size: %lu\n", vector->size);
 
 		// Acting as a NULL
 		// Will be used to make the file act as if it had a linked list for duplicates
