@@ -24,9 +24,9 @@ open_db <- function(db = "default_db", create = FALSE) {
     stop(paste0(db, " does not exist."))
   }
 
-  if (dir.exists(db) && create){
-    stop(paste0(db, " already exists."))
-  }
+  ## if (dir.exists(db) && create){
+  ##   ## stop(paste0(db, " already exists."))
+  ## }
 
   if (dir.exists(db) && !create && !file.exists(paste0(db, "/gbov.bin"))){
     stop(paste0(db, " is not a database."))
@@ -42,7 +42,7 @@ open_db <- function(db = "default_db", create = FALSE) {
 
     .Call(RCRD_create_gbov, gbov)
     .Call(RCRD_create_indices, indices)
-  }  else {
+  }  else { # includes the case where db exists and create = TRUE
     gbov = list.files(path = db, pattern = "gbov.bin", recursive = TRUE)
     indices = list.files(path = db, pattern = "indices.bin", recursive = TRUE)
 
