@@ -183,6 +183,16 @@ SEXP close_db() {
 		delete gbov_map;
 	}
 
+	// Need to munmap here
+	if (db_mmap_size && db_mmap) {
+		if (munmap(db_mmap, db_mmap_size)) {
+			perror("Could not properly munmap.");
+			exit(1);
+		}
+		db_mmap = NULL;
+		db_mmap_size = 0;
+	}
+
 	return R_NilValue;
 }
 
@@ -275,7 +285,6 @@ SEXP add_val(SEXP val) {
 			free_vector(vector);
 			Rf_error("Could not write out.");
 		}
-		printf("Blob size: %lu\n", vector->size);
 
 		// Acting as a NULL
 		// Will be used to make the file act as if it had a linked list for duplicates
@@ -370,12 +379,13 @@ SEXP get_random_val() {
 	}
 
 	// Set up a valid mmap of the file
-	if (db_mmap_size < size) {
+	if (db_mmap_size < offset) {
 		if (db_mmap) {
 			if (munmap(db_mmap, db_mmap_size)) {
 				perror("Could not properly munmap.");
 				exit(1);
 			}
+			db_mmap = NULL;
 		}
 
 		int fd = open(db_path, O_RDWR);
@@ -408,24 +418,12 @@ SEXP get_random_val() {
 	std::advance(it, random_index);
 
 	// Find the location of the specified value
-	size_t obj_size2 = ((size_t *)(db_mmap + it->second))[0];
-	printf("---\n");
-	printf("first byte location: %lu\n", it->second);
-	printf("Size according to mmap: %lu\n", obj_size2);
-
-	// unsigned char *obj_ptr = (unsigned char *) (db_mmap + it->second + sizeof(size_t));
+	size_t obj_size = ((size_t *)(db_mmap + it->second))[0];
+	unsigned char *obj_ptr = (unsigned char *) (db_mmap + it->second + sizeof(size_t));
 
 
-	size_t* obj_size = (size_t*) read_n(db_file, offset, it->second, sizeof(size_t));
-	unsigned char* serialized_value = (unsigned char*) read_n(db_file, offset, it->second + sizeof(size_t), *obj_size);
-	printf("Proper size: %lu\n", *obj_size);
-
-	// for (size_t i = 0; i < offset; ++i) {
-	// 	printf("%luth bytes: %c (%u)\n", i, db_mmap[i], db_mmap[i]);
-	// }
-	printf("===\n");
-
-
+	// size_t* obj_size = (size_t*) read_n(db_file, offset, it->second, sizeof(size_t));
+	// unsigned char* serialized_value = (unsigned char*) read_n(db_file, offset, it->second + sizeof(size_t), *obj_size);
 
 	// Deserialize the specified value
 
@@ -435,8 +433,8 @@ SEXP get_random_val() {
 
 	// TODO: Consider reuse
 	byte_vector_t vector = make_vector(0);
-	vector->capacity = *obj_size;
-	vector->buf = serialized_value;
+	vector->capacity = obj_size;
+	vector->buf = obj_ptr;
 
 	R_InitInPStream(stream, (R_pstream_data_t) vector,
 						R_pstream_binary_format,
@@ -447,8 +445,9 @@ SEXP get_random_val() {
 	SEXP res = R_Unserialize(stream);
 
 	// Clean Up
-	free(obj_size);
-	free(serialized_value);
+	// free(obj_size);
+	// free(serialized_value);
+	vector->buf = NULL;
 	free(vector);
 
 	// Return the deserialized value
