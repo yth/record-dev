@@ -4,7 +4,7 @@ test_that("open a new db and close it", {
 })
 
 test_that("open existing db", {
-	expect_silent(open_db("test_db/open", create = TRUE))
+	expect_error(open_db("test_db/open", create = TRUE))
 })
 
 test_that("test open non existing db for read", {
