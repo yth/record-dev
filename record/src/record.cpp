@@ -25,10 +25,14 @@
 FILE *db_file = NULL;
 FILE *index_file = NULL;
 size_t offset = 0;
-int count = 0; // TODO: Consider: Maybe better to make this a double
+unsigned int count = 0; // TODO: Consider: Maybe better to make this a double
 size_t size = 0; // TODO: Consider: Maybe better to make this a double
 std::map<std::string, size_t> *gbov_map = NULL;
 
+
+FILE *int_file = NULL;
+unsigned int i_size = 0;       // number of unique ints encountered
+size_t int_db[10001] = {0};    // hard wired to accommodate -5000 to 5000
 
 /**
  * This function creates a database for a collection of values.
@@ -39,19 +43,6 @@ std::map<std::string, size_t> *gbov_map = NULL;
 SEXP open_db(SEXP filename) {
   const char* name = CHAR(STRING_ELT(filename, 0));
 
-  /*mode = an octal expression (leading 0) of the unix file mode. See e.g. the chmod manpage.
-    0644 means the owner can read+write (4+2=6), the group can read (4), and others can read (4)*/
-  // int fd = open(pathname, O_CREAT | O_WRONLY | O_EXCL, S_IRUSR | S_IWUSR, 0644);
-  // if (fd < 0) {
-  //   /* failure */
-  //   if (errno == EEXIST) {
-  //     /* the file already existed */
-  //     open_db_for_read(pathname);
-  //   }
-  // } else {
-  //   /* now you can use the file */
-  //   open_db_for_write(pathname);
-  // }
 	FILE *db = fopen(name, "w+");
 	if (db == NULL) {
 		Rf_error("Could not start the database.");
@@ -65,6 +56,27 @@ SEXP open_db(SEXP filename) {
 	size = 0;
 
 	gbov_map = new std::map<std::string, size_t>;
+
+	return R_NilValue;
+}
+
+/**
+ * Loads ints.bin in the database
+ * @method loads_ints
+ * @return R_NilValue on success throw and error otherwise
+ */
+SEXP load_ints(SEXP filename) {
+  //TODO: finish implementation 
+	const char* name = CHAR(STRING_ELT(filename, 0));
+
+  FILE *ints = fopen(name, "w+");
+	if (ints == NULL) {
+		Rf_error("Could not open the int database.");
+	}
+
+	int_file = ints;
+
+	i_size = 0;
 
 	return R_NilValue;
 }
@@ -161,6 +173,12 @@ SEXP close_db() {
 		index_file = NULL;
 	}
 
+  //TODO: implement
+  // if (int_file) {
+  //   for(int i = 0; i < 10001; ++i)
+  //     write_size_t(int_file, int_db[[i]])
+  // }
+
 	if (gbov_map) {
 		delete gbov_map;
 	}
@@ -195,6 +213,29 @@ SEXP create_indices(SEXP indices) {
 	index_file = idx;
 
 	return R_NilValue;
+}
+
+
+/**
+ * Adds an R scalar integer value to a separate int database.
+ * @method add_int
+ * @param  val strictly an integer value from -5000 to 5000
+ * @return val
+ */
+SEXP add_int(SEXP val) {
+  int int_val = Rf_asInteger(val) + 5000; // int_db[0] represents -5000L
+
+  if(int_db[int_val] == 0) {
+    i_size += 1;
+
+    int_db[int_val] += 1;  // [1][0][0][0] [0][0][0][0]
+
+    return val;
+  } else {
+    int_db[int_val] += 1;
+
+    return R_NilValue;
+  }
 }
 
 
@@ -377,3 +418,4 @@ SEXP get_random_val() {
 	// Return the deserialized value
 	return res;
 }
+

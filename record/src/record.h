@@ -25,6 +25,14 @@ SEXP close_db();
 
 
 /**
+ * Loads ints.bin in the database
+ * @method loads_ints
+ * @return R_NilValue on success throw and error otherwise
+ */
+SEXP load_ints(SEXP filename);
+
+
+/**
  * Load the gbov.
  * @method load_gbov
  * @return R_NilValue on success throw and error otherwise
@@ -55,6 +63,24 @@ SEXP create_gbov(SEXP gbov);
  * @return R_NilValue on success throw and error otherwise
  */
 SEXP create_indices(SEXP indices);
+
+
+/**
+ * This functions directly adds an R scalar value to the specified storage.
+ * @method add_scalar
+ * @param  val      R scalar value in form of SEXP
+ * @return          R value on success
+ */
+SEXP add_scalar(SEXP val);
+
+
+/**
+ * Adds an R scalar integer value to a separate int database.
+ * @method add_int
+ * @param  val strictly an integer value from -5000 to 5000
+ * @return val
+ */
+SEXP add_int(SEXP val);
 
 
 /**
@@ -115,3 +141,4 @@ SEXP get_random_val();
 #endif
 
 #endif // RCRD_RCRD_H
+ 

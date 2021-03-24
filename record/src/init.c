@@ -26,6 +26,9 @@ static const R_CallMethodDef callMethods[] = {
 	{"load_indices", (DL_FUNC) &load_indices, 1},
 	{"create_gbov", (DL_FUNC) &create_gbov, 1},
 	{"create_indices", (DL_FUNC) &create_indices, 1},
+  {"add_int", (DL_FUNC) &add_int, 1},
+  {"load_ints", (DL_FUNC) &load_ints, 1},
+  {"add_int", (DL_FUNC) &add_int, 1},
 	{NULL, NULL, 0} // Required?
 };
 
