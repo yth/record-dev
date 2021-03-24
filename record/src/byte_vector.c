@@ -76,16 +76,21 @@ void append_buf(R_outpstream_t stream, void *buf, int length) {
 int get_byte(R_inpstream_t stream) {
 	byte_vector_t vector = (byte_vector_t) stream->data;
 	if (vector->size >= vector->capacity) {
-		perror("GET_BYTE: read error.");
+		// perror("GET_BYTE: read error byte");
+		// TODO: Think about better ways to handle this error check result
+		return -1;
+	} else {
+		return vector->buf[vector->size++];
 	}
-	return vector->buf[vector->size++];
 }
 
 // Required for make use of a R_inpstream_t
 void get_buf(R_inpstream_t stream, void *buf, int length) {
 	byte_vector_t vector = (byte_vector_t) stream->data;
 	if (vector->size + length >= vector->capacity) {
-		perror("GET_BUF: read error");
+		// perror("GET_BUF: read error buf");
+		// TODO: Think about better ways to handle this error check result
+		;
 	}
 	memcpy(buf, vector->buf + vector->size, length);
 	vector->size += length;

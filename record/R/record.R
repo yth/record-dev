@@ -1,34 +1,35 @@
 #' @export
 # Open database specified by db
 # If create is TRUE, then create the database.
-# If create is FALSE, then load the database. 
+# If create is FALSE, then load the database.
 open_db <- function(db = "db", create = FALSE) {
-  if (dir.exists(db)){
-    if (create) {
-      stop(paste0(db, " already exists."))
-    } else if (!file.exists(paste0(db, "/gbov.bin"))) {
-      stop(paste0(db, " is not a database."))
-    } else {# valid database
-      .Call(RCRD_load_ints, paste0(db, "/ints.bin"))
-      .Call(RCRD_load_gbov, paste0(db, "/gbov.bin"))
-      .Call(RCRD_load_indices, paste0(db, "/indices.bin"))
-    }
-  } else {
-    if (!create) {
-      stop(paste0(db, " does not exist."))
-    } else {
-      dir.create(db, recursive = TRUE)
+	if (dir.exists(db)){
+		if (create) {
+			stop(paste0(db, " already exists."))
+		} else if (!file.exists(paste0(db, "/gbov.bin"))) {
+			stop(paste0(db, " is not a database."))
+		} else {# valid database
+			.Call(RCRD_load_ints, paste0(db, "/ints.bin"))
+			.Call(RCRD_load_gbov, paste0(db, "/gbov.bin"))
+			.Call(RCRD_load_indices, paste0(db, "/indices.bin"))
+		}
+ 	} else {
+		if (!create) {
+			stop(paste0(db, " does not exist."))
+		} else {
+			dir.create(db, recursive = TRUE)
 
-      ints = paste0(db, "/ints.bin")
-      gbov = paste0(db, "/gbov.bin")
-      indices = paste0(db, "/indices.bin")
+			ints = paste0(db, "/ints.bin")
+			gbov = paste0(db, "/gbov.bin")
+			indices = paste0(db, "/indices.bin")
 
-      file.create(ints, gbov, indices, showWarnings = TRUE)
+			file.create(ints, gbov, indices, showWarnings = TRUE)
 
-      .Call(RCRD_create_gbov, gbov)
-      .Call(RCRD_create_indices, indices)
-    }
-  }
+			.Call(RCRD_create_ints, ints)
+			.Call(RCRD_create_gbov, gbov)
+			.Call(RCRD_create_indices, indices)
+		}
+	}
 }
 
 #' @export
@@ -47,7 +48,11 @@ add_val <- function(val) {
 
 #' @export
 have_seen <- function(val) {
-	.Call(RCRD_have_seen, val)
+	if (is_scalar_int(val, -5000, 5000)) {
+		.Call(RCRD_have_seen_int, val);
+	} else {
+		.Call(RCRD_have_seen, val)
+	}
 }
 
 #' @export
@@ -71,4 +76,6 @@ get_random_val <- function() {
 }
 
 ## is.scalar <- function(x) is.atomic(x) && length(x) == 1L && !is.character(x) && Im(x) == 0
-is_scalar_int <- function(x, from, to) length(x) == 1 && is.integer(x) && x >= from && x <= to
+is_scalar_int <- function(x, from, to) {
+	length(x) == 1 && is.integer(x) && x >= from && x <= to
+}

@@ -67,3 +67,61 @@ test_that("get random val from stringr::str_detect from existing db", {
 	close_db()
 })
 
+test_that("get random val from a database with ints", {
+	open_db("test_db/int_value_get", T)
+
+	ints = as.integer(1:5)
+
+	for (i in seq_along(ints)) {
+		add_val(ints[[i]])
+		expect_true(have_seen(ints[[i]]))
+	}
+
+	vals = vector('list', 100)
+	for (i in seq_along(vals)) {
+		  vals[[i]] <- get_random_val()
+	}
+
+	for(val in vals) {
+		expect_true(typeof(val) == "integer")
+		expect_true(length(val) == 1)
+	}
+
+	for (i in seq_along(ints)) {
+		expect_true(ints[[i]] %in% vals)
+	}
+
+	close_db()
+})
+
+test_that("get random val from a database with mix ints and vals", {
+	open_db("test_db/mix_int_value_get", T)
+
+	ints = as.integer(1:5)
+	strings = as.character(1:5)
+
+	for (i in seq_along(ints)) {
+		add_val(ints[[i]])
+		expect_true(have_seen(ints[[i]]))
+	}
+
+	for (i in seq_along(strings)) {
+		add_val(strings[[i]])
+		expect_true(have_seen(strings[[i]]))
+	}
+
+	vals = vector('list', 100)
+	for (i in seq_along(vals)) {
+		  vals[[i]] <- get_random_val()
+	}
+
+	for (i in seq_along(ints)) {
+		expect_true(ints[[i]] %in% vals)
+	}
+
+	for (i in seq_along(strings)) {
+		expect_true(ints[[i]] %in% vals)
+	}
+
+	close_db()
+})

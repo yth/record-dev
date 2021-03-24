@@ -25,14 +25,14 @@
 FILE *db_file = NULL;
 FILE *index_file = NULL;
 size_t offset = 0;
-unsigned int count = 0; // TODO: Consider: Maybe better to make this a double
+size_t count = 0; // TODO: Consider: Maybe better to make this a double
 size_t size = 0; // TODO: Consider: Maybe better to make this a double
 std::map<std::string, size_t> *gbov_map = NULL;
 
 
 FILE *int_file = NULL;
-unsigned int i_size = 0;       // number of unique ints encountered
-size_t int_db[10001] = {0};    // hard wired to accommodate -5000 to 5000
+size_t i_size = 0;       // number of unique ints encountered
+size_t int_db[10001] = { 0 };    // hard wired to accommodate -5000 to 5000
 
 /**
  * This function creates a database for a collection of values.
@@ -40,6 +40,7 @@ size_t int_db[10001] = {0};    // hard wired to accommodate -5000 to 5000
  * @param filename
  * @return file pointer wrapped as a R external pointer
  */
+// TODO: Deprecating this function
 SEXP open_db(SEXP filename) {
   const char* name = CHAR(STRING_ELT(filename, 0));
 
@@ -66,17 +67,27 @@ SEXP open_db(SEXP filename) {
  * @return R_NilValue on success throw and error otherwise
  */
 SEXP load_ints(SEXP filename) {
-  //TODO: finish implementation 
 	const char* name = CHAR(STRING_ELT(filename, 0));
-
-  FILE *ints = fopen(name, "w+");
+	FILE *ints = fopen(name, "w+");
 	if (ints == NULL) {
 		Rf_error("Could not open the int database.");
 	}
 
 	int_file = ints;
+	fseek(int_file, 0, SEEK_SET);
 
-	i_size = 0;
+	// TODO: Use better error checking methods
+	if (fread(&i_size, sizeof(size_t), 1, int_file) > 0) {
+		perror("Could not read all data from file.");
+		exit(1);
+	}
+
+	for (size_t i = 0; i < 10001; ++i) {
+		if (fread(int_db + i, sizeof(size_t), 1, int_file) > 0) {
+			perror("Could not read all data from file.");
+			exit(1);
+		}
+	}
 
 	return R_NilValue;
 }
@@ -102,6 +113,9 @@ SEXP load_gbov(SEXP gbov) {
 	offset = 0;
 	count = 0;
 	size = 0;
+
+	size_t int_db[10001] = { 0 };
+	i_size = 0;
 
 	gbov_map = new std::map<std::string, size_t>;
 
@@ -173,11 +187,17 @@ SEXP close_db() {
 		index_file = NULL;
 	}
 
-  //TODO: implement
-  // if (int_file) {
-  //   for(int i = 0; i < 10001; ++i)
-  //     write_size_t(int_file, int_db[[i]])
-  // }
+
+	if (int_file) {
+		write_size_t(int_file, i_size);
+		for(int i = 0; i < 10001; ++i)
+		{
+			write_size_t(int_file, int_db[i]);
+		}
+		fflush(int_file);
+		fclose(int_file);
+		int_file = NULL;
+	}
 
 	if (gbov_map) {
 		delete gbov_map;
@@ -212,6 +232,34 @@ SEXP create_indices(SEXP indices) {
 
 	index_file = idx;
 
+	i_size = 0;
+	for (int i = 0; i < 10001; ++i) {
+		int_db[i] = 0;
+	}
+
+	return R_NilValue;
+}
+
+
+/**
+ * Create the common ints storage
+ * @method create_ints
+ * @param  ints        file name
+ * @return             R_NilValue on succcecss
+ */
+SEXP create_ints(SEXP ints) {
+	const char* name = CHAR(STRING_ELT(ints, 0));
+	FILE *tmp = fopen(name, "r+");
+	if (tmp == NULL) {
+		Rf_error("Could not load the database.");
+	}
+
+	int_file = tmp;
+	i_size = 0;
+	for (int i = 0; i < 10001; ++i) {
+		int_db[i] = 0;
+	}
+
 	return R_NilValue;
 }
 
@@ -223,19 +271,20 @@ SEXP create_indices(SEXP indices) {
  * @return val
  */
 SEXP add_int(SEXP val) {
-  int int_val = Rf_asInteger(val) + 5000; // int_db[0] represents -5000L
+	count += 1;
 
-  if(int_db[int_val] == 0) {
-    i_size += 1;
+	int int_val = Rf_asInteger(val) + 5000; // int_db[0] represents -5000L
+	if(int_db[int_val] == 0) {
+		// printf("Got a new int: %d\n", int_val - 5000);
+		i_size += 1;
+		int_db[int_val] += 1;
+		size += 1;
+		return val;
+	} else {
+		int_db[int_val] += 1;
 
-    int_db[int_val] += 1;  // [1][0][0][0] [0][0][0][0]
-
-    return val;
-  } else {
-    int_db[int_val] += 1;
-
-    return R_NilValue;
-  }
+		return R_NilValue;
+	}
 }
 
 
@@ -315,6 +364,21 @@ SEXP add_val(SEXP val) {
 	return R_NilValue;
 }
 
+SEXP have_seen_int(SEXP val) {
+	int index = Rf_asInteger(val) + 5000;
+	int found = 0;
+	if (int_db[index]) {
+		found = 1;
+	}
+
+	SEXP res;
+	R_xlen_t n = 1;
+	PROTECT(res = allocVector(LGLSXP, n));
+	int *res_ptr = LOGICAL(res);
+	res_ptr[0] = found;
+	UNPROTECT(1);
+	return res;
+}
 
 SEXP have_seen(SEXP val) {
 	struct R_outpstream_st out;
@@ -383,14 +447,44 @@ SEXP read_vals(SEXP from, SEXP to) {
 
 SEXP get_random_val() {
 	// Specify a random value
-	int random_index = rand() % count;
+	// TODO: Find a bette rand() function that can return any size_t value
+	int random_index = rand() % size;
+	if (random_index < i_size) {
+		if (i_size < 10001) {
+			int values_passed = 0;
+			for (int i = 0; i < 10001; ++i) {
+				if (int_db[i] > 0) {
+					++values_passed;
+				}
+
+				if (values_passed == random_index + 1) {
+					SEXP res;
+					R_xlen_t n = 1;
+					PROTECT(res = allocVector(INTSXP, n));
+					int *res_ptr = INTEGER(res);
+					res_ptr[0] = i - 5000;
+					UNPROTECT(1);
+					return res;
+				}
+			}
+		} else {
+			SEXP res;
+			R_xlen_t n = 1;
+			PROTECT(res = allocVector(INTSXP, n));
+			int *res_ptr = INTEGER(res);
+			res_ptr[0] = random_index - 5000;
+			UNPROTECT(1);
+			return res;
+		}
+	}
+
 	std::map<std::string, size_t>::iterator it;
 	it = gbov_map->begin();
-	std::advance(it, random_index);
+	std::advance(it, random_index - i_size);
 
 	// Get the specified value
-	size_t* size = (size_t*) read_n(db_file, offset, it->second, sizeof(size_t));
-	unsigned char* serialized_value = (unsigned char*) read_n(db_file, offset, it->second + sizeof(size_t), *size);
+	size_t* obj_size = (size_t*) read_n(db_file, offset, it->second, sizeof(size_t));
+	unsigned char* serialized_value = (unsigned char*) read_n(db_file, offset, it->second + sizeof(size_t), *obj_size);
 
 	// Deserialize the specified value
 
@@ -400,7 +494,7 @@ SEXP get_random_val() {
 
 	// TODO: Consider reuse
 	byte_vector_t vector = make_vector(0);
-	vector->capacity = *size;
+	vector->capacity = *obj_size;
 	vector->buf = serialized_value;
 
 	R_InitInPStream(stream, (R_pstream_data_t) vector,
@@ -412,10 +506,9 @@ SEXP get_random_val() {
 	SEXP res = R_Unserialize(stream);
 
 	// Clean Up
-	free(size);
+	free(obj_size);
 	free(serialized_value);
 
 	// Return the deserialized value
 	return res;
 }
-
