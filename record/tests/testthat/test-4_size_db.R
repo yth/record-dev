@@ -62,3 +62,9 @@ test_that("add 5000L and 5001L", {
   expect_equal(size_ints(), 1)
 	close_db()
 })
+
+test_that("check i_size across sessions", {
+	open_db("test_db/size-ints", create = FALSE)
+  expect_equal(size_ints(), 1)
+	close_db()
+})
