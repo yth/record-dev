@@ -80,9 +80,10 @@ get_random_val <- function() {
 	.Call(RCRD_get_random_val)
 }
 
+
 ## is.scalar <- function(x) is.atomic(x) && length(x) == 1L && !is.character(x) && Im(x) == 0
 is_scalar_int <- function(x, from, to) {
-	ans <- length(x) == 1 && is.integer(x) && x >= from && x <= to && length(attributes(x)) == 0
+	ans <- is.integer(x) && length(x) == 1 && x >= from && x <= to && length(attributes(x)) == 0
 
   if(is.na(ans)) {
     FALSE
@@ -90,3 +91,4 @@ is_scalar_int <- function(x, from, to) {
     ans
   }
 }
+
