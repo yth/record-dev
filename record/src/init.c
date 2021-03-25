@@ -21,7 +21,7 @@ static const R_CallMethodDef callMethods[] = {
 	{"have_seen_int", (DL_FUNC) &have_seen_int, 1},
 	{"count_vals", (DL_FUNC) &count_vals, 0},
 	{"size_db", (DL_FUNC) &size_db, 0},
-  {"size_ints", (DL_FUNC) &size_ints, 0},
+	{"size_ints", (DL_FUNC) &size_ints, 0},
 	{"get_vals", (DL_FUNC) &read_vals, 2},
 	{"get_random_val", (DL_FUNC) &get_random_val, 0},
 	{"load_gbov", (DL_FUNC) &load_gbov, 1},
@@ -29,9 +29,7 @@ static const R_CallMethodDef callMethods[] = {
 	{"load_ints", (DL_FUNC) &load_ints, 1},
 	{"create_gbov", (DL_FUNC) &create_gbov, 1},
 	{"create_indices", (DL_FUNC) &create_indices, 1},
-	{"create_ints", (DL_FUNC) &load_ints, 1},
-	{"add_int", (DL_FUNC) &add_int, 1},
-	{"load_ints", (DL_FUNC) &load_ints, 1},
+	{"create_ints", (DL_FUNC) &create_ints, 1},
 	{"add_int", (DL_FUNC) &add_int, 1},
 	{NULL, NULL, 0} // Required?
 };
