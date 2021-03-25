@@ -9,7 +9,9 @@ extern "C" {
 
 // Writes a size_t to file
 void write_size_t(FILE* file, size_t val) {
-	fwrite(&val, sizeof(size_t), 1, file);
+	if (fwrite(&val, sizeof(size_t), 1, file) != 1) {
+		perror("Could not write a full size_t.");
+	}
 	return;
 }
 
