@@ -88,25 +88,36 @@ test_that("add double 1", {
 })
 
 test_that("add -5000L", {
-	open_db("test_db/int--5000L", create = TRUE)
+	open_db("test_db/add--5000L", create = TRUE)
   expect_equal(add_val(-5000L), -5000L)
 	close_db()
 })
 
 test_that("add 5000L", {
-	open_db("test_db/int-5000L", create = TRUE)
+	open_db("test_db/add-5000L", create = TRUE)
   expect_equal(add_val(5000L), 5000L)
 	close_db()
 })
 
 test_that("add 5000L again", {
-	open_db("test_db/int-5000L", create = FALSE)
+	open_db("test_db/add-5000L", create = FALSE)
   expect_equal(add_val(5000L), NULL)
 	close_db()
 })
 
 test_that("add 5001L", {
-	open_db("test_db/int-5001L", create = TRUE)
+	open_db("test_db/add-5001L", create = TRUE)
   expect_equal(add_val(5001L), 5001L)
+	close_db()
+})
+
+test_that("add attributed int", {
+	open_db("test_db/add-attributed-0", create = TRUE)
+
+  x <- 0
+  attr(x, "name") <- "attributed 0"
+
+  expect_equal(add_val(x), x)
+  expect_equal(size_db(), 1)
 	close_db()
 })
