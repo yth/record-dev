@@ -31,7 +31,7 @@ std::map<std::string, size_t> *gbov_map = NULL;
 
 
 FILE *int_file = NULL;
-size_t i_size = 0;       // number of unique ints encountered
+size_t i_size = 0;               // number of unique ints encountered
 size_t int_db[10001] = { 0 };    // hard wired to accommodate -5000 to 5000
 
 /**
@@ -435,6 +435,14 @@ SEXP count_vals() {
 SEXP size_db() {
 	SEXP ret = PROTECT(allocVector(INTSXP, 1));
 	INTEGER(ret)[0] = size;
+	UNPROTECT(1);
+
+	return ret;
+}
+
+SEXP size_ints() {
+	SEXP ret = PROTECT(allocVector(INTSXP, 1));
+	INTEGER(ret)[0] = i_size;
 	UNPROTECT(1);
 
 	return ret;

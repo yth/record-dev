@@ -52,3 +52,13 @@ test_that("add 102 vals and record 101", {
 	expect_equal(size_db(), 101)
 	close_db()
 })
+
+
+test_that("add 5000L and 5001L", {
+	open_db("test_db/size-ints", create = TRUE)
+	add_val(5000L)
+  add_val(5001L)
+	expect_equal(size_db(), 2)
+  expect_equal(size_ints(), 1)
+	close_db()
+})

@@ -132,7 +132,10 @@ SEXP count_vals();
  * @param
  * @return  number of values stored in the file
  */
-SEXP size_db();
+  SEXP size_db();
+
+
+  SEXP size_ints();
 
 
 /**

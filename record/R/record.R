@@ -66,6 +66,11 @@ size_db <- function() {
 }
 
 #' @export
+size_ints <- function() {
+	.Call(RCRD_size_ints)
+}
+
+#' @export
 get_vals <- function(from, to) {
 	.Call(RCRD_read_vals, from, to)
 }
@@ -77,5 +82,11 @@ get_random_val <- function() {
 
 ## is.scalar <- function(x) is.atomic(x) && length(x) == 1L && !is.character(x) && Im(x) == 0
 is_scalar_int <- function(x, from, to) {
-	length(x) == 1 && is.integer(x) && x >= from && x <= to && length(attributes(x)) == 0
+	ans <- length(x) == 1 && is.integer(x) && x >= from && x <= to && length(attributes(x)) == 0
+
+  if(is.na(ans)) {
+    FALSE
+  } else {
+    ans
+  }
 }
