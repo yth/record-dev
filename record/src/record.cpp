@@ -18,7 +18,7 @@
 
 #include "byte_vector.h"
 #include "sha1.h"
-#include "helper.h" // write_size_t, read_size_t
+#include "helper.h" // write_size_t, read_size_t, read_n
 
 
 // Globals
@@ -60,38 +60,6 @@ SEXP open_db(SEXP filename) {
 
 	return R_NilValue;
 }
-
-/**
- * Loads ints.bin in the database
- * @method loads_ints
- * @return R_NilValue on success throw and error otherwise
- */
-SEXP load_ints(SEXP filename) {
-	const char* name = CHAR(STRING_ELT(filename, 0));
-	FILE *ints = fopen(name, "w+");
-	if (ints == NULL) {
-		Rf_error("Could not open the int database.");
-	}
-
-	int_file = ints;
-	fseek(int_file, 0, SEEK_SET);
-
-	// TODO: Use better error checking methods
-	if (fread(&i_size, sizeof(size_t), 1, int_file) > 0) {
-		perror("Could not read all data from file.");
-		exit(1);
-	}
-
-	for (size_t i = 0; i < 10001; ++i) {
-		if (fread(int_db + i, sizeof(size_t), 1, int_file) > 0) {
-			perror("Could not read all data from file.");
-			exit(1);
-		}
-	}
-
-	return R_NilValue;
-}
-
 
 /**
  * Load the gbov. (Must be called before load_indices)
@@ -155,6 +123,38 @@ SEXP load_indices(SEXP indices) {
 
 
 /**
+ * Loads ints.bin in the database
+ * @method loads_ints
+ * @return R_NilValue on success throw and error otherwise
+ */
+SEXP load_ints(SEXP filename) {
+	const char* name = CHAR(STRING_ELT(filename, 0));
+	FILE *ints = fopen(name, "r+");
+	if (ints == NULL) {
+		Rf_error("Could not open the int database.");
+	}
+
+	int_file = ints;
+	fseek(int_file, 0, SEEK_SET);
+
+	// TODO: Use better error checking methods
+	if (fread(&i_size, sizeof(size_t), 1, int_file) < 0) {
+		perror("Could not read all data from file.");
+		exit(1);
+	}
+
+	for (size_t i = 0; i < 10001; ++i) {
+		if (fread(int_db + i, sizeof(size_t), 1, int_file) < 0) {
+			perror("Could not read all data from file.");
+			exit(1);
+		}
+	}
+
+	return R_NilValue;
+}
+
+
+/**
  * This function closes a database.
  * @method record_close
  * @param  file_ptr     wrapped FILE pointer
@@ -187,8 +187,8 @@ SEXP close_db() {
 		index_file = NULL;
 	}
 
-
 	if (int_file) {
+		fseek(int_file, 0, SEEK_SET);
 		write_size_t(int_file, i_size);
 		for(int i = 0; i < 10001; ++i)
 		{
@@ -232,7 +232,6 @@ SEXP create_indices(SEXP indices) {
 
 	index_file = idx;
 
-	i_size = 0;
 	for (int i = 0; i < 10001; ++i) {
 		int_db[i] = 0;
 	}
@@ -275,9 +274,8 @@ SEXP add_int(SEXP val) {
 
 	int int_val = Rf_asInteger(val) + 5000; // int_db[0] represents -5000L
 	if(int_db[int_val] == 0) {
-		// printf("Got a new int: %d\n", int_val - 5000);
-		i_size += 1;
 		int_db[int_val] += 1;
+		i_size += 1;
 		size += 1;
 		return val;
 	} else {
