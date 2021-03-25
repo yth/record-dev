@@ -83,12 +83,6 @@ get_random_val <- function() {
 
 ## is.scalar <- function(x) is.atomic(x) && length(x) == 1L && !is.character(x) && Im(x) == 0
 is_scalar_int <- function(x, from, to) {
-	ans <- is.integer(x) && length(x) == 1 && x >= from && x <= to && length(attributes(x)) == 0
-
-  if(is.na(ans)) {
-    FALSE
-  } else {
-    ans
-  }
+  is.integer(x) && length(x) == 1 && attributes(x) == NULL && !is.na(x) && x >= from && x <= to
 }
 
