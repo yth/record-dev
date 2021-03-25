@@ -9,9 +9,9 @@ open_db <- function(db = "db", create = FALSE) {
 		} else if (!file.exists(paste0(db, "/gbov.bin"))) {
 			stop(paste0(db, " is not a database."))
 		} else {# valid database
-			.Call(RCRD_load_ints, paste0(db, "/ints.bin"))
 			.Call(RCRD_load_gbov, paste0(db, "/gbov.bin"))
 			.Call(RCRD_load_indices, paste0(db, "/indices.bin"))
+			.Call(RCRD_load_ints, paste0(db, "/ints.bin"))
 		}
  	} else {
 		if (!create) {
@@ -25,9 +25,9 @@ open_db <- function(db = "db", create = FALSE) {
 
 			file.create(ints, gbov, indices, showWarnings = TRUE)
 
-			.Call(RCRD_create_ints, ints)
 			.Call(RCRD_create_gbov, gbov)
 			.Call(RCRD_create_indices, indices)
+			.Call(RCRD_create_ints, ints)
 		}
 	}
 }
