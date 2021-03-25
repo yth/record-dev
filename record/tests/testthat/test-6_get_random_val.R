@@ -1,3 +1,5 @@
+if (T) {
+
 test_that("get random val hello after adding hello", {
 	open_db("test_db/get_random_1", create = TRUE)
 	s1 = "hello"
@@ -125,3 +127,5 @@ test_that("get random val from a database with mix ints and vals", {
 
 	close_db()
 })
+
+}

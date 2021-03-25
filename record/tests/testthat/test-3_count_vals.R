@@ -1,3 +1,5 @@
+if (T) {
+
 test_that("count one val", {
 	open_db("test_db/count-one", create = T)
 	add_val(1:10)
@@ -41,3 +43,5 @@ test_that("count 101 vals again", {
 	expect_equal(count_vals(), 101)
 	close_db()
 })
+
+}

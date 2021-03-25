@@ -1,3 +1,5 @@
+if (T) {
+
 test_that("add hello", {
 	open_db("test_db/add-hello", create = T)
 	s = "hello"
@@ -121,3 +123,5 @@ test_that("add attributed int", {
   expect_equal(size_db(), 1)
 	close_db()
 })
+
+}

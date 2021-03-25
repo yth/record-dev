@@ -1,3 +1,5 @@
+if (T) {
+
 test_that("have seen hello", {
 	open_db("test_db/seen-hello", create = TRUE)
 	add_val("hello")
@@ -70,3 +72,5 @@ test_that("num of unique vals equals to num of values recorded to db", {
   u_vals <- unique(vals)
   expect_equal(size_db(), length(u_vals))
 })
+
+}
