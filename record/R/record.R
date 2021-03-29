@@ -83,7 +83,7 @@ get_random_val <- function() {
 
 ## is.scalar <- function(x) is.atomic(x) && length(x) == 1L && !is.character(x) && Im(x) == 0
 is_scalar_int <- function(x, from, to) {
-  truth <- is.integer(x) && attributes(x) == NULL && x >= from && x <= to && length(x) == 1
+  truth <- is.integer(x) && length(attributes(x)) == 0 && x >= from && x <= to && length(x) == 1
 
   if(!is.na(truth)) {
     truth
