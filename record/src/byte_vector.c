@@ -10,13 +10,16 @@
 byte_vector_t make_vector(size_t capacity) {
 	byte_vector_t v = (byte_vector_t) Calloc(1, struct byte_vector_st);
 	if (v == NULL) {
-		perror("Could not malloc.");
+		fprintf(stderr, "Attempt to malloc %lu bytes: ",
+				sizeof(struct byte_vector_st));
+		perror("make_vector first allocation");
 		return NULL;
 	}
 
 	unsigned char *ptr = (unsigned char*) Calloc(capacity, char);
 	if (ptr == NULL) {
-		perror("Could not malloc.");
+		fprintf(stderr, "Attempt to malloc %lu bytes: ", capacity);
+		perror("make_vector second allocation");
 		free(v);
 		return NULL;
 	}

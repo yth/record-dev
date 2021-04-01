@@ -10,7 +10,7 @@ extern "C" {
 // Writes a size_t to file
 void write_size_t(FILE* file, size_t val) {
 	if (fwrite(&val, sizeof(size_t), 1, file) != 1) {
-		perror("Could not write a full size_t.");
+		perror("Could not write a full size_t");
 	}
 	return;
 }
@@ -23,7 +23,7 @@ size_t read_size_t(FILE* file, size_t file_offset, size_t value_offset) {
 	fseek(file, value_offset, SEEK_SET);
 
 	if (fread(&res, sizeof(size_t), 1, file) != sizeof(size_t)) {
-		perror("Could not read a full size_t.");
+		perror("Could not read a full size_t");
 	}
 
 	fseek(file, file_offset, SEEK_SET);
@@ -37,7 +37,8 @@ size_t read_size_t(FILE* file, size_t file_offset, size_t value_offset) {
 char *read_n(FILE* file, size_t file_offset, size_t value_offset, size_t n) {
 	char *buf = (char *) malloc(n);
 	if (!buf) {
-		perror("Could not malloc.");
+		fprintf(stderr, "Attempt to malloc %lu bytes: ", n);
+		perror("read_n");
 	}
 
 	fseek(file, value_offset, SEEK_SET);
@@ -45,7 +46,7 @@ char *read_n(FILE* file, size_t file_offset, size_t value_offset, size_t n) {
 	// TODO: Add loop
 	if (fread(buf, 1, n, file) != n) {
 		free(buf);
-		perror("Could not read a full n bytes.");
+		perror("Could not read a full n bytes");
 	}
 
 	fseek(file, file_offset, SEEK_SET);
