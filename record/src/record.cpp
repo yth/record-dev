@@ -70,6 +70,7 @@ SEXP open_db(SEXP filename) {
  * @return R_NilValue on success throw and error otherwise
  */
 SEXP load_gbov(SEXP gbov) {
+	// TODO: Wrap in helper function to make code shorter and easier to read
 	const char* name = CHAR(STRING_ELT(gbov, 0));
 	FILE *db = fopen(name, "r+");
 	if (db == NULL) {
@@ -100,6 +101,7 @@ SEXP load_gbov(SEXP gbov) {
  * @return R_NilValue on success throw and error otherwise
  */
 SEXP load_indices(SEXP indices) {
+	// TODO: Wrap in helper function to make code shorter and easier to read
 	const char* name = CHAR(STRING_ELT(indices, 0));
 	FILE *idx = fopen(name, "r+");
 	if (idx == NULL) {
@@ -108,6 +110,7 @@ SEXP load_indices(SEXP indices) {
 
 	index_file = idx;
 
+	// TODO: Wrap in helper function to make code shorter and easier to read
 	// TODO: Check the return value instead of silence
 	int _ = fread(&offset, sizeof(size_t), 1, index_file);
 	_ = fread(&size, sizeof(size_t), 1, index_file);
@@ -131,6 +134,7 @@ SEXP load_indices(SEXP indices) {
  * @return R_NilValue on success throw and error otherwise
  */
 SEXP load_ints(SEXP filename) {
+	// TODO: Check the return value instead of silence
 	const char* name = CHAR(STRING_ELT(filename, 0));
 	FILE *ints = fopen(name, "r+");
 	if (ints == NULL) {
@@ -141,12 +145,14 @@ SEXP load_ints(SEXP filename) {
 	fseek(int_file, 0, SEEK_SET);
 
 	// TODO: Use better error checking methods
+	// TODO: Check the return value instead of silence
 	if (fread(&i_size, sizeof(size_t), 1, int_file) < 0) {
 		perror("Could not read all data from file.");
 		exit(1);
 	}
 
 	for (size_t i = 0; i < 10001; ++i) {
+		// TODO: Check the return value instead of silence
 		if (fread(int_db + i, sizeof(size_t), 1, int_file) < 0) {
 			perror("Could not read all data from file.");
 			exit(1);
@@ -204,6 +210,7 @@ SEXP close_db() {
 
 	if (gbov_map) {
 		delete gbov_map;
+		gbov_map = NULL;
 	}
 
 	return R_NilValue;
@@ -227,6 +234,7 @@ SEXP create_gbov(SEXP gbov) {
  * @return R_NilValue on success throw and error otherwise
  */
 SEXP create_indices(SEXP indices) {
+	// TODO: Wrap in helper function to make code shorter and easier to read
 	const char* name = CHAR(STRING_ELT(indices, 0));
 	FILE *idx = fopen(name, "r+");
 	if (idx == NULL) {
@@ -250,6 +258,7 @@ SEXP create_indices(SEXP indices) {
  * @return             R_NilValue on succcecss
  */
 SEXP create_ints(SEXP ints) {
+	// TODO: Wrap in helper function to make code shorter and easier to read
 	const char* name = CHAR(STRING_ELT(ints, 0));
 	FILE *tmp = fopen(name, "r+");
 	if (tmp == NULL) {
@@ -379,6 +388,7 @@ SEXP add_val(SEXP val) {
 	return R_NilValue;
 }
 
+// TODO: Let people pass in ints instead
 SEXP have_seen_int(SEXP val) {
 	int index = Rf_asInteger(val) + 5000;
 	int found = 0;
