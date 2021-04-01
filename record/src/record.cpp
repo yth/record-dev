@@ -25,11 +25,14 @@
 FILE *db_file = NULL;
 FILE *index_file = NULL;
 size_t offset = 0;
+// TODO: Give count and size better names
 size_t count = 0; // TODO: Consider: Maybe better to make this a double
 size_t size = 0; // TODO: Consider: Maybe better to make this a double
 std::map<std::string, size_t> *gbov_map = NULL;
 
 
+int INT_STORE_MAX = 5000;
+int INT_STORE_MIN = -5000;
 FILE *int_file = NULL;
 size_t i_size = 0;               // number of unique ints encountered
 size_t int_db[10001] = { 0 };    // hard wired to accommodate -5000 to 5000
@@ -270,8 +273,6 @@ SEXP create_ints(SEXP ints) {
  * @return val
  */
 SEXP add_int(SEXP val) {
-	count += 1;
-
 	int int_val = Rf_asInteger(val) + 5000; // int_db[0] represents -5000L
 	if(int_db[int_val] == 0) {
 		int_db[int_val] += 1;
@@ -295,10 +296,26 @@ SEXP add_int(SEXP val) {
 SEXP add_val(SEXP val) {
 	count += 1;
 
+	// if (IS_SIMPLE_SCALAR(val, INTSXP)) {
+	// 	if (asInteger(val) <= INT_STORE_MAX && asInteger(val) >= INT_STORE_MIN) {
+	// 		return add_int(val);
+	// 	}
+	// }
+
+	if (TYPEOF(val) == INTSXP && ATTRIB(val) == R_NilValue && XLENGTH(val) == 1) {
+		if (asInteger(val) <= INT_STORE_MAX && asInteger(val) >= INT_STORE_MIN) {
+			return add_int(val);
+		}
+	}
+
 	struct R_outpstream_st out;
 	R_outpstream_t stream = &out;
 
-	byte_vector_t vector = make_vector(100);
+	byte_vector_t vector = make_vector(100);	if (IS_SIMPLE_SCALAR(val, INTSXP)) {
+		if (asInteger(val) <= INT_STORE_MAX && asInteger(val) >= INT_STORE_MIN) {
+			return add_int(val);
+		}
+	}
 
 	R_InitOutPStream(stream, (R_pstream_data_t) vector,
 						R_pstream_binary_format, 3,
@@ -379,6 +396,18 @@ SEXP have_seen_int(SEXP val) {
 }
 
 SEXP have_seen(SEXP val) {
+	// if (IS_SIMPLE_SCALAR(val, INTSXP)) {
+	// 	if (asInteger(val) <= INT_STORE_MAX && asInteger(val) >= INT_STORE_MIN) {
+	// 		return have_seen_int(val);
+	// 	}
+	// }
+
+	if (TYPEOF(val) == INTSXP && ATTRIB(val) == R_NilValue && XLENGTH(val) == 1) {
+		if (asInteger(val) <= INT_STORE_MAX && asInteger(val) >= INT_STORE_MIN) {
+			return have_seen_int(val);
+		}
+	}
+
 	struct R_outpstream_st out;
 	R_outpstream_t stream = &out;
 

@@ -13,7 +13,7 @@ open_db <- function(db = "db", create = FALSE) {
 			.Call(RCRD_load_indices, paste0(db, "/indices.bin"))
 			.Call(RCRD_load_ints, paste0(db, "/ints.bin"))
 		}
- 	} else {
+	} else {
 		if (!create) {
 			stop(paste0(db, " does not exist."))
 		} else {
@@ -39,20 +39,12 @@ close_db <- function(file) {
 
 #' @export
 add_val <- function(val) {
-  if (is_scalar_int(val, -5000L, 5000L)) {
-    .Call(RCRD_add_int, val)
-  } else {
-    .Call(RCRD_add_val, val)
-  }
+	.Call(RCRD_add_val, val)
 }
 
 #' @export
-have_seen <- function(val) {
-	if (is_scalar_int(val, -5000, 5000)) {
-		.Call(RCRD_have_seen_int, val);
-	} else {
-		.Call(RCRD_have_seen, val)
-	}
+have_seen <- function(val) {44
+	.Call(RCRD_have_seen, val)
 }
 
 #' @export
@@ -79,16 +71,3 @@ get_vals <- function(from, to) {
 get_random_val <- function() {
 	.Call(RCRD_get_random_val)
 }
-
-
-## is.scalar <- function(x) is.atomic(x) && length(x) == 1L && !is.character(x) && Im(x) == 0
-is_scalar_int <- function(x, from, to) {
-  truth <- is.integer(x) && length(attributes(x)) == 0 && x >= from && x <= to && length(x) == 1
-
-  if(!is.na(truth)) {
-    truth
-  } else {
-    FALSE
-  }
-}
-
