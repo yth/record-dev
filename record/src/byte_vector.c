@@ -1,6 +1,7 @@
 #include "byte_vector.h"
 
 
+// TODO: Use malloc instead since nothing is returned to R interpreter directly
 #include <R_ext/RS.h> // R's allocations
 
 
