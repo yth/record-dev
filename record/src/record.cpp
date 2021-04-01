@@ -54,6 +54,7 @@ SEXP open_db(SEXP filename) {
 	db_file = db;
 
 	index_file = NULL;
+	int_file = NULL;
 
 	offset = 0;
 	count = 0;
