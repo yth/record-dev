@@ -70,9 +70,17 @@ void append_byte(R_outpstream_t stream, int c) {
 // Required for make use of a R_outpstream_t
 void append_buf(R_outpstream_t stream, void *buf, int length) {
 	unsigned char* cbuf = (unsigned char*) buf;
-	for (int i = 0; i < length; ++i) {
-		append_byte(stream, cbuf[i]);
+	byte_vector_t vector = (byte_vector_t) stream->data;
+	while (vector->size + length >= vector->capacity) {
+		grow_vector(vector);
 	}
+
+	memcpy(vector->buf + vector->size, cbuf, length);
+	vector->size += length;
+
+	// for (int i = 0; i < length; ++i) {
+	// 	append_byte(stream, cbuf[i]);
+	// }
 }
 
 // Required for make use of a R_inpstream_t
