@@ -99,10 +99,11 @@ int get_byte(R_inpstream_t stream) {
 void get_buf(R_inpstream_t stream, void *buf, int length) {
 	byte_vector_t vector = (byte_vector_t) stream->data;
 	if (vector->size + length >= vector->capacity) {
-		// perror("GET_BUF: read error buf");
-		// TODO: Think about better ways to handle this error check result
-		;
+		size_t copy_length = vector->capacity - vector->size;
+		memcpy(buf, vector->buf + vector->size, copy_length);
+		vector->size += copy_length;
+	} else {
+		memcpy(buf, vector->buf + vector->size, length);
+		vector->size += length;
 	}
-	memcpy(buf, vector->buf + vector->size, length);
-	vector->size += length;
 }
