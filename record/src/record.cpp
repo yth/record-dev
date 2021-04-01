@@ -243,10 +243,6 @@ SEXP create_indices(SEXP indices) {
 
 	index_file = idx;
 
-	for (int i = 0; i < 10001; ++i) {
-		int_db[i] = 0;
-	}
-
 	return R_NilValue;
 }
 
