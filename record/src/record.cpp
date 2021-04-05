@@ -119,10 +119,10 @@ SEXP load_indices(SEXP indices) {
 
 	for (size_t i = 0; i < size; ++i) {
 		size_t start = 0;
-		char hash[40];
-		_ = fread(hash, 1, 40, index_file);
+		char hash[20];
+		_ = fread(hash, 1, 20, index_file);
 		_ = fread(&start, sizeof(size_t), 1, index_file);
-		(*gbov_map)[std::string(hash, 40)] = start;
+		(*gbov_map)[std::string(hash, 20)] = start;
 	}
 
 	return R_NilValue;
@@ -189,7 +189,7 @@ SEXP close_db() {
 
 		std::map<std::string, size_t>::iterator it;
 		for(it = gbov_map->begin(); it != gbov_map->end(); it++) {
-			fwrite(it->first.c_str(), 1, 40, index_file);
+			fwrite(it->first.c_str(), 1, 20, index_file);
 			fwrite(&(it->second), sizeof(size_t), 1, index_file);
 		}
 		fflush(index_file);
@@ -311,11 +311,7 @@ SEXP add_val(SEXP val) {
 	struct R_outpstream_st out;
 	R_outpstream_t stream = &out;
 
-	byte_vector_t vector = make_vector(100);	if (IS_SIMPLE_SCALAR(val, INTSXP)) {
-		if (asInteger(val) <= INT_STORE_MAX && asInteger(val) >= INT_STORE_MIN) {
-			return add_int(val);
-		}
-	}
+	byte_vector_t vector = make_vector(100);
 
 	R_InitOutPStream(stream, (R_pstream_data_t) vector,
 						R_pstream_binary_format, 3,
@@ -324,26 +320,18 @@ SEXP add_val(SEXP val) {
 
 	R_Serialize(val, stream);
 
-	// TODO: Think about reuse
+	// Get the sha1 hash of the serialized value
 	sha1_context ctx;
 	unsigned char sha1sum[20];
-	char hash[41] = { 0 }; // TODO: Do not actually need 41 bytes here
-
 	sha1_starts(&ctx);
 	sha1_update(&ctx, (uint8 *)vector->buf, vector->size);
-	sha1_finish( &ctx, sha1sum );
-
-	// TODO: Use the original sha1sum when being readable is no longer wanted
-	// Make readable for easier debugging
-	for(int i = 0; i < 20; ++i) {
-		sprintf(hash + i * 2, "%02x", sha1sum[i] );
-	}
+	sha1_finish(&ctx, sha1sum);
 
 	// TODO: Check if we have seen the value before
 	int have_seen = 0;
 	if (gbov_map->begin() != gbov_map->end()) {
 		std::map<std::string, size_t>::iterator it;
-		it = gbov_map->find(std::string(hash, 40));
+		it = gbov_map->find(std::string((char *) sha1sum, 20));
 		if (it != gbov_map->end()) {
 			have_seen = 1;
 		}
@@ -351,7 +339,7 @@ SEXP add_val(SEXP val) {
 
 	if (!have_seen) {
 
-		(*gbov_map)[std::string(hash, 40)] = offset;
+		(*gbov_map)[std::string((char *) sha1sum, 20)] = offset;
 
 		// Write the blob's size
 		write_size_t(db_file, vector->size);
@@ -415,22 +403,21 @@ SEXP have_seen(SEXP val) {
 
 	R_Serialize(val, stream);
 
+	// Get the sha1 hash of the serialized value
 	sha1_context ctx;
 	unsigned char sha1sum[20];
-	char hash[41] = { 0 };
-
 	sha1_starts(&ctx);
 	sha1_update(&ctx, (uint8 *)vector->buf, vector->size);
-	sha1_finish( &ctx, sha1sum );
+	sha1_finish(&ctx, sha1sum);
 
 	// TODO: Use the original sha1sum when being readable is no longer wanted
 	// Make readable for easier debugging
-	for(int i = 0; i < 20; ++i) {
-		sprintf(hash + i * 2, "%02x", sha1sum[i] );
-	}
+	// for(int i = 0; i < 20; ++i) {
+	// 	sprintf(hash + i * 2, "%02x", sha1sum[i] );
+	// }
 
 	std::map<std::string, size_t>::iterator it;
-	it = gbov_map->find(std::string(hash, 40));
+	it = gbov_map->find(std::string((char *) sha1sum, 20));
 
 	int found = 0;
 	if (it != gbov_map->end()) {
