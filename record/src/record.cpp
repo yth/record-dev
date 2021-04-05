@@ -327,24 +327,14 @@ SEXP add_val(SEXP val) {
 	sha1_update(&ctx, (uint8 *)vector->buf, vector->size);
 	sha1_finish(&ctx, sha1sum);
 
-	// TODO: Check if we have seen the value before
-	int have_seen = 0;
-	if (gbov_map->begin() != gbov_map->end()) {
-		std::map<std::string, size_t>::iterator it;
-		it = gbov_map->find(std::string((char *) sha1sum, 20));
-		if (it != gbov_map->end()) {
-			have_seen = 1;
-		}
-	}
-
-	if (!have_seen) {
-
-		(*gbov_map)[std::string((char *) sha1sum, 20)] = offset;
+	std::string key((char *) sha1sum, 20);
+	std::map<std::string, size_t>::iterator it = gbov_map->find(key);
+	if (it == gbov_map->end()) {
+		(*gbov_map)[key] = offset;
 
 		// Write the blob's size
 		write_size_t(db_file, vector->size);
 
-		// TODO: Make sure fwrite writes enough bytes every time
 		if (vector->size != fwrite(vector->buf, 1, vector->size, db_file)) {
 			// TODO: Consider reuse;
 			free_vector(vector);
@@ -409,12 +399,6 @@ SEXP have_seen(SEXP val) {
 	sha1_starts(&ctx);
 	sha1_update(&ctx, (uint8 *)vector->buf, vector->size);
 	sha1_finish(&ctx, sha1sum);
-
-	// TODO: Use the original sha1sum when being readable is no longer wanted
-	// Make readable for easier debugging
-	// for(int i = 0; i < 20; ++i) {
-	// 	sprintf(hash + i * 2, "%02x", sha1sum[i] );
-	// }
 
 	std::map<std::string, size_t>::iterator it;
 	it = gbov_map->find(std::string((char *) sha1sum, 20));
