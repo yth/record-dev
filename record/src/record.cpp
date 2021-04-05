@@ -498,7 +498,8 @@ SEXP get_random_val() {
 	struct R_inpstream_st in;
 	R_inpstream_t stream = &in;
 
-	free_content(vector);
+	// TODO: Consider reuse
+	byte_vector_t vector = make_vector(0);
 	vector->capacity = *obj_size;
 	vector->buf = serialized_value;
 
