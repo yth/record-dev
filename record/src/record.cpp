@@ -31,11 +31,15 @@ size_t size = 0; // TODO: Consider: Maybe better to make this a double
 std::map<std::string, size_t> *gbov_map = NULL;
 
 
+// Small scalar int storage
 int INT_STORE_MAX = 5000;
 int INT_STORE_MIN = -5000;
 FILE *int_file = NULL;
 size_t i_size = 0;               // number of unique ints encountered
 size_t int_db[10001] = { 0 };    // hard wired to accommodate -5000 to 5000
+
+// Reusable buffer for stream
+byte_vector_t vector = NULL;
 
 /**
  * This function creates a database for a collection of values.
@@ -91,6 +95,8 @@ SEXP load_gbov(SEXP gbov) {
 	i_size = 0;
 
 	gbov_map = new std::map<std::string, size_t>;
+
+	vector = make_vector(1 << 30);
 
 	return R_NilValue;
 }
@@ -311,7 +317,7 @@ SEXP add_val(SEXP val) {
 	struct R_outpstream_st out;
 	R_outpstream_t stream = &out;
 
-	byte_vector_t vector = make_vector(100);
+	free_content(vector);
 
 	R_InitOutPStream(stream, (R_pstream_data_t) vector,
 						R_pstream_binary_format, 3,
@@ -336,9 +342,8 @@ SEXP add_val(SEXP val) {
 		write_size_t(db_file, vector->size);
 
 		if (vector->size != fwrite(vector->buf, 1, vector->size, db_file)) {
-			// TODO: Consider reuse;
-			free_vector(vector);
 			Rf_error("Could not write out.");
+			return R_NilValue;
 		}
 
 		// Acting as a NULL
@@ -384,7 +389,7 @@ SEXP have_seen(SEXP val) {
 	struct R_outpstream_st out;
 	R_outpstream_t stream = &out;
 
-	byte_vector_t vector = make_vector(100);
+	free_content(vector);
 
 	R_InitOutPStream(stream, (R_pstream_data_t) vector,
 						R_pstream_binary_format, 3,
@@ -493,8 +498,7 @@ SEXP get_random_val() {
 	struct R_inpstream_st in;
 	R_inpstream_t stream = &in;
 
-	// TODO: Consider reuse
-	byte_vector_t vector = make_vector(0);
+	free_content(vector);
 	vector->capacity = *obj_size;
 	vector->buf = serialized_value;
 
