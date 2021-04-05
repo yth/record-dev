@@ -9,7 +9,7 @@
 
 
 byte_vector_t make_vector(size_t capacity) {
-	byte_vector_t v = (byte_vector_t) Calloc(1, struct byte_vector_st);
+	byte_vector_t v = (byte_vector_t) malloc(sizeof (struct byte_vector_st));
 	if (v == NULL) {
 		fprintf(stderr, "Attempt to malloc %lu bytes: ",
 				sizeof(struct byte_vector_st));
@@ -17,7 +17,7 @@ byte_vector_t make_vector(size_t capacity) {
 		return NULL;
 	}
 
-	unsigned char *ptr = (unsigned char*) Calloc(capacity, char);
+	unsigned char *ptr = (unsigned char*) malloc(capacity);
 	if (ptr == NULL) {
 		fprintf(stderr, "Attempt to malloc %lu bytes: ", capacity);
 		perror("make_vector second allocation");
@@ -32,6 +32,7 @@ byte_vector_t make_vector(size_t capacity) {
 	return v;
 }
 
+// Not used
 void free_vector(byte_vector_t vector) {
 	if (vector) {
 		Free(vector->buf);
@@ -42,27 +43,27 @@ void free_vector(byte_vector_t vector) {
 // For potential reuse
 void free_content(byte_vector_t vector) {
 	if (vector) {
-		Free(vector->buf);
 		vector->size = 0;
-		vector->capacity = 0;
 	}
 }
 
-// TODO: Add mechanism to not go over a max size
+// Not used
 void grow_vector(byte_vector_t vector) {
 	vector->capacity *= 2;
-	vector->buf = (unsigned char*)Realloc(vector->buf, vector->capacity, char);
+	vector->buf = (unsigned char *) realloc(vector->buf, vector->capacity);
 	if (vector->buf) {
 		return;
 	}
-	Rf_error("Could not realloc.");
+	fprintf(stderr, "Attempt to malloc %lu bytes: ", vector->capacity);
+	perror("grow_vector");
 }
 
 // Required for make use of a R_outpstream_t
 void append_byte(R_outpstream_t stream, int c) {
 	byte_vector_t vector = (byte_vector_t) stream->data;
 	if (vector->size == vector->capacity) {
-		grow_vector(vector);
+		fprintf(stderr, "append_byte attempts to overflow buffer\n");
+		abort();
 	}
 	vector->buf[vector->size] = c;
 	vector->size += 1;
@@ -72,16 +73,16 @@ void append_byte(R_outpstream_t stream, int c) {
 void append_buf(R_outpstream_t stream, void *buf, int length) {
 	unsigned char* cbuf = (unsigned char*) buf;
 	byte_vector_t vector = (byte_vector_t) stream->data;
-	while (vector->size + length >= vector->capacity) {
-		grow_vector(vector);
+	// while (vector->size + length >= vector->capacity) {
+	// 	grow_vector(vector);
+	// }
+	if (vector->size + length >= vector->capacity) {
+		fprintf(stderr, "append_buf attempts to overflow buffer\n");
+		abort();
 	}
 
 	memcpy(vector->buf + vector->size, cbuf, length);
 	vector->size += length;
-
-	// for (int i = 0; i < length; ++i) {
-	// 	append_byte(stream, cbuf[i]);
-	// }
 }
 
 // Required for make use of a R_inpstream_t
