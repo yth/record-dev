@@ -38,6 +38,12 @@ test_that("add large vals", {
 	close_db()
 })
 
+test_that("add value again", {
+	open_db("test_db/add-large-vals")
+	expect_equal(add_val(1), 1)
+	close_db()
+})
+
 test_that("add val twice", {
 	open_db("test_db/add-val-twice", create = T)
 	once <- "1"
@@ -51,12 +57,6 @@ test_that("add duplicate simple val", {
 	open_db("test_db/add-duplicate-simple-val", create = T)
 	expect_equal(add_val(1), 1)
 	expect_equal(add_val(1), NULL)
-	close_db()
-})
-
-test_that("add value again", {
-	open_db("test_db/add-large-vals")
-	expect_equal(add_val(1), 1)
 	close_db()
 })
 
