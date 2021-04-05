@@ -17,6 +17,9 @@ byte_vector_t make_vector(size_t capacity);
 
 void free_vector(byte_vector_t vector);
 
+// Clear content in a vector
+void free_content(byte_vector_t vector);
+
 // Required for make use of a R_outpstream_t
 void append_byte(R_outpstream_t stream, int c);
 
