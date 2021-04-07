@@ -220,6 +220,11 @@ SEXP close_db() {
 		gbov_map = NULL;
 	}
 
+	if (vector) {
+		free_vector(vector);
+		vector = NULL;
+	}
+
 	return R_NilValue;
 }
 
