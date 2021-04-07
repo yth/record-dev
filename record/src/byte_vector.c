@@ -35,8 +35,8 @@ byte_vector_t make_vector(size_t capacity) {
 // Not used
 void free_vector(byte_vector_t vector) {
 	if (vector) {
-		Free(vector->buf);
-		Free(vector);
+		free(vector->buf);
+		free(vector);
 	}
 }
 
@@ -73,9 +73,6 @@ void append_byte(R_outpstream_t stream, int c) {
 void append_buf(R_outpstream_t stream, void *buf, int length) {
 	unsigned char* cbuf = (unsigned char*) buf;
 	byte_vector_t vector = (byte_vector_t) stream->data;
-	// while (vector->size + length >= vector->capacity) {
-	// 	grow_vector(vector);
-	// }
 	if (vector->size + length >= vector->capacity) {
 		fprintf(stderr, "append_buf attempts to overflow buffer\n");
 		abort();
