@@ -1,11 +1,5 @@
 #include "record.h"
 
-
-#include "R_ext/Error.h"
-#include "R_ext/Print.h"
-#include <R_ext/RS.h>
-
-
 #include <string> // std::string, strlen
 #include <map> // std::map
 #include <stdio.h> // FILE, fopen, close, fwrite
@@ -14,7 +8,6 @@
 #include <iterator> //advance
 #include <fcntl.h> //open
 #include <errno.h>
-
 
 #include "byte_vector.h"
 #include "sha1.h"
