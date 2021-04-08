@@ -14,7 +14,6 @@
 static const R_CallMethodDef callMethods[] = {
 	//name, casted pointer to function, # of arg?
 	{"hello", 			(DL_FUNC) &hello, 1},
-	{"open_db", 		(DL_FUNC) &open_db, 1}, // TODO: Deprecate this
 	{"close_db", 		(DL_FUNC) &close_db, 0},
 	{"create_gbov", 	(DL_FUNC) &create_gbov, 1},
 	{"create_indices", 	(DL_FUNC) &create_indices, 1},
