@@ -1,5 +1,11 @@
 if (T) {
 
+test_that("have seen nothing", {
+	open_db("test_db/nothing", create = TRUE)
+	expect_equal(have_seen("hello"), FALSE)
+	close_db()
+})
+
 test_that("have seen hello", {
 	open_db("test_db/seen-hello", create = TRUE)
 	add_val("hello")
