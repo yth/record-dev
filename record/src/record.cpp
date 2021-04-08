@@ -42,9 +42,6 @@ byte_vector_t vector = NULL;
 SEXP load_gbov(SEXP gbov) {
 	db_file = open_file(gbov);
 	fseek(db_file, 0, SEEK_END);
-
-	vector = make_vector(1 << 30);
-
 	return R_NilValue;
 }
 
@@ -56,6 +53,8 @@ SEXP load_gbov(SEXP gbov) {
  */
 SEXP load_indices(SEXP indices) {
 	index_file = open_file(indices);
+
+	vector = make_vector(1 << 30);
 
 	// TODO: Wrap in helper function to make code shorter and easier to read
 	// TODO: Check the return value instead of silence
@@ -188,17 +187,9 @@ SEXP create_gbov(SEXP gbov) {
  * @return R_NilValue on success throw and error otherwise
  */
 SEXP create_indices(SEXP indices) {
-	// TODO: Wrap in helper function to make code shorter and easier to read
-	const char* name = CHAR(STRING_ELT(indices, 0));
-	FILE *idx = fopen(name, "r+");
-	if (idx == NULL) {
-		Rf_error("Could not load the database.");
-	}
-
-	index_file = idx;
-
+	index_file = open_file(indices);
 	gbov_map = new std::map<std::string, size_t>;
-
+	vector = make_vector(1 << 30);
 	return R_NilValue;
 }
 
