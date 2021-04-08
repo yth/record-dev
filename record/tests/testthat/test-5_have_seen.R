@@ -74,9 +74,9 @@ test_that("have seen real vals from stringr::str_detect", {
   close_db()
 })
 
-test_that("num of unique vals equals to num of values recorded to db", {
+test_that("remove all information after closing database", {
   u_vals <- unique(vals)
-  expect_equal(size_db(), length(u_vals))
+  expect_false(size_db() == length(u_vals))
 })
 
 }
