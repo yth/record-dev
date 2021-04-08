@@ -423,11 +423,11 @@ SEXP sample_val() {
 	R_inpstream_t stream = &in;
 
 	// TODO: Consider reuse
-	byte_vector_t vector = make_vector(0);
-	vector->capacity = *obj_size;
-	vector->buf = serialized_value;
+	byte_vector_t tmp = make_vector(0);
+	tmp->capacity = *obj_size;
+	tmp->buf = serialized_value;
 
-	R_InitInPStream(stream, (R_pstream_data_t) vector,
+	R_InitInPStream(stream, (R_pstream_data_t) tmp,
 						R_pstream_binary_format,
 						get_byte, get_buf,
 						NULL, R_NilValue);
