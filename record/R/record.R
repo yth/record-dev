@@ -69,5 +69,5 @@ get_vals <- function(from, to) {
 
 #' @export
 get_random_val <- function() {
-	.Call(RCRD_get_random_val)
+	.Call(RCRD_sample_val)
 }
