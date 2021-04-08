@@ -2,6 +2,8 @@
 
 #include <stdlib.h>
 
+#include <R_ext/RS.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -52,6 +54,15 @@ char *read_n(FILE* file, size_t file_offset, size_t value_offset, size_t n) {
 	fseek(file, file_offset, SEEK_SET);
 
 	return buf;
+}
+
+FILE *open_file(SEXP filename) {
+	const char* cfilename = CHAR(STRING_ELT(filename, 0));
+	FILE *fp = fopen(cfilename, "r+");
+	if (fp == NULL) {
+		Rf_error("%s does not exist", cfilename);
+	}
+	return fp;
 }
 
 #ifdef __cplusplus
