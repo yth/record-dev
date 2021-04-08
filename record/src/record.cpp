@@ -34,17 +34,23 @@ size_t int_db[10001] = { 0 };    // hard wired to accommodate -5000 to 5000
 // Reusable buffer for stream
 byte_vector_t vector = NULL;
 
+
 /**
- * Load the gbov. (Must be called before load_indices)
- * @method load_gbov
+ * Load the indices associated with the gbov.
+ * @method load_indices
  * @return R_NilValue on success throw and error otherwise
  */
-SEXP load_gbov(SEXP gbov) {
-	db_file = open_file(gbov);
-	fseek(db_file, 0, SEEK_END);
+SEXP create_indices(SEXP indices) {
+	index_file = open_file(indices);
+
+	offset = 0;
+	size = 0;
+	count = 0;
+
+	gbov_map = new std::map<std::string, size_t>;
+	vector = make_vector(1 << 30);
 	return R_NilValue;
 }
-
 
 /**
  * Load the indices associated with the gbov.
@@ -52,9 +58,7 @@ SEXP load_gbov(SEXP gbov) {
  * @return R_NilValue on success throw and error otherwise
  */
 SEXP load_indices(SEXP indices) {
-	index_file = open_file(indices);
-
-	vector = make_vector(1 << 30);
+	create_indices(indices);
 
 	// TODO: Wrap in helper function to make code shorter and easier to read
 	// TODO: Check the return value instead of silence
@@ -62,7 +66,6 @@ SEXP load_indices(SEXP indices) {
 	_ = fread(&size, sizeof(size_t), 1, index_file);
 	_ = fread(&count, sizeof(int), 1, index_file);
 
-	gbov_map = new std::map<std::string, size_t>;
 	for (size_t i = 0; i < size; ++i) {
 		size_t start = 0;
 		char hash[20];
@@ -76,13 +79,30 @@ SEXP load_indices(SEXP indices) {
 
 
 /**
+ * Create the common ints storage
+ * @method create_ints
+ * @param  ints        file name
+ * @return             R_NilValue on succcecss
+ */
+SEXP create_ints(SEXP ints) {
+	int_file = open_file(ints);
+
+	i_size = 0;
+	for (int i = 0; i < 10001; ++i) {
+		int_db[i] = 0;
+	}
+
+	return R_NilValue;
+}
+
+
+/**
  * Loads ints.bin in the database
  * @method loads_ints
  * @return R_NilValue on success throw and error otherwise
  */
-SEXP load_ints(SEXP filename) {
-	int_file = open_file(filename);
-	fseek(int_file, 0, SEEK_SET);
+SEXP load_ints(SEXP ints) {
+	create_ints(ints);
 
 	// TODO: Use better error checking methods
 	// TODO: Check the return value instead of silence
@@ -100,6 +120,29 @@ SEXP load_ints(SEXP filename) {
 	}
 
 	return R_NilValue;
+}
+
+
+/**
+ * Load the gbov. (Must be called before load_indices)
+ * @method load_gbov
+ * @return R_NilValue on success throw and error otherwise
+ */
+SEXP load_gbov(SEXP gbov) {
+	db_file = open_file(gbov);
+	fseek(db_file, 0, SEEK_END);
+	return R_NilValue;
+}
+
+
+/**
+ * Create the gbov. (Must be called before create_indices)
+ * @method load_gbov
+ * @return R_NilValue on success throw and error otherwise
+ */
+
+SEXP create_gbov(SEXP gbov) {
+	return load_gbov(gbov);
 }
 
 
@@ -164,48 +207,6 @@ SEXP close_db() {
 	if (vector) {
 		free_vector(vector);
 		vector = NULL;
-	}
-
-	return R_NilValue;
-}
-
-
-/**
- * Create the gbov. (Must be called before create_indices)
- * @method load_gbov
- * @return R_NilValue on success throw and error otherwise
- */
-
-SEXP create_gbov(SEXP gbov) {
-	return load_gbov(gbov);
-}
-
-
-/**
- * Load the indices associated with the gbov.
- * @method load_indices
- * @return R_NilValue on success throw and error otherwise
- */
-SEXP create_indices(SEXP indices) {
-	index_file = open_file(indices);
-	gbov_map = new std::map<std::string, size_t>;
-	vector = make_vector(1 << 30);
-	return R_NilValue;
-}
-
-
-/**
- * Create the common ints storage
- * @method create_ints
- * @param  ints        file name
- * @return             R_NilValue on succcecss
- */
-SEXP create_ints(SEXP ints) {
-	int_file = open_file(ints);
-
-	i_size = 0;
-	for (int i = 0; i < 10001; ++i) {
-		int_db[i] = 0;
 	}
 
 	return R_NilValue;
