@@ -14,7 +14,7 @@ byte_vector_t make_vector(size_t capacity) {
 		fprintf(stderr, "Attempt to malloc %lu bytes: ",
 				sizeof(struct byte_vector_st));
 		perror("make_vector first allocation");
-		return NULL;
+		abort();
 	}
 
 	unsigned char *ptr = (unsigned char*) malloc(capacity);
@@ -22,7 +22,7 @@ byte_vector_t make_vector(size_t capacity) {
 		fprintf(stderr, "Attempt to malloc %lu bytes: ", capacity);
 		perror("make_vector second allocation");
 		free(v);
-		return NULL;
+		abort();
 	}
 
 	v->capacity = capacity;
@@ -86,9 +86,8 @@ void append_buf(R_outpstream_t stream, void *buf, int length) {
 int get_byte(R_inpstream_t stream) {
 	byte_vector_t vector = (byte_vector_t) stream->data;
 	if (vector->size >= vector->capacity) {
-		// perror("GET_BYTE: read error byte");
-		// TODO: Think about better ways to handle this error check result
-		return -1;
+		fprintf(stderr, "get_byte attempts to read beyond buffer\n");
+		abort();
 	} else {
 		return vector->buf[vector->size++];
 	}
