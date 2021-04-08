@@ -42,47 +42,12 @@ size_t int_db[10001] = { 0 };    // hard wired to accommodate -5000 to 5000
 byte_vector_t vector = NULL;
 
 /**
- * This function creates a database for a collection of values.
- * @method open_db
- * @param filename
- * @return file pointer wrapped as a R external pointer
- */
-// TODO: Deprecating this function
-SEXP open_db(SEXP filename) {
-  const char* name = CHAR(STRING_ELT(filename, 0));
-
-	FILE *db = fopen(name, "w+");
-	if (db == NULL) {
-		Rf_error("Could not start the database.");
-	}
-	db_file = db;
-
-	index_file = NULL;
-	int_file = NULL;
-
-	offset = 0;
-	count = 0;
-	size = 0;
-
-	gbov_map = new std::map<std::string, size_t>;
-
-	return R_NilValue;
-}
-
-/**
  * Load the gbov. (Must be called before load_indices)
  * @method load_gbov
  * @return R_NilValue on success throw and error otherwise
  */
 SEXP load_gbov(SEXP gbov) {
-	// TODO: Wrap in helper function to make code shorter and easier to read
-	const char* name = CHAR(STRING_ELT(gbov, 0));
-	FILE *db = fopen(name, "r+");
-	if (db == NULL) {
-		Rf_error("Could not load the database.");
-	}
-
-	db_file = db;
+	db_file = open_file(gbov);
 	fseek(db_file, 0, SEEK_END);
 
 	index_file = NULL;
@@ -91,7 +56,7 @@ SEXP load_gbov(SEXP gbov) {
 	count = 0;
 	size = 0;
 
-	size_t int_db[10001] = { 0 };
+	int_db[10001] = { 0 };
 	i_size = 0;
 
 	gbov_map = new std::map<std::string, size_t>;
@@ -108,14 +73,7 @@ SEXP load_gbov(SEXP gbov) {
  * @return R_NilValue on success throw and error otherwise
  */
 SEXP load_indices(SEXP indices) {
-	// TODO: Wrap in helper function to make code shorter and easier to read
-	const char* name = CHAR(STRING_ELT(indices, 0));
-	FILE *idx = fopen(name, "r+");
-	if (idx == NULL) {
-		Rf_error("Could not load the database.");
-	}
-
-	index_file = idx;
+	index_file = open_file(indices);
 
 	// TODO: Wrap in helper function to make code shorter and easier to read
 	// TODO: Check the return value instead of silence
@@ -141,14 +99,7 @@ SEXP load_indices(SEXP indices) {
  * @return R_NilValue on success throw and error otherwise
  */
 SEXP load_ints(SEXP filename) {
-	// TODO: Check the return value instead of silence
-	const char* name = CHAR(STRING_ELT(filename, 0));
-	FILE *ints = fopen(name, "r+");
-	if (ints == NULL) {
-		Rf_error("Could not open the int database.");
-	}
-
-	int_file = ints;
+	int_file = open_file(filename);
 	fseek(int_file, 0, SEEK_SET);
 
 	// TODO: Use better error checking methods
@@ -266,14 +217,8 @@ SEXP create_indices(SEXP indices) {
  * @return             R_NilValue on succcecss
  */
 SEXP create_ints(SEXP ints) {
-	// TODO: Wrap in helper function to make code shorter and easier to read
-	const char* name = CHAR(STRING_ELT(ints, 0));
-	FILE *tmp = fopen(name, "r+");
-	if (tmp == NULL) {
-		Rf_error("Could not load the database.");
-	}
+	int_file = open_file(ints);
 
-	int_file = tmp;
 	i_size = 0;
 	for (int i = 0; i < 10001; ++i) {
 		int_db[i] = 0;
@@ -319,16 +264,14 @@ SEXP add_val(SEXP val) {
 		}
 	}
 
+	// Serialize val
+	free_content(vector);
 	struct R_outpstream_st out;
 	R_outpstream_t stream = &out;
-
-	free_content(vector);
-
 	R_InitOutPStream(stream, (R_pstream_data_t) vector,
 						R_pstream_binary_format, 3,
 						append_byte, append_buf,
 						NULL, R_NilValue);
-
 	R_Serialize(val, stream);
 
 	// Get the sha1 hash of the serialized value
@@ -343,20 +286,15 @@ SEXP add_val(SEXP val) {
 	if (it == gbov_map->end()) {
 		(*gbov_map)[key] = offset;
 
-		// Write the blob's size
-		write_size_t(db_file, vector->size);
-
+		// Write the blob
+		write_size_t(db_file, vector->size); // serialized data size
 		if (vector->size != fwrite(vector->buf, 1, vector->size, db_file)) {
 			Rf_error("Could not write out.");
 			return R_NilValue;
 		}
-
-		// Acting as a NULL
-		// Will be used to make the file act as if it had a linked list for duplicates
-		write_size_t(db_file, 0);
+		write_size_t(db_file, 0); // Act as a NULL and potential ptr in future
 
 		// Modify offset here
-		// TODO: Check for overflow
 		offset += vector->size + sizeof(size_t) + sizeof(size_t);
 
 		size++;
@@ -391,16 +329,14 @@ SEXP have_seen(SEXP val) {
 		}
 	}
 
+	// Serialize value
+	free_content(vector);
 	struct R_outpstream_st out;
 	R_outpstream_t stream = &out;
-
-	free_content(vector);
-
 	R_InitOutPStream(stream, (R_pstream_data_t) vector,
 						R_pstream_binary_format, 3,
 						append_byte, append_buf,
 						NULL, R_NilValue);
-
 	R_Serialize(val, stream);
 
 	// Get the sha1 hash of the serialized value
@@ -410,21 +346,20 @@ SEXP have_seen(SEXP val) {
 	sha1_update(&ctx, (uint8 *)vector->buf, vector->size);
 	sha1_finish(&ctx, sha1sum);
 
-	std::map<std::string, size_t>::iterator it;
-	it = gbov_map->find(std::string((char *) sha1sum, 20));
-
-	int found = 0;
-	if (it != gbov_map->end()) {
-		found = 1;
-	}
+	std::string key((char *) sha1sum, 20);
+	std::map<std::string, size_t>::iterator it = gbov_map->find(key);
 
 	SEXP res;
-	R_xlen_t n = 1;
-	PROTECT(res = allocVector(LGLSXP, n));
+	PROTECT(res = allocVector(LGLSXP, 1));
 	int *res_ptr = LOGICAL(res);
-	res_ptr[0] = found;
+	if (it == gbov_map->end()) {
+		res_ptr[0] = 0;
+	} else {
+		res_ptr[0] = 1;
+	}
 	UNPROTECT(1);
 	return res;
+
 }
 
 SEXP count_vals() {
