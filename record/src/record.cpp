@@ -124,11 +124,11 @@ SEXP load_ints(SEXP ints) {
 
 
 /**
- * Load the gbov. (Must be called before load_indices)
+ * Create the gbov. (Must be called before create_indices)
  * @method load_gbov
  * @return R_NilValue on success throw and error otherwise
  */
-SEXP load_gbov(SEXP gbov) {
+SEXP create_gbov(SEXP gbov) {
 	db_file = open_file(gbov);
 	fseek(db_file, 0, SEEK_END);
 	return R_NilValue;
@@ -136,13 +136,12 @@ SEXP load_gbov(SEXP gbov) {
 
 
 /**
- * Create the gbov. (Must be called before create_indices)
+ * Load the gbov. (Must be called before load_indices)
  * @method load_gbov
  * @return R_NilValue on success throw and error otherwise
  */
-
-SEXP create_gbov(SEXP gbov) {
-	return load_gbov(gbov);
+SEXP load_gbov(SEXP gbov) {
+	return create_gbov(gbov);
 }
 
 
@@ -376,7 +375,7 @@ SEXP read_vals(SEXP from, SEXP to) {
 	return R_NilValue;
 }
 
-SEXP get_random_val() {
+SEXP sample_val() {
 	// Specify a random value
 	// TODO: Find a bette rand() function that can return any size_t value
 	int random_index = rand() % size;
@@ -424,11 +423,11 @@ SEXP get_random_val() {
 	R_inpstream_t stream = &in;
 
 	// TODO: Consider reuse
-	byte_vector_t vector = make_vector(0);
-	vector->capacity = *obj_size;
-	vector->buf = serialized_value;
+	byte_vector_t tmp = make_vector(0);
+	tmp->capacity = *obj_size;
+	tmp->buf = serialized_value;
 
-	R_InitInPStream(stream, (R_pstream_data_t) vector,
+	R_InitInPStream(stream, (R_pstream_data_t) tmp,
 						R_pstream_binary_format,
 						get_byte, get_buf,
 						NULL, R_NilValue);

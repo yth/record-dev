@@ -73,14 +73,6 @@ SEXP create_indices(SEXP indices);
  */
 SEXP create_ints(SEXP ints);
 
-/**
- * This functions directly adds an R scalar value to the specified storage.
- * @method add_scalar
- * @param  val      R scalar value in form of SEXP
- * @return          R value on success
- */
-SEXP add_scalar(SEXP val);
-
 
 /**
  * Adds an R scalar integer value to a separate int database.
@@ -126,16 +118,10 @@ SEXP have_seen_int(SEXP val);
 SEXP count_vals();
 
 
-/**
- * This function asks if the C layer has seen a R value.
- * @method count_u_vals
- * @param
- * @return  number of values stored in the file
- */
-  SEXP size_db();
+SEXP size_db();
 
 
-  SEXP size_ints();
+SEXP size_ints();
 
 
 /**
@@ -152,7 +138,7 @@ SEXP read_vals(SEXP from, SEXP to);
  * @method get_random_val
  * @return R value in form of SEXP from the database
  */
-SEXP get_random_val();
+SEXP sample_val();
 
 
 #ifdef __cplusplus
