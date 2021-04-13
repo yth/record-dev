@@ -65,6 +65,27 @@ FILE *open_file(SEXP filename) {
 	return fp;
 }
 
+// Help read n bytes into buffer and check error messages
+// Doesn't restore file offset
+void readn(FILE* file, void *buf, size_t n) {
+	size_t m = fread(buf, 1, n, file);
+	if (m != n) {
+		fprintf(stderr, "readn only read %lu out of %lu bytes\n", m, n);
+		perror("readn");
+		abort();
+	}
+}
+
+void writen(FILE* file, void *buf, size_t n) {
+	size_t m = fwrite(buf, n, 1, file);
+	if (m != n) {
+		fprintf(stderr, "writen only wrote %lu out of %lu bytes\n", m, n);
+		perror("writen");
+		abort();
+	}
+}
+
+
 #ifdef __cplusplus
 } // extern "C"
 #endif

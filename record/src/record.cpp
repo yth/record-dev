@@ -60,17 +60,16 @@ SEXP create_indices(SEXP indices) {
 SEXP load_indices(SEXP indices) {
 	create_indices(indices);
 
-	// TODO: Wrap in helper function to make code shorter and easier to read
-	// TODO: Check the return value instead of silence
-	int _ = fread(&offset, sizeof(size_t), 1, index_file);
-	_ = fread(&size, sizeof(size_t), 1, index_file);
-	_ = fread(&count, sizeof(int), 1, index_file);
+	readn(index_file, &offset, sizeof(size_t));
+	readn(index_file, &size, sizeof(size_t));
+	readn(index_file, &count, sizeof(int));
 
-	for (size_t i = 0; i < size; ++i) {
-		size_t start = 0;
-		char hash[20];
-		_ = fread(hash, 1, 20, index_file);
-		_ = fread(&start, sizeof(size_t), 1, index_file);
+	int _;
+	size_t start = 0;
+	char hash[20];
+	for (size_t i = 0; i < size - i_size; ++i) {
+		readn(index_file, hash, 20);
+		readn(index_file, &start, sizeof(size_t));
 		(*gbov_map)[std::string(hash, 20)] = start;
 	}
 
@@ -104,19 +103,10 @@ SEXP create_ints(SEXP ints) {
 SEXP load_ints(SEXP ints) {
 	create_ints(ints);
 
-	// TODO: Use better error checking methods
-	// TODO: Check the return value instead of silence
-	if (fread(&i_size, sizeof(size_t), 1, int_file) < 0) {
-		perror("Could not read all data from file.");
-		exit(1);
-	}
+	readn(int_file, &i_size, sizeof(size_t));
 
 	for (size_t i = 0; i < 10001; ++i) {
-		// TODO: Check the return value instead of silence
-		if (fread(int_db + i, sizeof(size_t), 1, int_file) < 0) {
-			perror("Could not read all data from file.");
-			exit(1);
-		}
+		readn(int_file, int_db + i, sizeof(size_t));
 	}
 
 	return R_NilValue;
@@ -151,7 +141,9 @@ SEXP load_gbov(SEXP gbov) {
  * @param  file_ptr     wrapped FILE pointer
  */
 SEXP close_db() {
+	char safety = 0xff;
 	if (db_file) {
+		fwrite(&safety, 1, 1, db_file);
 		fflush(db_file);
 		if (fclose(db_file)) {
 			Rf_error("Could not close the database.");
@@ -178,6 +170,10 @@ SEXP close_db() {
 			fwrite(it->first.c_str(), 1, 20, index_file);
 			fwrite(&(it->second), sizeof(size_t), 1, index_file);
 		}
+
+		if (fwrite(&safety, 1, 1, index_file) != 1) {
+			fprintf(stderr, "Could not write safety byte\n");
+		}
 		fflush(index_file);
 		fclose(index_file);
 		index_file = NULL;
@@ -190,6 +186,7 @@ SEXP close_db() {
 		{
 			write_size_t(int_file, int_db[i]);
 		}
+		fwrite(&safety, 1, 1, int_file);
 		fflush(int_file);
 		fclose(int_file);
 		int_file = NULL;
@@ -269,6 +266,7 @@ SEXP add_val(SEXP val) {
 	std::map<std::string, size_t>::iterator it = gbov_map->find(key);
 	if (it == gbov_map->end()) {
 		(*gbov_map)[key] = offset;
+		size++;
 
 		// Write the blob
 		write_size_t(db_file, vector->size); // serialized data size
@@ -280,8 +278,6 @@ SEXP add_val(SEXP val) {
 
 		// Modify offset here
 		offset += vector->size + sizeof(size_t) + sizeof(size_t);
-
-		size++;
 
 		return val;
 	}

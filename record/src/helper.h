@@ -22,6 +22,14 @@ size_t read_size_t(FILE* file, size_t file_offset, size_t value_offset);
 // Heap allocates the result. User is responsible for freeing it.
 char *read_n(FILE* file, size_t file_offset, size_t value_offset, size_t n);
 
+// Help read n bytes into buffer and check error messages
+// Doesn't restore file offset
+void readn(FILE* file, void *buf, size_t n);
+
+// Help write n bytes into file and check error messages
+// Doesn't restore file offset
+void writen(FILE* file, void *buf, size_t n);
+
 FILE *open_file(SEXP filename);
 
 #ifdef __cplusplus
