@@ -5,32 +5,20 @@
 #ifndef RCRD_HELPER_H
 #define RCRD_HELPER_H
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-
-// Writes a size_t to file
-void write_size_t(FILE* file, size_t val);
-
-
-// Read a size_t from file starting at the indicated offset
-size_t read_size_t(FILE* file, size_t file_offset, size_t value_offset);
-
-// Read n bytes starting at an offset from a file_ptr
-// Heap allocates the result. User is responsible for freeing it.
-char *read_n(FILE* file, size_t file_offset, size_t value_offset, size_t n);
+// Help wrap fopen with checks and unpack SEXP filename
+FILE *open_file(SEXP filename);
 
 // Help read n bytes into buffer and check error messages
 // Doesn't restore file offset
-void readn(FILE* file, void *buf, size_t n);
+void read_n(FILE* file, void *buf, size_t n);
 
 // Help write n bytes into file and check error messages
 // Doesn't restore file offset
-void writen(FILE* file, void *buf, size_t n);
-
-FILE *open_file(SEXP filename);
+void write_n(FILE* file, void *buf, size_t n);
 
 #ifdef __cplusplus
 } // extern "C"

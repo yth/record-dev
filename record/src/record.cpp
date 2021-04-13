@@ -2,7 +2,7 @@
 
 #include <string> // std::string, strlen
 #include <map> // std::map
-#include <stdio.h> // FILE, fopen, close, fwrite
+#include <stdio.h> // FILE, fopen, close
 #include <stdarg.h> // testing
 #include <random> // rand
 #include <iterator> //advance
@@ -11,7 +11,7 @@
 
 #include "byte_vector.h"
 #include "sha1.h"
-#include "helper.h" // write_size_t, read_size_t, read_n
+#include "helper.h"
 
 
 // Globals
@@ -60,16 +60,15 @@ SEXP create_indices(SEXP indices) {
 SEXP load_indices(SEXP indices) {
 	create_indices(indices);
 
-	readn(index_file, &offset, sizeof(size_t));
-	readn(index_file, &size, sizeof(size_t));
-	readn(index_file, &count, sizeof(int));
+	read_n(index_file, &offset, sizeof(size_t));
+	read_n(index_file, &size, sizeof(size_t));
+	read_n(index_file, &count, sizeof(int));
 
-	int _;
 	size_t start = 0;
 	char hash[20];
 	for (size_t i = 0; i < size - i_size; ++i) {
-		readn(index_file, hash, 20);
-		readn(index_file, &start, sizeof(size_t));
+		read_n(index_file, hash, 20);
+		read_n(index_file, &start, sizeof(size_t));
 		(*gbov_map)[std::string(hash, 20)] = start;
 	}
 
@@ -103,10 +102,10 @@ SEXP create_ints(SEXP ints) {
 SEXP load_ints(SEXP ints) {
 	create_ints(ints);
 
-	readn(int_file, &i_size, sizeof(size_t));
+	read_n(int_file, &i_size, sizeof(size_t));
 
 	for (size_t i = 0; i < 10001; ++i) {
-		readn(int_file, int_db + i, sizeof(size_t));
+		read_n(int_file, int_db + i, sizeof(size_t));
 	}
 
 	return R_NilValue;
@@ -120,7 +119,7 @@ SEXP load_ints(SEXP ints) {
  */
 SEXP create_gbov(SEXP gbov) {
 	db_file = open_file(gbov);
-	fseek(db_file, 0, SEEK_END);
+	fseek(db_file, offset, SEEK_SET);
 	return R_NilValue;
 }
 
@@ -141,9 +140,8 @@ SEXP load_gbov(SEXP gbov) {
  * @param  file_ptr     wrapped FILE pointer
  */
 SEXP close_db() {
-	char safety = 0xff;
 	if (db_file) {
-		fwrite(&safety, 1, 1, db_file);
+		write_n(db_file, (void *) "\n", 1);
 		fflush(db_file);
 		if (fclose(db_file)) {
 			Rf_error("Could not close the database.");
@@ -156,24 +154,22 @@ SEXP close_db() {
 		// TODO: Error check
 		fseek(index_file, 0, SEEK_SET);
 		// TODO: Create a write_n function or check success here
-		fwrite(&offset, sizeof(size_t), 1, index_file);
+		write_n(index_file, &offset, sizeof(size_t));
 		offset = 0;
 
-		fwrite(&size, sizeof(size_t), 1, index_file);
+		write_n(index_file, &size, sizeof(size_t));
 		size = 0;
 
-		fwrite(&count, sizeof(int), 1, index_file);
+		write_n(index_file, &count, sizeof(int));
 		count = 0;
 
 		std::map<std::string, size_t>::iterator it;
 		for(it = gbov_map->begin(); it != gbov_map->end(); it++) {
-			fwrite(it->first.c_str(), 1, 20, index_file);
-			fwrite(&(it->second), sizeof(size_t), 1, index_file);
+			write_n(index_file, (void *) it->first.c_str(), 20);
+			write_n(index_file, &(it->second), sizeof(size_t));
 		}
 
-		if (fwrite(&safety, 1, 1, index_file) != 1) {
-			fprintf(stderr, "Could not write safety byte\n");
-		}
+		write_n(index_file, (void *) "\n", 1);
 		fflush(index_file);
 		fclose(index_file);
 		index_file = NULL;
@@ -181,18 +177,16 @@ SEXP close_db() {
 
 	if (int_file) {
 		fseek(int_file, 0, SEEK_SET);
-		write_size_t(int_file, i_size);
-		for(int i = 0; i < 10001; ++i)
-		{
-			write_size_t(int_file, int_db[i]);
+		write_n(int_file, &i_size, sizeof(size_t));
+		for(int i = 0; i < 10001; ++i) {
+			write_n(int_file, &(int_db[i]), sizeof(size_t));
 		}
-		fwrite(&safety, 1, 1, int_file);
+		write_n(int_file, (void *) "\n", 1);
 		fflush(int_file);
 		fclose(int_file);
 		int_file = NULL;
-
 		i_size = 0;
-		size_t int_db[10001] = { 0 };
+		int_db[10001] = { 0 };
 	}
 
 	if (gbov_map) {
@@ -269,12 +263,11 @@ SEXP add_val(SEXP val) {
 		size++;
 
 		// Write the blob
-		write_size_t(db_file, vector->size); // serialized data size
-		if (vector->size != fwrite(vector->buf, 1, vector->size, db_file)) {
-			Rf_error("Could not write out.");
-			return R_NilValue;
-		}
-		write_size_t(db_file, 0); // Act as a NULL and potential ptr in future
+		write_n(db_file, &(vector->size), sizeof(size_t));
+		write_n(db_file, vector->buf, vector->size);
+
+		// Acting as NULL for linked-list next pointer
+		write_n(db_file, &(vector->size), sizeof(size_t));
 
 		// Modify offset here
 		offset += vector->size + sizeof(size_t) + sizeof(size_t);
@@ -409,8 +402,14 @@ SEXP sample_val() {
 	std::advance(it, random_index - i_size);
 
 	// Get the specified value
-	size_t* obj_size = (size_t*) read_n(db_file, offset, it->second, sizeof(size_t));
-	unsigned char* serialized_value = (unsigned char*) read_n(db_file, offset, it->second + sizeof(size_t), *obj_size);
+
+	size_t obj_size;
+	free_content(vector);
+	fseek(db_file, it->second, SEEK_SET);
+	read_n(db_file, &obj_size, sizeof(size_t));
+	read_n(db_file, vector->buf, obj_size);
+	fseek(db_file, offset, SEEK_SET);
+	vector->capacity = obj_size;
 
 	// Deserialize the specified value
 
@@ -418,12 +417,7 @@ SEXP sample_val() {
 	struct R_inpstream_st in;
 	R_inpstream_t stream = &in;
 
-	// TODO: Consider reuse
-	byte_vector_t tmp = make_vector(0);
-	tmp->capacity = *obj_size;
-	tmp->buf = serialized_value;
-
-	R_InitInPStream(stream, (R_pstream_data_t) tmp,
+	R_InitInPStream(stream, (R_pstream_data_t) vector,
 						R_pstream_binary_format,
 						get_byte, get_buf,
 						NULL, R_NilValue);
@@ -431,10 +425,8 @@ SEXP sample_val() {
 	// Call R_Unserialize(stream) and catch the return value
 	SEXP res = R_Unserialize(stream);
 
-	// Clean Up
-	free(obj_size);
-	free(serialized_value);
+	// Restore vector
+	vector->capacity = 1 << 30;
 
-	// Return the deserialized value
 	return res;
 }
