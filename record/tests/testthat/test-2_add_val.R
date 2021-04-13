@@ -85,13 +85,13 @@ test_that("add int 1L", {
 
 test_that("add double 1", {
 	open_db("test_db/add-1", create = TRUE)
-  expect_equal(add_val(1), 1)
+	expect_equal(add_val(1), 1)
 	close_db()
 })
 
 test_that("add -5000L", {
 	open_db("test_db/add--5000L", create = TRUE)
-  expect_equal(add_val(-5000L), -5000L)
+	expect_equal(add_val(-5000L), -5000L)
 	close_db()
 })
 
