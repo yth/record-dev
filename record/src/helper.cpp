@@ -10,6 +10,10 @@ extern "C" {
 extern size_t bytes_read_session;
 extern size_t bytes_written_session;
 
+// Useful procecss counters
+extern size_t bytes_read_process;
+extern size_t bytes_written_process;
+
 // Useful lifetime counters
 extern size_t bytes_read;
 extern size_t bytes_written;
@@ -31,6 +35,7 @@ void read_n(FILE* file, void *buf, size_t n) {
 		abort();
 	}
 	bytes_read_session += n;
+	bytes_read_process += n;
 	bytes_read += n;
 }
 
@@ -42,6 +47,7 @@ void write_n(FILE* file, void *buf, size_t n) {
 		abort();
 	}
 	bytes_written_session += n;
+	bytes_written_process += n;
 	bytes_written += n;
 }
 

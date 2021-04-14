@@ -38,6 +38,10 @@ byte_vector_t vector = NULL;
 size_t bytes_read_session = 0;
 size_t bytes_written_session = 0;
 
+// Useful process counters
+size_t bytes_read_process = 0;
+size_t bytes_written_process = 0;
+
 // Useful lifetime counters // Not implemented yet
 size_t bytes_read = 0;
 size_t bytes_written = 0;
@@ -447,9 +451,13 @@ SEXP report() {
 	printf("Session: bytes read: %lu\n", bytes_read_session);
 	printf("Session: bytes written: %lu\n", bytes_written_session);
 
+	// Process
+	printf("Process: bytes read: %lu\n", bytes_read_process);
+	printf("Process: bytes written: %lu\n", bytes_written_process);
+
 	// Lifetime // Not implemented; just placeholder
-	printf("Lifetime: bytes read: %lu\n", bytes_read);
-	printf("Lifetime: bytes written: %lu\n", bytes_written);
+	printf("Lifetime: bytes read: %lu # NOT CORRECT\n", bytes_read);
+	printf("Lifetime: bytes written: %lu # NOT CORRECT\n", bytes_written);
 
 	return R_NilValue;
 }
