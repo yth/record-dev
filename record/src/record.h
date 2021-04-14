@@ -141,6 +141,12 @@ SEXP read_vals(SEXP from, SEXP to);
 SEXP sample_val();
 
 
+/**
+ * Report database statistics
+ * @method report
+ */
+SEXP report();
+
 #ifdef __cplusplus
 } // extern "C"
 #endif

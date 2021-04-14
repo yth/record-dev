@@ -31,9 +31,16 @@ FILE *int_file = NULL;
 size_t i_size = 0;               // number of unique ints encountered
 size_t int_db[10001] = { 0 };    // hard wired to accommodate -5000 to 5000
 
-// Reusable buffer for stream
+// Reusable buffer for everything
 byte_vector_t vector = NULL;
 
+// Useful session counters
+size_t bytes_read_session = 0;
+size_t bytes_written_session = 0;
+
+// Useful lifetime counters // Not implemented yet
+size_t bytes_read = 0;
+size_t bytes_written = 0;
 
 /**
  * Load the indices associated with the gbov.
@@ -46,6 +53,10 @@ SEXP create_indices(SEXP indices) {
 	offset = 0;
 	size = 0;
 	count = 0;
+
+	// Temporary
+	bytes_read_session = 0;
+	bytes_written_session = 0;
 
 	gbov_map = new std::map<std::string, size_t>;
 	vector = make_vector(1 << 30);
@@ -429,4 +440,16 @@ SEXP sample_val() {
 	vector->capacity = 1 << 30;
 
 	return res;
+}
+
+SEXP report() {
+	// Session
+	printf("Session: bytes read: %lu\n", bytes_read_session);
+	printf("Session: bytes written: %lu\n", bytes_written_session);
+
+	// Lifetime // Not implemented; just placeholder
+	printf("Lifetime: bytes read: %lu\n", bytes_read);
+	printf("Lifetime: bytes written: %lu\n", bytes_written);
+
+	return R_NilValue;
 }

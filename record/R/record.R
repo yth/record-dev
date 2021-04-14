@@ -71,3 +71,8 @@ get_vals <- function(from, to) {
 get_random_val <- function() {
 	.Call(RCRD_sample_val)
 }
+
+#' @export
+report <- function() {
+	.Call(RCRD_report)
+}

@@ -6,6 +6,14 @@
 extern "C" {
 #endif
 
+// Useful session counters
+extern size_t bytes_read_session;
+extern size_t bytes_written_session;
+
+// Useful lifetime counters
+extern size_t bytes_read;
+extern size_t bytes_written;
+
 FILE *open_file(SEXP filename) {
 	const char* cfilename = CHAR(STRING_ELT(filename, 0));
 	FILE *fp = fopen(cfilename, "r+");
@@ -22,6 +30,8 @@ void read_n(FILE* file, void *buf, size_t n) {
 		perror("read_n");
 		abort();
 	}
+	bytes_read_session += n;
+	bytes_read += n;
 }
 
 // Help write n bytes into file and check error messages
@@ -31,6 +41,8 @@ void write_n(FILE* file, void *buf, size_t n) {
 		perror("write_n");
 		abort();
 	}
+	bytes_written_session += n;
+	bytes_written += n;
 }
 
 #ifdef __cplusplus
