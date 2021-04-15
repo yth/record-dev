@@ -25,8 +25,16 @@ SEXP close_db();
 
 
 /**
+ * Loads stats.bin in the database
+ * @method load_stats
+ * @return R_NilValue on success, throw and error otherwise
+ */
+SEXP load_stats(SEXP stats);
+
+
+/**
  * Loads ints.bin in the database
- * @method loads_ints
+ * @method load_ints
  * @return R_NilValue on success, throw and error otherwise
  */
 SEXP load_ints(SEXP ints);
@@ -46,6 +54,14 @@ SEXP load_gbov(SEXP gbov);
  * @return R_NilValue on success, throw and error otherwise
  */
 SEXP load_indices(SEXP indices);
+
+
+/**
+ * Create stats.bin in the database
+ * @method create_stats
+ * @return R_NilValue on success, throw and error otherwise
+ */
+SEXP create_stats(SEXP stats);
 
 
 /**
