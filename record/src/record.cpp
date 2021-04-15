@@ -34,6 +34,10 @@ size_t int_db[10001] = { 0 };    // hard wired to accommodate -5000 to 5000
 // Reusable buffer for everything
 byte_vector_t vector = NULL;
 
+
+// Report Related
+FILE *stats = NULL;
+
 // Useful session counters
 size_t bytes_read_session = 0;
 size_t bytes_written_session = 0;
@@ -47,6 +51,29 @@ size_t bytes_read = 0;
 size_t bytes_written = 0;
 
 /**
+ * Create stats.bin in the database
+ * @method create_stats
+ * @return R_NilValue on success, throw and error otherwise
+ */
+SEXP create_stats(SEXP stats) {
+	// Temporary
+	bytes_read_session = 0;
+	bytes_written_session = 0;
+
+	return R_NilValue;
+}
+
+/**
+ * Loads stats.bin in the database
+ * @method load_stats
+ * @return R_NilValue on success, throw and error otherwise
+ */
+SEXP load_stats(SEXP stats) {
+	return create_stats(stats);
+}
+
+
+/**
  * Load the indices associated with the gbov.
  * @method load_indices
  * @return R_NilValue on success throw and error otherwise
@@ -57,10 +84,6 @@ SEXP create_indices(SEXP indices) {
 	offset = 0;
 	size = 0;
 	count = 0;
-
-	// Temporary
-	bytes_read_session = 0;
-	bytes_written_session = 0;
 
 	gbov_map = new std::map<std::string, size_t>;
 	vector = make_vector(1 << 30);
@@ -456,8 +479,8 @@ SEXP report() {
 	printf("Process: bytes written: %lu\n", bytes_written_process);
 
 	// Lifetime // Not implemented; just placeholder
-	printf("Lifetime: bytes read: %lu # NOT CORRECT\n", bytes_read);
-	printf("Lifetime: bytes written: %lu # NOT CORRECT\n", bytes_written);
+	printf("Database Lifetime: bytes read: %lu # NOT CORRECT\n", bytes_read);
+	printf("Database Lifetime: bytes written: %lu # NOT CORRECT\n", bytes_written);
 
 	return R_NilValue;
 }
