@@ -7,6 +7,17 @@
 
 #include <stdlib.h> //size_t
 
+// Useful session counters
+extern size_t bytes_appended_session;
+extern size_t bytes_gotten_session;
+
+// Useful process counters
+extern size_t bytes_appended_process;
+extern size_t bytes_gotten_process;
+
+// Useful lifetime counters // Not implemented yet
+extern size_t bytes_appended;
+extern size_t bytes_gotten;
 
 byte_vector_t make_vector(size_t capacity) {
 	byte_vector_t v = (byte_vector_t) malloc(sizeof (struct byte_vector_st));
@@ -67,6 +78,10 @@ void append_byte(R_outpstream_t stream, int c) {
 	}
 	vector->buf[vector->size] = c;
 	vector->size += 1;
+
+	bytes_appended_session += 1;
+	bytes_appended_process += 1;
+	bytes_appended += 1;
 }
 
 // Required for make use of a R_outpstream_t
@@ -80,6 +95,10 @@ void append_buf(R_outpstream_t stream, void *buf, int length) {
 
 	memcpy(vector->buf + vector->size, cbuf, length);
 	vector->size += length;
+
+	bytes_appended_session += length;
+	bytes_appended_process += length;
+	bytes_appended += length;
 }
 
 // Required for make use of a R_inpstream_t
@@ -89,6 +108,10 @@ int get_byte(R_inpstream_t stream) {
 		fprintf(stderr, "get_byte attempts to read beyond buffer\n");
 		abort();
 	} else {
+		bytes_gotten_session += 1;
+		bytes_gotten_process += 1;
+		bytes_gotten += 1;
+
 		return vector->buf[vector->size++];
 	}
 }
@@ -100,8 +123,16 @@ void get_buf(R_inpstream_t stream, void *buf, int length) {
 		size_t copy_length = vector->capacity - vector->size;
 		memcpy(buf, vector->buf + vector->size, copy_length);
 		vector->size += copy_length;
+
+		bytes_gotten_session += copy_length;
+		bytes_gotten_process += copy_length;
+		bytes_gotten += copy_length;
 	} else {
 		memcpy(buf, vector->buf + vector->size, length);
 		vector->size += length;
+
+		bytes_gotten_session += length;
+		bytes_gotten_process += length;
+		bytes_gotten += length;
 	}
 }

@@ -1,18 +1,16 @@
 #include "record.h"
 
+
 #include <string> // std::string, strlen
 #include <map> // std::map
 #include <stdio.h> // FILE, fopen, close
 #include <stdarg.h> // testing
 #include <random> // rand
 #include <iterator> //advance
-#include <fcntl.h> //open
-#include <errno.h>
 
 #include "byte_vector.h"
 #include "sha1.h"
 #include "helper.h"
-
 
 // Globals
 FILE *db_file = NULL;
@@ -36,19 +34,37 @@ byte_vector_t vector = NULL;
 
 
 // Report Related
-FILE *stats = NULL;
+FILE *stats_file = NULL;
 
 // Useful session counters
 size_t bytes_read_session = 0;
 size_t bytes_written_session = 0;
 
+size_t bytes_serialized_session = 0;
+size_t bytes_unserialized_session = 0;
+
+size_t bytes_appended_session = 0;
+size_t bytes_gotten_session = 0;
+
 // Useful process counters
 size_t bytes_read_process = 0;
 size_t bytes_written_process = 0;
 
+size_t bytes_serialized_process = 0;
+size_t bytes_unserialized_process = 0;
+
+size_t bytes_appended_process = 0;
+size_t bytes_gotten_process = 0;
+
 // Useful lifetime counters // Not implemented yet
 size_t bytes_read = 0;
 size_t bytes_written = 0;
+
+size_t bytes_serialized = 0;
+size_t bytes_unserialized = 0;
+
+size_t bytes_appended = 0;
+size_t bytes_gotten = 0;
 
 /**
  * Create stats.bin in the database
@@ -56,9 +72,16 @@ size_t bytes_written = 0;
  * @return R_NilValue on success, throw and error otherwise
  */
 SEXP create_stats(SEXP stats) {
-	// Temporary
+	stats_file = open_file(stats);
+
 	bytes_read_session = 0;
 	bytes_written_session = 0;
+
+	bytes_serialized_session = 0;
+	bytes_unserialized_session = 0;
+
+	bytes_appended_session = 0;
+	bytes_gotten_session = 0;
 
 	return R_NilValue;
 }
@@ -69,9 +92,51 @@ SEXP create_stats(SEXP stats) {
  * @return R_NilValue on success, throw and error otherwise
  */
 SEXP load_stats(SEXP stats) {
-	return create_stats(stats);
+	create_stats(stats);
+
+	read_n(stats_file, &bytes_read, sizeof(size_t));
+	read_n(stats_file, &bytes_written, sizeof(size_t));
+
+	read_n(stats_file, &bytes_serialized, sizeof(size_t));
+	read_n(stats_file, &bytes_unserialized, sizeof(size_t));
+
+	read_n(stats_file, &bytes_appended, sizeof(size_t));
+	read_n(stats_file, &bytes_gotten, sizeof(size_t));
+
+	return R_NilValue;
 }
 
+SEXP close_stats() {
+	if (stats_file) {
+		write_n(stats_file, &bytes_read, sizeof(size_t));
+		bytes_read = 0;
+
+		write_n(stats_file, &bytes_written, sizeof(size_t));
+		bytes_written = 0;
+
+		write_n(stats_file, &bytes_serialized, sizeof(size_t));
+		bytes_serialized = 0;
+
+		write_n(stats_file, &bytes_unserialized, sizeof(size_t));
+		bytes_unserialized = 0;
+
+		write_n(stats_file, &bytes_appended, sizeof(size_t));
+		bytes_appended = 0;
+
+		write_n(stats_file, &bytes_gotten, sizeof(size_t));
+		bytes_gotten = 0;
+
+		write_n(stats_file, (void *) "\n", 1);
+		fflush(stats_file);
+
+		if (fclose(stats_file)) {
+			Rf_error("Could not close the stats file.");
+		}
+		stats_file = NULL;
+	}
+
+	return R_NilValue;
+}
 
 /**
  * Load the indices associated with the gbov.
@@ -277,15 +342,7 @@ SEXP add_val(SEXP val) {
 		}
 	}
 
-	// Serialize val
-	free_content(vector);
-	struct R_outpstream_st out;
-	R_outpstream_t stream = &out;
-	R_InitOutPStream(stream, (R_pstream_data_t) vector,
-						R_pstream_binary_format, 3,
-						append_byte, append_buf,
-						NULL, R_NilValue);
-	R_Serialize(val, stream);
+	serialize_val(vector, val);
 
 	// Get the sha1 hash of the serialized value
 	sha1_context ctx;
@@ -340,15 +397,7 @@ SEXP have_seen(SEXP val) {
 		}
 	}
 
-	// Serialize value
-	free_content(vector);
-	struct R_outpstream_st out;
-	R_outpstream_t stream = &out;
-	R_InitOutPStream(stream, (R_pstream_data_t) vector,
-						R_pstream_binary_format, 3,
-						append_byte, append_buf,
-						NULL, R_NilValue);
-	R_Serialize(val, stream);
+	serialize_val(vector, val);
 
 	// Get the sha1 hash of the serialized value
 	sha1_context ctx;
@@ -376,22 +425,6 @@ SEXP have_seen(SEXP val) {
 SEXP count_vals() {
 	SEXP ret = PROTECT(allocVector(INTSXP, 1));
 	INTEGER(ret)[0] = count;
-	UNPROTECT(1);
-
-	return ret;
-}
-
-SEXP size_db() {
-	SEXP ret = PROTECT(allocVector(INTSXP, 1));
-	INTEGER(ret)[0] = size;
-	UNPROTECT(1);
-
-	return ret;
-}
-
-SEXP size_ints() {
-	SEXP ret = PROTECT(allocVector(INTSXP, 1));
-	INTEGER(ret)[0] = i_size;
 	UNPROTECT(1);
 
 	return ret;
@@ -449,19 +482,7 @@ SEXP sample_val() {
 	fseek(db_file, offset, SEEK_SET);
 	vector->capacity = obj_size;
 
-	// Deserialize the specified value
-
-	// Create an R_inpstream_t of the serialized value
-	struct R_inpstream_st in;
-	R_inpstream_t stream = &in;
-
-	R_InitInPStream(stream, (R_pstream_data_t) vector,
-						R_pstream_binary_format,
-						get_byte, get_buf,
-						NULL, R_NilValue);
-
-	// Call R_Unserialize(stream) and catch the return value
-	SEXP res = R_Unserialize(stream);
+	SEXP res = unserialize_val(vector);
 
 	// Restore vector
 	vector->capacity = 1 << 30;
@@ -471,16 +492,49 @@ SEXP sample_val() {
 
 SEXP report() {
 	// Session
-	printf("Session: bytes read: %lu\n", bytes_read_session);
-	printf("Session: bytes written: %lu\n", bytes_written_session);
+	printf("Session Information:\n");
+	printf("  bytes read: %lu\n", bytes_read_session);
+	printf("  bytes written: %lu\n", bytes_written_session);
+	printf("  bytes serialized: %lu\n", bytes_serialized_session);
+	printf("  bytes unserialized: %lu\n", bytes_unserialized_session);
+	printf("  bytes appended: %lu\n", bytes_appended_session);
+	printf("  bytes gotten: %lu\n", bytes_gotten_session);
+	printf("\n");
 
 	// Process
-	printf("Process: bytes read: %lu\n", bytes_read_process);
-	printf("Process: bytes written: %lu\n", bytes_written_process);
+	printf("Process Information (APPROXIMATE ONLY):\n");
+	printf("  bytes read: %lu\n", bytes_read_process);
+	printf("  bytes written: %lu\n", bytes_written_process);
+	printf("  bytes serialized: %lu\n", bytes_serialized_process);
+	printf("  bytes unserialized: %lu\n", bytes_unserialized_process);
+	printf("  bytes appended: %lu\n", bytes_appended_process);
+	printf("  bytes gotten: %lu\n", bytes_gotten_process);
+	printf("\n");
 
 	// Lifetime // Not implemented; just placeholder
-	printf("Database Lifetime: bytes read: %lu # NOT CORRECT\n", bytes_read);
-	printf("Database Lifetime: bytes written: %lu # NOT CORRECT\n", bytes_written);
+	printf("Database Lifetime Information (APPROXIMATE ONLY):\n");
+	printf("  bytes read: %lu\n", bytes_read);
+	printf("  bytes written: %lu\n", bytes_written);
+	printf("  bytes serialized: %lu\n", bytes_serialized);
+	printf("  bytes unserialized: %lu\n", bytes_unserialized);
+	printf("  bytes appended: %lu\n", bytes_appended);
+	printf("  bytes gotten: %lu\n", bytes_gotten);
 
 	return R_NilValue;
+}
+
+SEXP size_db() {
+	SEXP ret = PROTECT(allocVector(INTSXP, 1));
+	INTEGER(ret)[0] = size;
+	UNPROTECT(1);
+
+	return ret;
+}
+
+SEXP size_ints() {
+	SEXP ret = PROTECT(allocVector(INTSXP, 1));
+	INTEGER(ret)[0] = i_size;
+	UNPROTECT(1);
+
+	return ret;
 }

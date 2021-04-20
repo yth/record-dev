@@ -23,6 +23,7 @@ static const R_CallMethodDef callMethods[] = {
 	{"load_indices", 	(DL_FUNC) &load_indices,	1},
 	{"load_ints", 		(DL_FUNC) &load_ints,		1},
 	{"load_stats", 		(DL_FUNC) &load_stats,		1},
+	{"close_stats",		(DL_FUNC) &close_stats,		0},
 	{"add_val", 		(DL_FUNC) &add_val,			1},
 	{"add_int", 		(DL_FUNC) &add_int,			1},
 	{"have_seen", 		(DL_FUNC) &have_seen,		1},

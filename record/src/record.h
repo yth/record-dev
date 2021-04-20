@@ -25,6 +25,14 @@ SEXP close_db();
 
 
 /**
+ * This functions writes lifetime database information to file.
+ * @method close_stats
+ * @return R_NilValue on success
+ */
+SEXP close_stats();
+
+
+/**
  * Loads stats.bin in the database
  * @method load_stats
  * @return R_NilValue on success, throw and error otherwise
