@@ -43,9 +43,6 @@ size_t bytes_written_session = 0;
 size_t bytes_serialized_session = 0;
 size_t bytes_unserialized_session = 0;
 
-size_t bytes_appended_session = 0;
-size_t bytes_gotten_session = 0;
-
 // Useful process counters
 size_t bytes_read_process = 0;
 size_t bytes_written_process = 0;
@@ -53,18 +50,12 @@ size_t bytes_written_process = 0;
 size_t bytes_serialized_process = 0;
 size_t bytes_unserialized_process = 0;
 
-size_t bytes_appended_process = 0;
-size_t bytes_gotten_process = 0;
-
 // Useful lifetime counters // Not implemented yet
 size_t bytes_read = 0;
 size_t bytes_written = 0;
 
 size_t bytes_serialized = 0;
 size_t bytes_unserialized = 0;
-
-size_t bytes_appended = 0;
-size_t bytes_gotten = 0;
 
 /**
  * Create stats.bin in the database
@@ -79,9 +70,6 @@ SEXP create_stats(SEXP stats) {
 
 	bytes_serialized_session = 0;
 	bytes_unserialized_session = 0;
-
-	bytes_appended_session = 0;
-	bytes_gotten_session = 0;
 
 	return R_NilValue;
 }
@@ -100,9 +88,6 @@ SEXP load_stats(SEXP stats) {
 	read_n(stats_file, &bytes_serialized, sizeof(size_t));
 	read_n(stats_file, &bytes_unserialized, sizeof(size_t));
 
-	read_n(stats_file, &bytes_appended, sizeof(size_t));
-	read_n(stats_file, &bytes_gotten, sizeof(size_t));
-
 	return R_NilValue;
 }
 
@@ -119,12 +104,6 @@ SEXP close_stats() {
 
 		write_n(stats_file, &bytes_unserialized, sizeof(size_t));
 		bytes_unserialized = 0;
-
-		write_n(stats_file, &bytes_appended, sizeof(size_t));
-		bytes_appended = 0;
-
-		write_n(stats_file, &bytes_gotten, sizeof(size_t));
-		bytes_gotten = 0;
 
 		write_n(stats_file, (void *) "\n", 1);
 		fflush(stats_file);
@@ -497,8 +476,6 @@ SEXP report() {
 	printf("  bytes written: %lu\n", bytes_written_session);
 	printf("  bytes serialized: %lu\n", bytes_serialized_session);
 	printf("  bytes unserialized: %lu\n", bytes_unserialized_session);
-	printf("  bytes appended: %lu\n", bytes_appended_session);
-	printf("  bytes gotten: %lu\n", bytes_gotten_session);
 	printf("\n");
 
 	// Process
@@ -507,8 +484,6 @@ SEXP report() {
 	printf("  bytes written: %lu\n", bytes_written_process);
 	printf("  bytes serialized: %lu\n", bytes_serialized_process);
 	printf("  bytes unserialized: %lu\n", bytes_unserialized_process);
-	printf("  bytes appended: %lu\n", bytes_appended_process);
-	printf("  bytes gotten: %lu\n", bytes_gotten_process);
 	printf("\n");
 
 	// Lifetime // Not implemented; just placeholder
@@ -517,8 +492,6 @@ SEXP report() {
 	printf("  bytes written: %lu\n", bytes_written);
 	printf("  bytes serialized: %lu\n", bytes_serialized);
 	printf("  bytes unserialized: %lu\n", bytes_unserialized);
-	printf("  bytes appended: %lu\n", bytes_appended);
-	printf("  bytes gotten: %lu\n", bytes_gotten);
 
 	return R_NilValue;
 }
