@@ -17,18 +17,12 @@ SEXP close_db();
 
 
 /**
- * This function writes ints data to file and close the file.
- * @method close_ints
- * @return R_NilValue on success
- */
-SEXP close_ints();
-
-/**
- * Loads ints.bin in the database
- * @method load_ints
+ * Create the gbov.
+ * @method load_gbov
  * @return R_NilValue on success, throw and error otherwise
  */
-SEXP load_ints(SEXP ints);
+
+SEXP create_gbov(SEXP gbov);
 
 
 /**
@@ -40,20 +34,11 @@ SEXP load_gbov(SEXP gbov);
 
 
 /**
- * Load the indices associated with the gbov.
- * @method load_indices
- * @return R_NilValue on success, throw and error otherwise
+ * This functions writes generic R val store to file and closes the file.
+ * @method close_gbov
+ * @return R_NilValue on success
  */
-SEXP load_indices(SEXP indices);
-
-
-/**
- * Create the gbov.
- * @method load_gbov
- * @return R_NilValue on success, throw and error otherwise
- */
-
-SEXP create_gbov(SEXP gbov);
+SEXP close_gbov();
 
 
 /**
@@ -65,12 +50,11 @@ SEXP create_indices(SEXP indices);
 
 
 /**
- * Create the common ints storage
- * @method create_ints
- * @param  ints        file name
- * @return             R_NilValue on succcecss
+ * Load the indices associated with the gbov.
+ * @method load_indices
+ * @return R_NilValue on success, throw and error otherwise
  */
-SEXP create_ints(SEXP ints);
+SEXP load_indices(SEXP indices);
 
 
 /**
@@ -163,11 +147,36 @@ SEXP load_stats(SEXP stats);
 
 
 /**
- * This function writesdatabase information to file and close the file.
+ * This function writes database information to file and close the file.
  * @method close_stats
  * @return R_NilValue on success
  */
 SEXP close_stats();
+
+
+/**
+ * Create the common ints storage
+ * @method create_ints
+ * @param  ints        file name
+ * @return             R_NilValue on succcecss
+ */
+SEXP create_ints(SEXP ints);
+
+
+/**
+ * Loads ints.bin in the database
+ * @method load_ints
+ * @return R_NilValue on success, throw and error otherwise
+ */
+SEXP load_ints(SEXP ints);
+
+
+/**
+ * This function writes ints data to file and close the file.
+ * @method close_ints
+ * @return R_NilValue on success
+ */
+SEXP close_ints();
 
 
 #ifdef __cplusplus

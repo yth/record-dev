@@ -58,72 +58,6 @@ size_t bytes_serialized = 0;
 size_t bytes_unserialized = 0;
 
 /**
- * Create the common ints storage
- * @method create_ints
- * @param  ints        file name
- * @return             R_NilValue on succcecss
- */
-SEXP create_ints(SEXP ints) {
-	int_file = open_file(ints);
-
-	i_size = 0;
-	for (int i = 0; i < 10001; ++i) {
-		int_db[i] = 0;
-	}
-
-	return R_NilValue;
-}
-
-
-/**
- * Loads ints.bin in the database
- * @method loads_ints
- * @return R_NilValue on success throw and error otherwise
- */
-SEXP load_ints(SEXP ints) {
-	create_ints(ints);
-
-	read_n(int_file, &i_size, sizeof(size_t));
-
-	for (size_t i = 0; i < 10001; ++i) {
-		read_n(int_file, int_db + i, sizeof(size_t));
-	}
-
-	return R_NilValue;
-}
-
-
-/**
- * This function writes ints data to file and close the file.
- * @method close_ints
- * @return [description]
- */
-SEXP close_ints() {
-	if (int_file) {
-		fseek(int_file, 0, SEEK_SET);
-
-		write_n(int_file, &i_size, sizeof(size_t));
-
-		for(int i = 0; i < 10001; ++i) {
-			write_n(int_file, &(int_db[i]), sizeof(size_t));
-		}
-
-		write_n(int_file, (void *) "\n", 1);
-
-		fflush(int_file);
-		fclose(int_file);
-
-		int_file = NULL;
-
-		i_size = 0;
-		int_db[10001] = { 0 };
-	}
-
-	return R_NilValue;
-}
-
-
-/**
  * Load the indices associated with the gbov.
  * @method load_indices
  * @return R_NilValue on success throw and error otherwise
@@ -165,41 +99,11 @@ SEXP load_indices(SEXP indices) {
 
 
 /**
- * Create the gbov. (Must be called before create_indices)
- * @method load_gbov
- * @return R_NilValue on success throw and error otherwise
- */
-SEXP create_gbov(SEXP gbov) {
-	db_file = open_file(gbov);
-	fseek(db_file, offset, SEEK_SET);
-	return R_NilValue;
-}
-
-
-/**
- * Load the gbov. (Must be called before load_indices)
- * @method load_gbov
- * @return R_NilValue on success throw and error otherwise
- */
-SEXP load_gbov(SEXP gbov) {
-	return create_gbov(gbov);
-}
-
-
-/**
  * This function closes a database.
  * @method record_close
  * @param  file_ptr     wrapped FILE pointer
  */
 SEXP close_db() {
-	if (db_file) {
-		write_n(db_file, (void *) "\n", 1);
-		fflush(db_file);
-		if (fclose(db_file)) {
-			Rf_error("Could not close the database.");
-		}
-		db_file = NULL;
-	}
 
 	if (index_file) {
 		// TODO: Think about ways to reuse rather than overwrite
@@ -525,6 +429,112 @@ SEXP close_stats() {
 			Rf_error("Could not close the stats file.");
 		}
 		stats_file = NULL;
+	}
+
+	return R_NilValue;
+}
+
+/**
+ * Create the common ints storage
+ * @method create_ints
+ * @param  ints        file name
+ * @return             R_NilValue on succcecss
+ */
+SEXP create_ints(SEXP ints) {
+	int_file = open_file(ints);
+
+	i_size = 0;
+	for (int i = 0; i < 10001; ++i) {
+		int_db[i] = 0;
+	}
+
+	return R_NilValue;
+}
+
+
+/**
+ * Loads ints.bin in the database
+ * @method loads_ints
+ * @return R_NilValue on success throw and error otherwise
+ */
+SEXP load_ints(SEXP ints) {
+	create_ints(ints);
+
+	read_n(int_file, &i_size, sizeof(size_t));
+
+	for (size_t i = 0; i < 10001; ++i) {
+		read_n(int_file, int_db + i, sizeof(size_t));
+	}
+
+	return R_NilValue;
+}
+
+
+/**
+ * This function writes ints data to file and close the file.
+ * @method close_ints
+ * @return [description]
+ */
+SEXP close_ints() {
+	if (int_file) {
+		fseek(int_file, 0, SEEK_SET);
+
+		write_n(int_file, &i_size, sizeof(size_t));
+
+		for(int i = 0; i < 10001; ++i) {
+			write_n(int_file, &(int_db[i]), sizeof(size_t));
+		}
+
+		write_n(int_file, (void *) "\n", 1);
+
+		fflush(int_file);
+		fclose(int_file);
+
+		int_file = NULL;
+
+		i_size = 0;
+		int_db[10001] = { 0 };
+	}
+
+	return R_NilValue;
+}
+
+
+/**
+ * Create the gbov. (Must be called before create_indices)
+ * @method load_gbov
+ * @return R_NilValue on success throw and error otherwise
+ */
+SEXP create_gbov(SEXP gbov) {
+	db_file = open_file(gbov);
+	fseek(db_file, offset, SEEK_SET);
+	return R_NilValue;
+}
+
+
+/**
+ * Load the gbov. (Must be called before load_indices)
+ * @method load_gbov
+ * @return R_NilValue on success throw and error otherwise
+ */
+SEXP load_gbov(SEXP gbov) {
+	return create_gbov(gbov);
+}
+
+
+/**
+ * This functions writes generic R val store to file and closes the file.
+ * @method close_gbov
+ * @return R_NilValue on success
+ */
+SEXP close_gbov() {
+	if (db_file) {
+		write_n(db_file, (void *) "\n", 1);
+		fflush(db_file);
+		if (fclose(db_file)) {
+			Rf_error("Could not close the database.");
+		}
+		db_file = NULL;
 	}
 
 	return R_NilValue;
