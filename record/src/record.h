@@ -17,31 +17,6 @@ SEXP close_db();
 
 
 /**
- * Create the gbov.
- * @method load_gbov
- * @return R_NilValue on success, throw and error otherwise
- */
-
-SEXP create_gbov(SEXP gbov);
-
-
-/**
- * Load the gbov.
- * @method load_gbov
- * @return R_NilValue on success, throw and error otherwise
- */
-SEXP load_gbov(SEXP gbov);
-
-
-/**
- * This functions writes generic R val store to file and closes the file.
- * @method close_gbov
- * @return R_NilValue on success
- */
-SEXP close_gbov();
-
-
-/**
  * Load the indices associated with the gbov.
  * @method load_indices
  * @return R_NilValue on success, throw and error otherwise
@@ -55,6 +30,14 @@ SEXP create_indices(SEXP indices);
  * @return R_NilValue on success, throw and error otherwise
  */
 SEXP load_indices(SEXP indices);
+
+
+/**
+ * This function  writes indices to file and closes the file.
+ * @method close_indices
+ * @return [description]
+ */
+SEXP close_indices();
 
 
 /**
@@ -177,6 +160,31 @@ SEXP load_ints(SEXP ints);
  * @return R_NilValue on success
  */
 SEXP close_ints();
+
+
+/**
+ * Create the gbov.
+ * @method load_gbov
+ * @return R_NilValue on success, throw and error otherwise
+ */
+
+SEXP create_gbov(SEXP gbov);
+
+
+/**
+ * Load the gbov.
+ * @method load_gbov
+ * @return R_NilValue on success, throw and error otherwise
+ */
+SEXP load_gbov(SEXP gbov);
+
+
+/**
+ * This functions writes generic R val store to file and closes the file.
+ * @method close_gbov
+ * @return R_NilValue on success
+ */
+SEXP close_gbov();
 
 
 #ifdef __cplusplus

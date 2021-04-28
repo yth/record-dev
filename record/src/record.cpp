@@ -58,79 +58,11 @@ size_t bytes_serialized = 0;
 size_t bytes_unserialized = 0;
 
 /**
- * Load the indices associated with the gbov.
- * @method load_indices
- * @return R_NilValue on success throw and error otherwise
- */
-SEXP create_indices(SEXP indices) {
-	index_file = open_file(indices);
-
-	offset = 0;
-	size = 0;
-	count = 0;
-
-	gbov_map = new std::map<std::string, size_t>;
-	vector = make_vector(1 << 30);
-	return R_NilValue;
-}
-
-/**
- * Load the indices associated with the gbov.
- * @method load_indices
- * @return R_NilValue on success throw and error otherwise
- */
-SEXP load_indices(SEXP indices) {
-	create_indices(indices);
-
-	read_n(index_file, &offset, sizeof(size_t));
-	read_n(index_file, &size, sizeof(size_t));
-	read_n(index_file, &count, sizeof(int));
-
-	size_t start = 0;
-	char hash[20];
-	for (size_t i = 0; i < size - i_size; ++i) {
-		read_n(index_file, hash, 20);
-		read_n(index_file, &start, sizeof(size_t));
-		(*gbov_map)[std::string(hash, 20)] = start;
-	}
-
-	return R_NilValue;
-}
-
-
-/**
  * This function closes a database.
  * @method record_close
  * @param  file_ptr     wrapped FILE pointer
  */
 SEXP close_db() {
-
-	if (index_file) {
-		// TODO: Think about ways to reuse rather than overwrite
-		// TODO: Error check
-		fseek(index_file, 0, SEEK_SET);
-		// TODO: Create a write_n function or check success here
-		write_n(index_file, &offset, sizeof(size_t));
-		offset = 0;
-
-		write_n(index_file, &size, sizeof(size_t));
-		size = 0;
-
-		write_n(index_file, &count, sizeof(int));
-		count = 0;
-
-		std::map<std::string, size_t>::iterator it;
-		for(it = gbov_map->begin(); it != gbov_map->end(); it++) {
-			write_n(index_file, (void *) it->first.c_str(), 20);
-			write_n(index_file, &(it->second), sizeof(size_t));
-		}
-
-		write_n(index_file, (void *) "\n", 1);
-		fflush(index_file);
-		fclose(index_file);
-		index_file = NULL;
-	}
-
 	if (gbov_map) {
 		delete gbov_map;
 		gbov_map = NULL;
@@ -539,4 +471,82 @@ SEXP close_gbov() {
 
 	return R_NilValue;
 }
+
+
+/**
+ * Load the indices associated with the gbov.
+ * @method load_indices
+ * @return R_NilValue on success throw and error otherwise
+ */
+SEXP create_indices(SEXP indices) {
+	index_file = open_file(indices);
+
+	offset = 0;
+	size = 0;
+	count = 0;
+
+	gbov_map = new std::map<std::string, size_t>;
+	vector = make_vector(1 << 30);
+	return R_NilValue;
+}
+
+/**
+ * Load the indices associated with the gbov.
+ * @method load_indices
+ * @return R_NilValue on success throw and error otherwise
+ */
+SEXP load_indices(SEXP indices) {
+	create_indices(indices);
+
+	read_n(index_file, &offset, sizeof(size_t));
+	read_n(index_file, &size, sizeof(size_t));
+	read_n(index_file, &count, sizeof(int));
+
+	size_t start = 0;
+	char hash[20];
+	for (size_t i = 0; i < size - i_size; ++i) {
+		read_n(index_file, hash, 20);
+		read_n(index_file, &start, sizeof(size_t));
+		(*gbov_map)[std::string(hash, 20)] = start;
+	}
+
+	return R_NilValue;
+}
+
+
+/**
+ * This function  writes indices to file and closes the file.
+ * @method close_indices
+ * @return [description]
+ */
+SEXP close_indices() {
+	if (index_file) {
+		// TODO: Think about ways to reuse rather than overwrite
+		// TODO: Error check
+		fseek(index_file, 0, SEEK_SET);
+		// TODO: Create a write_n function or check success here
+		write_n(index_file, &offset, sizeof(size_t));
+		offset = 0;
+
+		write_n(index_file, &size, sizeof(size_t));
+		size = 0;
+
+		write_n(index_file, &count, sizeof(int));
+		count = 0;
+
+		std::map<std::string, size_t>::iterator it;
+		for(it = gbov_map->begin(); it != gbov_map->end(); it++) {
+			write_n(index_file, (void *) it->first.c_str(), 20);
+			write_n(index_file, &(it->second), sizeof(size_t));
+		}
+
+		write_n(index_file, (void *) "\n", 1);
+		fflush(index_file);
+		fclose(index_file);
+		index_file = NULL;
+	}
+
+	return R_NilValue;
+}
+
 

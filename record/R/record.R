@@ -37,9 +37,10 @@ open_db <- function(db = "db", create = FALSE) {
 
 #' @export
 close_db <- function(file) {
+	.Call(RCRD_close_indices)
 	.Call(RCRD_close_gbov)
-	.Call(RCRD_close_db)
 	.Call(RCRD_close_ints)
+	.Call(RCRD_close_db)
 	.Call(RCRD_close_stats)
 }
 

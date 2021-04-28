@@ -17,6 +17,7 @@ static const R_CallMethodDef callMethods[] = {
 	{"close_db", 		(DL_FUNC) &close_db,		0},
 	{"create_indices", 	(DL_FUNC) &create_indices, 	1},
 	{"load_indices", 	(DL_FUNC) &load_indices,	1},
+	{"close_indices",	(DL_FUNC) &close_indices,	0},
 	{"create_gbov", 	(DL_FUNC) &create_gbov,		1},
 	{"load_gbov", 		(DL_FUNC) &load_gbov,		1},
 	{"close_gbov",		(DL_FUNC) &close_gbov,		0},
