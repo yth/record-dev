@@ -9,7 +9,12 @@ open_db <- function(db = "db", create = FALSE) {
 		} else if (!file.exists(paste0(db, "/gbov.bin"))) {
 			stop(paste0(db, " is not a database."))
 		} else {# valid database
+			# This must be called first
+			.Call(RCRD_setup)
+
+			# This must be called second
 			.Call(RCRD_load_stats, paste0(db, "/stats.bin"))
+
 			.Call(RCRD_load_ints, paste0(db, "/ints.bin"))
 			.Call(RCRD_load_indices, paste0(db, "/indices.bin"))
 			.Call(RCRD_load_gbov, paste0(db, "/gbov.bin"))
@@ -27,7 +32,12 @@ open_db <- function(db = "db", create = FALSE) {
 
 			file.create(ints, gbov, indices, stats, showWarnings = TRUE)
 
+			# This must be called first
+			.Call(RCRD_setup)
+
+			# This must be called second
 			.Call(RCRD_create_stats, stats)
+
 			.Call(RCRD_create_ints, ints)
 			.Call(RCRD_create_indices, indices)
 			.Call(RCRD_create_gbov, gbov)
@@ -40,8 +50,12 @@ close_db <- function(file) {
 	.Call(RCRD_close_indices)
 	.Call(RCRD_close_gbov)
 	.Call(RCRD_close_ints)
-	.Call(RCRD_close_db)
+
+	# This must be called second to last
 	.Call(RCRD_close_stats)
+
+	# This must be called last
+	.Call(RCRD_teardown)
 }
 
 #' @export

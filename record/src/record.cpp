@@ -57,12 +57,26 @@ size_t bytes_written = 0;
 size_t bytes_serialized = 0;
 size_t bytes_unserialized = 0;
 
+
+
 /**
- * This function closes a database.
- * @method record_close
- * @param  file_ptr     wrapped FILE pointer
+ * This function sets up the initiatial state of the database.
+ * This function must be called first.
+ * @method setup
+ * @return R_NilValue on succecss
  */
-SEXP close_db() {
+SEXP setup() {
+	return R_NilValue;
+}
+
+
+/**
+ * This function tears down all traces of the database after running.
+ * This function must be called last.
+ * @method setup
+ * @return R_NilValue on succecss
+ */
+SEXP teardown() {
 	if (gbov_map) {
 		delete gbov_map;
 		gbov_map = NULL;

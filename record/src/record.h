@@ -8,12 +8,23 @@
 extern "C" {
 #endif
 
+
 /**
- * This function closes a database.
- * @method close_db
- * @return R_NilValue on success
+ * This function sets up the initiatial state of the database.
+ * This function must be called first.
+ * @method setup
+ * @return R_NilValue on succecss
  */
-SEXP close_db();
+SEXP setup();
+
+
+/**
+ * This function tears down all traces of the database after running.
+ * This function must be called last.
+ * @method setup
+ * @return R_NilValue on succecss
+ */
+SEXP teardown();
 
 
 /**

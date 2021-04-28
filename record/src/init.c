@@ -14,7 +14,8 @@
 static const R_CallMethodDef callMethods[] = {
 	//name, casted pointer to function, # of arg?
 	{"hello", 			(DL_FUNC) &hello,			1},
-	{"close_db", 		(DL_FUNC) &close_db,		0},
+	{"setup",			(DL_FUNC) &setup,			0},
+	{"teardown",		(DL_FUNC) &teardown,		0},
 	{"create_indices", 	(DL_FUNC) &create_indices, 	1},
 	{"load_indices", 	(DL_FUNC) &load_indices,	1},
 	{"close_indices",	(DL_FUNC) &close_indices,	0},
