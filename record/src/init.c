@@ -22,6 +22,7 @@ static const R_CallMethodDef callMethods[] = {
 	{"load_gbov", 		(DL_FUNC) &load_gbov,		1},
 	{"load_indices", 	(DL_FUNC) &load_indices,	1},
 	{"load_ints", 		(DL_FUNC) &load_ints,		1},
+	{"close_ints",		(DL_FUNC) &close_ints,		0},
 	{"load_stats", 		(DL_FUNC) &load_stats,		1},
 	{"close_stats",		(DL_FUNC) &close_stats,		0},
 	{"add_val", 		(DL_FUNC) &add_val,			1},

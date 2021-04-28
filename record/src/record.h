@@ -9,14 +9,6 @@ extern "C" {
 #endif
 
 /**
- * This function creates a database for a collection of values.
- * @method open_db
- * @return R_NilValue; File pointer is kept in the C layer
- */
-SEXP open_db(SEXP filename);
-
-
-/**
  * This function closes a database.
  * @method close_db
  * @return R_NilValue on success
@@ -25,20 +17,11 @@ SEXP close_db();
 
 
 /**
- * This functions writes lifetime database information to file.
- * @method close_stats
+ * This function writes ints data to file and close the file.
+ * @method close_ints
  * @return R_NilValue on success
  */
-SEXP close_stats();
-
-
-/**
- * Loads stats.bin in the database
- * @method load_stats
- * @return R_NilValue on success, throw and error otherwise
- */
-SEXP load_stats(SEXP stats);
-
+SEXP close_ints();
 
 /**
  * Loads ints.bin in the database
@@ -62,14 +45,6 @@ SEXP load_gbov(SEXP gbov);
  * @return R_NilValue on success, throw and error otherwise
  */
 SEXP load_indices(SEXP indices);
-
-
-/**
- * Create stats.bin in the database
- * @method create_stats
- * @return R_NilValue on success, throw and error otherwise
- */
-SEXP create_stats(SEXP stats);
 
 
 /**
@@ -170,6 +145,30 @@ SEXP sample_val();
  * @method report
  */
 SEXP report();
+
+/**
+ * Create stats.bin in the database
+ * @method create_stats
+ * @return R_NilValue on success, throw and error otherwise
+ */
+SEXP create_stats(SEXP stats);
+
+
+/**
+ * Loads stats.bin in the database
+ * @method load_stats
+ * @return R_NilValue on success, throw and error otherwise
+ */
+SEXP load_stats(SEXP stats);
+
+
+/**
+ * This function writesdatabase information to file and close the file.
+ * @method close_stats
+ * @return R_NilValue on success
+ */
+SEXP close_stats();
+
 
 #ifdef __cplusplus
 } // extern "C"
