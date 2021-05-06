@@ -25,6 +25,9 @@ static const R_CallMethodDef callMethods[] = {
 	{"load_stats_store",		(DL_FUNC) &load_stats_store,		1},
 	{"close_stats_store",		(DL_FUNC) &close_stats_store,		0},
 	{"report",					(DL_FUNC) &report,					0},
+	{"size_db",					(DL_FUNC) &size_db,					0},
+	{"size_ints",				(DL_FUNC) &size_ints,				0},
+	{"count_vals",				(DL_FUNC) &count_vals,				0},
 
 	{"create_indices",			(DL_FUNC) &create_indices, 			1},
 	{"load_indices",			(DL_FUNC) &load_indices,			1},
@@ -39,9 +42,6 @@ static const R_CallMethodDef callMethods[] = {
 	{"add_int",					(DL_FUNC) &add_int,					1},
 	{"have_seen",				(DL_FUNC) &have_seen,				1},
 	{"have_seen_int",			(DL_FUNC) &have_seen_int,			1},
-	{"size_db",					(DL_FUNC) &size_db,					0},
-	{"size_ints",				(DL_FUNC) &size_ints,				0},
-	{"count_vals",				(DL_FUNC) &count_vals,				0},
 	{"sample_val",				(DL_FUNC) &sample_val,				0},
 	// TODO: Implement this
 	{"get_vals",				(DL_FUNC) &read_vals,				2},
