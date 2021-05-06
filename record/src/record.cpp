@@ -186,14 +186,6 @@ SEXP have_seen(SEXP val) {
 
 }
 
-SEXP count_vals() {
-	SEXP ret = PROTECT(allocVector(INTSXP, 1));
-	INTEGER(ret)[0] = count;
-	UNPROTECT(1);
-
-	return ret;
-}
-
 SEXP read_vals(SEXP from, SEXP to) {
   //TODO
 	return R_NilValue;
@@ -252,22 +244,6 @@ SEXP sample_val() {
 	vector->capacity = 1 << 30;
 
 	return res;
-}
-
-SEXP size_db() {
-	SEXP ret = PROTECT(allocVector(INTSXP, 1));
-	INTEGER(ret)[0] = size;
-	UNPROTECT(1);
-
-	return ret;
-}
-
-SEXP size_ints() {
-	SEXP ret = PROTECT(allocVector(INTSXP, 1));
-	INTEGER(ret)[0] = i_size;
-	UNPROTECT(1);
-
-	return ret;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

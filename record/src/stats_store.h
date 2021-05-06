@@ -35,6 +35,27 @@ SEXP close_stats_store();
  */
 SEXP report();
 
+/**
+ * This function asks for how many R values the C add_val has seen.
+ * @method count_vals
+ * @return number of total values encountered by add_val
+ */
+SEXP count_vals();
+
+/**
+ * This function asks for how many values are stored in the database
+ * @method size_db
+ * @return [description]
+ */
+SEXP size_db();
+
+/**
+ * This function asks for how many simple integer values stored in the database
+ * @method size_ints
+ * @return [description]
+ */
+SEXP size_ints();
+
 #ifdef __cplusplus
 } // extern "C"
 #endif

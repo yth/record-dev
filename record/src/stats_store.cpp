@@ -136,3 +136,27 @@ SEXP report() {
 
 	return R_NilValue;
 }
+
+SEXP count_vals() {
+	SEXP ret = PROTECT(allocVector(INTSXP, 1));
+	INTEGER(ret)[0] = count;
+	UNPROTECT(1);
+
+	return ret;
+}
+
+SEXP size_db() {
+	SEXP ret = PROTECT(allocVector(INTSXP, 1));
+	INTEGER(ret)[0] = size;
+	UNPROTECT(1);
+
+	return ret;
+}
+
+SEXP size_ints() {
+	SEXP ret = PROTECT(allocVector(INTSXP, 1));
+	INTEGER(ret)[0] = i_size;
+	UNPROTECT(1);
+
+	return ret;
+}

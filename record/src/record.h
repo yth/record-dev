@@ -88,21 +88,6 @@ SEXP have_seen_int(SEXP val);
 
 /**
  * This function asks if the C layer has seen a R value.
- * @method count_vals
- * @param
- * @return  number of total values encountered
- */
-SEXP count_vals();
-
-
-SEXP size_db();
-
-
-SEXP size_ints();
-
-
-/**
- * This function asks if the C layer has seen a R value.
  * @method read_vals
  * @param   from, to
  * @return  values from to
