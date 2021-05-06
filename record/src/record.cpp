@@ -14,13 +14,15 @@
 
 #include "stats_store.h"
 
+// Pulled in from stats_store.cpp
+extern size_t count;
+extern size_t size;
+
 // Globals
 FILE *db_file = NULL;
 FILE *index_file = NULL;
 size_t offset = 0;
-// TODO: Give count and size better names
-size_t count = 0; // TODO: Consider: Maybe better to make this a double
-size_t size = 0; // TODO: Consider: Maybe better to make this a double
+
 std::map<std::string, size_t> *gbov_map = NULL;
 
 
