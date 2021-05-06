@@ -80,10 +80,8 @@ SEXP teardown() {
 SEXP add_val(SEXP val) {
 	count += 1;
 
-	if (IS_SIMPLE_SCALAR(val, INTSXP)) {
-		if (asInteger(val) <= INT_STORE_MAX && asInteger(val) >= INT_STORE_MIN) {
-			return add_int(val);
-		}
+	if (is_simple_int(val)) {
+		return add_int(val);
 	}
 
 	serialize_val(vector, val);
@@ -118,10 +116,8 @@ SEXP add_val(SEXP val) {
 }
 
 SEXP have_seen(SEXP val) {
-	if (IS_SIMPLE_SCALAR(val, INTSXP)) {
-		if (asInteger(val) <= INT_STORE_MAX && asInteger(val) >= INT_STORE_MIN) {
-			return have_seen_int(val);
-		}
+	if (is_simple_int(val)) {
+		return have_seen_int(val);
 	}
 
 	serialize_val(vector, val);

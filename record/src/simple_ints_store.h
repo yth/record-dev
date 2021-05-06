@@ -31,6 +31,14 @@ SEXP load_ints(SEXP ints);
 SEXP close_ints();
 
 /**
+ * This function assess if the input is a simple integer
+ * @method is_simple_int
+ * @param  SEXP          Any R value
+ * @return               1 if it is a simple int, 0 otherwise
+ */
+int is_simple_int(SEXP value);
+
+/**
  * Adds an R scalar integer value to a separate int database.
  * @method add_int
  * @param  val strictly an integer value from -5000 to 5000
