@@ -8,6 +8,9 @@
 
 
 #include "hello.h"
+
+#include "stats_store.h"
+
 #include "record.h"
 
 
