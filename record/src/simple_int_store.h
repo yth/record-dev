@@ -1,8 +1,8 @@
 #include <R.h>
 #include <Rinternals.h>
 
-#ifndef RCRD_SIMPLE_INTS_STORE_H
-#define RCRD_SIMPLE_INTS_STORE_H
+#ifndef RCRD_SIMPLE_INT_STORE_H
+#define RCRD_SIMPLE_INT_STORE_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -65,4 +65,4 @@ SEXP get_simple_int(int index);
 } // extern "C"
 #endif
 
-#endif // RCRD_SIMPLE_INTS_STORE_H
+#endif // RCRD_SIMPLE_INT_STORE_H
