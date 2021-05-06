@@ -13,7 +13,7 @@ extern "C" {
  * @method create_stats
  * @return R_NilValue on success, throw and error otherwise
  */
-SEXP initiate_stats_store(SEXP stats);
+SEXP init_stats_store(SEXP stats);
 
 /**
  * Loads stats.bin in the database

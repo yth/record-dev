@@ -22,7 +22,7 @@ static const R_CallMethodDef callMethods[] = {
 	{"teardown",				(DL_FUNC) &teardown,				0},
 
 	// stats store related
-	{"initiate_stats_store",	(DL_FUNC) &initiate_stats_store,	1},
+	{"init_stats_store",		(DL_FUNC) &init_stats_store,	1},
 	{"load_stats_store",		(DL_FUNC) &load_stats_store,		1},
 	{"close_stats_store",		(DL_FUNC) &close_stats_store,		0},
 	{"report",					(DL_FUNC) &report,					0},

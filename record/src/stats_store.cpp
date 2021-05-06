@@ -30,7 +30,7 @@ size_t i_size = 0;               // number of unique ints encountered
  * @method initiate_stats_store
  * @return R_NilValue on success, throw and error otherwise
  */
-SEXP initiate_stats_store(SEXP stats) {
+SEXP init_stats_store(SEXP stats) {
 	stats_file = open_file(stats);
 
 	bytes_read_session = 0;
@@ -52,7 +52,7 @@ SEXP initiate_stats_store(SEXP stats) {
  * @return R_NilValue on success, throw and error otherwise
  */
 SEXP load_stats_store(SEXP stats) {
-	initiate_stats_store(stats);
+	init_stats_store(stats);
 
 	read_n(stats_file, &bytes_read, sizeof(size_t));
 	read_n(stats_file, &bytes_written, sizeof(size_t));
