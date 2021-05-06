@@ -54,6 +54,13 @@ SEXP add_int(SEXP val);
  */
 SEXP have_seen_int(SEXP val);
 
+/**
+ * This function samples from the simple ints that the database has.
+ * @method get_int
+ * @return [description]
+ */
+SEXP get_int(int index);
+
 #ifdef __cplusplus
 } // extern "C"
 #endif

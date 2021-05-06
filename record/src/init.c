@@ -37,6 +37,7 @@ static const R_CallMethodDef callMethods[] = {
 	{"is_simple_int",			(DL_FUNC) &is_simple_int,			1},
 	{"add_int",					(DL_FUNC) &add_int,					1},
 	{"have_seen_int",			(DL_FUNC) &have_seen_int,			1},
+	{"get_int",					(DL_FUNC) &get_int,					1},
 
 	{"create_indices",			(DL_FUNC) &create_indices, 			1},
 	{"load_indices",			(DL_FUNC) &load_indices,			1},

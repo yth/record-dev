@@ -130,3 +130,36 @@ SEXP have_seen_int(SEXP val) {
 	return res;
 }
 
+/**
+ * This function gets the index'th valid int recorded in the database.
+ * @method get_int
+ * @return [description]
+ */
+SEXP get_int(int index) {
+	if (i_size < 10001) {
+		int values_passed = 0;
+		for (int i = 0; i < 10001; ++i) {
+			if (int_db[i] > 0) {
+				++values_passed;
+			}
+
+			if (values_passed == index + 1) {
+				SEXP res;
+				R_xlen_t n = 1;
+				PROTECT(res = allocVector(INTSXP, n));
+				int *res_ptr = INTEGER(res);
+				res_ptr[0] = i - INT_STORE_MAX;
+				UNPROTECT(1);
+				return res;
+			}
+		}
+	} else {
+		SEXP res;
+		R_xlen_t n = 1;
+		PROTECT(res = allocVector(INTSXP, n));
+		int *res_ptr = INTEGER(res);
+		res_ptr[0] = index - INT_STORE_MAX;
+		UNPROTECT(1);
+		return res;
+	}
+}

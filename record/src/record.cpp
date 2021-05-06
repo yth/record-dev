@@ -152,35 +152,10 @@ SEXP read_vals(SEXP from, SEXP to) {
 
 SEXP sample_val() {
 	// Specify a random value
-	// TODO: Find a bette rand() function that can return any size_t value
+	// TODO: Find a better rand() function that can return any size_t value
 	int random_index = rand() % size;
 	if (random_index < i_size) {
-		if (i_size < 10001) {
-			int values_passed = 0;
-			for (int i = 0; i < 10001; ++i) {
-				if (int_db[i] > 0) {
-					++values_passed;
-				}
-
-				if (values_passed == random_index + 1) {
-					SEXP res;
-					R_xlen_t n = 1;
-					PROTECT(res = allocVector(INTSXP, n));
-					int *res_ptr = INTEGER(res);
-					res_ptr[0] = i - 5000;
-					UNPROTECT(1);
-					return res;
-				}
-			}
-		} else {
-			SEXP res;
-			R_xlen_t n = 1;
-			PROTECT(res = allocVector(INTSXP, n));
-			int *res_ptr = INTEGER(res);
-			res_ptr[0] = random_index - 5000;
-			UNPROTECT(1);
-			return res;
-		}
+		return get_int(random_index);
 	}
 
 	std::map<std::string, size_t>::iterator it;
