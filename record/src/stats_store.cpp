@@ -43,6 +43,8 @@ SEXP init_stats_store(SEXP stats) {
 	size = 0;
 	count = 0;
 
+	i_size = 0;
+
 	return R_NilValue;
 }
 
@@ -64,8 +66,7 @@ SEXP load_stats_store(SEXP stats) {
 	read_n(stats_file, &offset, sizeof(size_t));
 	read_n(stats_file, &size, sizeof(size_t));
 	read_n(stats_file, &count, sizeof(int));
-
-
+	read_n(stats_file, &i_size, sizeof(size_t));
 
 	return R_NilValue;
 }
@@ -96,6 +97,10 @@ SEXP close_stats_store() {
 		write_n(stats_file, &count, sizeof(int));
 		count = 0;
 
+		write_n(stats_file, &i_size, sizeof(size_t));
+		i_size = 0;
+
+		// Safety byte
 		write_n(stats_file, (void *) "\n", 1);
 		fflush(stats_file);
 

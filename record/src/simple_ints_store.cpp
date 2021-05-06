@@ -21,7 +21,6 @@ extern size_t i_size;
 SEXP init_simple_ints_store(SEXP ints) {
 	int_file = open_file(ints);
 
-	i_size = 0;
 	for (int i = 0; i < 10001; ++i) {
 		int_db[i] = 0;
 	}
@@ -36,8 +35,6 @@ SEXP init_simple_ints_store(SEXP ints) {
  */
 SEXP load_ints(SEXP ints) {
 	init_simple_ints_store(ints);
-
-	read_n(int_file, &i_size, sizeof(size_t));
 
 	for (size_t i = 0; i < 10001; ++i) {
 		read_n(int_file, int_db + i, sizeof(size_t));
@@ -56,8 +53,6 @@ SEXP close_ints() {
 	if (int_file) {
 		fseek(int_file, 0, SEEK_SET);
 
-		write_n(int_file, &i_size, sizeof(size_t));
-
 		for(int i = 0; i < 10001; ++i) {
 			write_n(int_file, &(int_db[i]), sizeof(size_t));
 		}
@@ -69,7 +64,6 @@ SEXP close_ints() {
 
 		int_file = NULL;
 
-		i_size = 0;
 		int_db[10001] = { 0 };
 	}
 
