@@ -13,7 +13,7 @@
 #include "helper.h"
 
 #include "stats_store.h"
-#include "simple_ints_store.h"
+#include "simple_int_store.h"
 
 
 // Pulled in from stats_store.cpp
@@ -77,7 +77,7 @@ SEXP add_val(SEXP val) {
 	count += 1;
 
 	if (is_simple_int(val)) {
-		return add_int(val);
+		return add_simple_int(val);
 	}
 
 	serialize_val(vector, val);
@@ -113,7 +113,7 @@ SEXP add_val(SEXP val) {
 
 SEXP have_seen(SEXP val) {
 	if (is_simple_int(val)) {
-		return have_seen_int(val);
+		return have_seen_simple_int(val);
 	}
 
 	serialize_val(vector, val);
@@ -151,7 +151,7 @@ SEXP sample_val() {
 	// TODO: Find a better rand() function that can return any size_t value
 	int random_index = rand() % size;
 	if (random_index < i_size) {
-		return get_int(random_index);
+		return get_simple_int(random_index);
 	}
 
 	std::map<std::string, size_t>::iterator it;

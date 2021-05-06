@@ -1,4 +1,4 @@
-#include "simple_ints_store.h"
+#include "simple_int_store.h"
 
 #include "helper.h"
 
@@ -18,7 +18,7 @@ extern size_t i_size;
  * @param  ints        file name
  * @return             R_NilValue on succcecss
  */
-SEXP init_simple_ints_store(SEXP ints) {
+SEXP init_simple_int_store(SEXP ints) {
 	int_file = open_file(ints);
 
 	for (int i = 0; i < 10001; ++i) {
@@ -33,8 +33,8 @@ SEXP init_simple_ints_store(SEXP ints) {
  * @method loads_ints
  * @return R_NilValue on success throw and error otherwise
  */
-SEXP load_ints(SEXP ints) {
-	init_simple_ints_store(ints);
+SEXP load_simple_int_store(SEXP ints) {
+	init_simple_int_store(ints);
 
 	for (size_t i = 0; i < 10001; ++i) {
 		read_n(int_file, int_db + i, sizeof(size_t));
@@ -49,7 +49,7 @@ SEXP load_ints(SEXP ints) {
  * @method close_ints
  * @return [description]
  */
-SEXP close_ints() {
+SEXP close_simple_int_store() {
 	if (int_file) {
 		fseek(int_file, 0, SEEK_SET);
 
@@ -93,7 +93,7 @@ int is_simple_int(SEXP value) {
  * @param  val strictly an integer value from -5000 to 5000
  * @return val
  */
-SEXP add_int(SEXP val) {
+SEXP add_simple_int(SEXP val) {
 	int int_val = Rf_asInteger(val) + 5000; // int_db[0] represents -5000L
 	if(int_db[int_val] == 0) {
 		int_db[int_val] += 1;
@@ -108,7 +108,7 @@ SEXP add_int(SEXP val) {
 }
 
 // TODO: Let people pass in ints instead
-SEXP have_seen_int(SEXP val) {
+SEXP have_seen_simple_int(SEXP val) {
 	int index = Rf_asInteger(val) + 5000;
 	int found = 0;
 	if (int_db[index]) {
@@ -129,7 +129,7 @@ SEXP have_seen_int(SEXP val) {
  * @method get_int
  * @return [description]
  */
-SEXP get_int(int index) {
+SEXP get_simple_int(int index) {
 	if (i_size < 10001) {
 		int values_passed = 0;
 		for (int i = 0; i < 10001; ++i) {

@@ -14,21 +14,21 @@ extern "C" {
  * @param  ints        file name
  * @return             R_NilValue on succcecss
  */
-SEXP init_simple_ints_store(SEXP ints);
+SEXP init_simple_int_store(SEXP ints);
 
 /**
  * Loads ints.bin in the database
  * @method load_ints
  * @return R_NilValue on success, throw and error otherwise
  */
-SEXP load_ints(SEXP ints);
+SEXP load_simple_int_store(SEXP ints);
 
 /**
  * This function writes ints data to file and close the file.
  * @method close_ints
  * @return R_NilValue on success
  */
-SEXP close_ints();
+SEXP close_simple_int_store();
 
 /**
  * This function assess if the input is a simple integer
@@ -44,7 +44,7 @@ int is_simple_int(SEXP value);
  * @param  val strictly an integer value from -5000 to 5000
  * @return val
  */
-SEXP add_int(SEXP val);
+SEXP add_simple_int(SEXP val);
 
 /**
  * This function asks if the C layer has seen a int in range [-5000, 5000]
@@ -52,14 +52,14 @@ SEXP add_int(SEXP val);
  * @param  val       R value in form of SEXP
  * @return           R value of True or False as a SEXP
  */
-SEXP have_seen_int(SEXP val);
+SEXP have_seen_simple_int(SEXP val);
 
 /**
  * This function samples from the simple ints that the database has.
  * @method get_int
  * @return [description]
  */
-SEXP get_int(int index);
+SEXP get_simple_int(int index);
 
 #ifdef __cplusplus
 } // extern "C"

@@ -15,7 +15,7 @@ open_db <- function(db = "db", create = FALSE) {
 			# This must be called second
 			.Call(RCRD_load_stats_store, paste0(db, "/stats.bin"))
 
-			.Call(RCRD_load_ints, paste0(db, "/ints.bin"))
+			.Call(RCRD_load_simple_int_store, paste0(db, "/ints.bin"))
 			.Call(RCRD_load_indices, paste0(db, "/indices.bin"))
 			.Call(RCRD_load_gbov, paste0(db, "/gbov.bin"))
 		}
@@ -37,7 +37,7 @@ open_db <- function(db = "db", create = FALSE) {
 
 			# This must be called second
 			.Call(RCRD_init_stats_store, stats)
-			.Call(RCRD_init_simple_ints_store, ints)
+			.Call(RCRD_init_simple_int_store, ints)
 
 			.Call(RCRD_create_indices, indices)
 			.Call(RCRD_create_gbov, gbov)
@@ -49,7 +49,8 @@ open_db <- function(db = "db", create = FALSE) {
 close_db <- function(file) {
 	.Call(RCRD_close_indices)
 	.Call(RCRD_close_gbov)
-	.Call(RCRD_close_ints)
+
+	.Call(RCRD_close_simple_int_store)
 
 	# This must be called second to last
 	.Call(RCRD_close_stats_store)
