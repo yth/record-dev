@@ -1,3 +1,5 @@
+if (T) {
+
 test_that("print some report", {
 	open_db("test_db/some_report", create = TRUE)
 	s1 = "hello"
@@ -6,3 +8,5 @@ test_that("print some report", {
 	expect_silent(report())
 	close_db()
 })
+
+}
