@@ -17,11 +17,12 @@
 // Pulled in from stats_store.cpp
 extern size_t count;
 extern size_t size;
+extern size_t offset;
 
 // Globals
 FILE *db_file = NULL;
 FILE *index_file = NULL;
-size_t offset = 0;
+
 
 std::map<std::string, size_t> *gbov_map = NULL;
 

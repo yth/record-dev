@@ -19,9 +19,10 @@ size_t bytes_serialized = 0;
 size_t bytes_unserialized = 0;
 
 // Database Statistics
-// TODO: Give count and size better names
+// TODO: Give count, size, offset better names
 size_t count = 0; // TODO: Consider: Maybe better to make this a double
 size_t size = 0; // TODO: Consider: Maybe better to make this a double
+size_t offset = 0;
 
 /**
  * Create stats.bin in the database
@@ -104,6 +105,7 @@ SEXP report() {
 	printf("Database Statistics\n");
 	printf("  Unique elements in the database: %lu\n", size);
 	printf("  Elements tried to be added to the database: %lu\n", count);
+	printf("  Bytes in the generic database: %lu\n", offset);
 
 	return R_NilValue;
 }
