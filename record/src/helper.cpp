@@ -17,13 +17,6 @@ extern size_t bytes_written_session;
 extern size_t bytes_serialized_session;
 extern size_t bytes_unserialized_session;
 
-// Useful process counters
-extern size_t bytes_read_process;
-extern size_t bytes_written_process;
-
-extern size_t bytes_serialized_process;
-extern size_t bytes_unserialized_process;
-
 // Useful lifetime counters // Not implemented yet
 extern size_t bytes_read;
 extern size_t bytes_written;
@@ -47,8 +40,8 @@ void read_n(FILE* file, void *buf, size_t n) {
 		perror("read_n");
 		abort();
 	}
+
 	bytes_read_session += n;
-	bytes_read_process += n;
 	bytes_read += n;
 }
 
@@ -59,8 +52,8 @@ void write_n(FILE* file, void *buf, size_t n) {
 		perror("write_n");
 		abort();
 	}
+
 	bytes_written_session += n;
-	bytes_written_process += n;
 	bytes_written += n;
 }
 
@@ -76,7 +69,6 @@ void serialize_val(byte_vector_t vector, SEXP val) {
 	R_Serialize(val, stream);
 
 	bytes_serialized_session += vector->size;
-	bytes_serialized_process += vector->size;
 	bytes_serialized += vector->size;
 }
 
@@ -91,7 +83,6 @@ SEXP unserialize_val(byte_vector_t vector) {
 						NULL, R_NilValue);
 
 	bytes_unserialized_session += vector->capacity;
-	bytes_unserialized_process += vector->capacity;
 	bytes_unserialized += vector->capacity;
 
 	return R_Unserialize(stream);

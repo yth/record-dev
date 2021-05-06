@@ -44,13 +44,6 @@ extern size_t bytes_written_session;
 extern size_t bytes_serialized_session;
 extern size_t bytes_unserialized_session;
 
-// Useful process counters
-extern size_t bytes_read_process;
-extern size_t bytes_written_process;
-
-extern size_t bytes_serialized_process;
-extern size_t bytes_unserialized_process;
-
 // Useful lifetime counters // Not implemented yet
 extern size_t bytes_read;
 extern size_t bytes_written;
@@ -282,14 +275,6 @@ SEXP report() {
 	printf("  bytes written: %lu\n", bytes_written_session);
 	printf("  bytes serialized: %lu\n", bytes_serialized_session);
 	printf("  bytes unserialized: %lu\n", bytes_unserialized_session);
-	printf("\n");
-
-	// Process
-	printf("Process Information (APPROXIMATE ONLY):\n");
-	printf("  bytes read: %lu\n", bytes_read_process);
-	printf("  bytes written: %lu\n", bytes_written_process);
-	printf("  bytes serialized: %lu\n", bytes_serialized_process);
-	printf("  bytes unserialized: %lu\n", bytes_unserialized_process);
 	printf("\n");
 
 	// Lifetime // Not implemented; just placeholder
