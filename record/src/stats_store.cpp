@@ -78,3 +78,21 @@ SEXP close_stats_store() {
 	return R_NilValue;
 }
 
+SEXP report() {
+	// Session
+	printf("Session Information:\n");
+	printf("  bytes read: %lu\n", bytes_read_session);
+	printf("  bytes written: %lu\n", bytes_written_session);
+	printf("  bytes serialized: %lu\n", bytes_serialized_session);
+	printf("  bytes unserialized: %lu\n", bytes_unserialized_session);
+	printf("\n");
+
+	// Lifetime // Not implemented; just placeholder
+	printf("Database Lifetime Information (APPROXIMATE ONLY):\n");
+	printf("  bytes read: %lu\n", bytes_read);
+	printf("  bytes written: %lu\n", bytes_written);
+	printf("  bytes serialized: %lu\n", bytes_serialized);
+	printf("  bytes unserialized: %lu\n", bytes_unserialized);
+
+	return R_NilValue;
+}

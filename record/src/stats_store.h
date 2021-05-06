@@ -29,6 +29,12 @@ SEXP load_stats_store(SEXP stats);
  */
 SEXP close_stats_store();
 
+/**
+ * Report database statistics
+ * @method report
+ */
+SEXP report();
+
 #ifdef __cplusplus
 } // extern "C"
 #endif

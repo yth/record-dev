@@ -119,12 +119,6 @@ SEXP sample_val();
 
 
 /**
- * Report database statistics
- * @method report
- */
-SEXP report();
-
-/**
  * Create the common ints storage
  * @method create_ints
  * @param  ints        file name

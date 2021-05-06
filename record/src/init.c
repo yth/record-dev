@@ -15,13 +15,17 @@
 
 
 static const R_CallMethodDef callMethods[] = {
-	//name, casted pointer to function, # of arg?
+	/* name						casted ptr to function			# of args */
 	{"hello",					(DL_FUNC) &hello,					1},
 	{"setup",					(DL_FUNC) &setup,					0},
 	{"teardown",				(DL_FUNC) &teardown,				0},
+
+	// stats store related
 	{"initiate_stats_store",	(DL_FUNC) &initiate_stats_store,	1},
 	{"load_stats_store",		(DL_FUNC) &load_stats_store,		1},
 	{"close_stats_store",		(DL_FUNC) &close_stats_store,		0},
+	{"report",					(DL_FUNC) &report,					0},
+
 	{"create_indices",			(DL_FUNC) &create_indices, 			1},
 	{"load_indices",			(DL_FUNC) &load_indices,			1},
 	{"close_indices",			(DL_FUNC) &close_indices,			0},
@@ -41,7 +45,6 @@ static const R_CallMethodDef callMethods[] = {
 	{"sample_val",				(DL_FUNC) &sample_val,				0},
 	// TODO: Implement this
 	{"get_vals",				(DL_FUNC) &read_vals,				2},
-	{"report",					(DL_FUNC) &report,					0},
 	{NULL,						NULL,								0}
 };
 

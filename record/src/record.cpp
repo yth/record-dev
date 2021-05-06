@@ -35,23 +35,6 @@ size_t int_db[10001] = { 0 };    // hard wired to accommodate -5000 to 5000
 byte_vector_t vector = NULL;
 
 
-// Report Related
-
-// Useful session counters
-extern size_t bytes_read_session;
-extern size_t bytes_written_session;
-
-extern size_t bytes_serialized_session;
-extern size_t bytes_unserialized_session;
-
-// Useful lifetime counters // Not implemented yet
-extern size_t bytes_read;
-extern size_t bytes_written;
-
-extern size_t bytes_serialized;
-extern size_t bytes_unserialized;
-
-
 /**
  * This function sets up the initiatial state of the database.
  * This function must be called first.
@@ -268,25 +251,6 @@ SEXP sample_val() {
 	return res;
 }
 
-SEXP report() {
-	// Session
-	printf("Session Information:\n");
-	printf("  bytes read: %lu\n", bytes_read_session);
-	printf("  bytes written: %lu\n", bytes_written_session);
-	printf("  bytes serialized: %lu\n", bytes_serialized_session);
-	printf("  bytes unserialized: %lu\n", bytes_unserialized_session);
-	printf("\n");
-
-	// Lifetime // Not implemented; just placeholder
-	printf("Database Lifetime Information (APPROXIMATE ONLY):\n");
-	printf("  bytes read: %lu\n", bytes_read);
-	printf("  bytes written: %lu\n", bytes_written);
-	printf("  bytes serialized: %lu\n", bytes_serialized);
-	printf("  bytes unserialized: %lu\n", bytes_unserialized);
-
-	return R_NilValue;
-}
-
 SEXP size_db() {
 	SEXP ret = PROTECT(allocVector(INTSXP, 1));
 	INTEGER(ret)[0] = size;
@@ -487,5 +451,3 @@ SEXP close_indices() {
 
 	return R_NilValue;
 }
-
-
