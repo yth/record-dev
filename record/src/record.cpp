@@ -322,10 +322,10 @@ SEXP size_ints() {
 
 /**
  * Create stats.bin in the database
- * @method create_stats
+ * @method initiate_stats_store
  * @return R_NilValue on success, throw and error otherwise
  */
-SEXP create_stats(SEXP stats) {
+SEXP initiate_stats_store(SEXP stats) {
 	stats_file = open_file(stats);
 
 	bytes_read_session = 0;
@@ -342,8 +342,8 @@ SEXP create_stats(SEXP stats) {
  * @method load_stats
  * @return R_NilValue on success, throw and error otherwise
  */
-SEXP load_stats(SEXP stats) {
-	create_stats(stats);
+SEXP load_stats_store(SEXP stats) {
+	initiate_stats_store(stats);
 
 	read_n(stats_file, &bytes_read, sizeof(size_t));
 	read_n(stats_file, &bytes_written, sizeof(size_t));
@@ -354,7 +354,7 @@ SEXP load_stats(SEXP stats) {
 	return R_NilValue;
 }
 
-SEXP close_stats() {
+SEXP close_stats_store() {
 	if (stats_file) {
 		write_n(stats_file, &bytes_read, sizeof(size_t));
 		bytes_read = 0;

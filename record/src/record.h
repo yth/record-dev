@@ -129,7 +129,7 @@ SEXP report();
  * @method create_stats
  * @return R_NilValue on success, throw and error otherwise
  */
-SEXP create_stats(SEXP stats);
+SEXP initiate_stats_store(SEXP stats);
 
 
 /**
@@ -137,7 +137,7 @@ SEXP create_stats(SEXP stats);
  * @method load_stats
  * @return R_NilValue on success, throw and error otherwise
  */
-SEXP load_stats(SEXP stats);
+SEXP load_stats_store(SEXP stats);
 
 
 /**
@@ -145,7 +145,7 @@ SEXP load_stats(SEXP stats);
  * @method close_stats
  * @return R_NilValue on success
  */
-SEXP close_stats();
+SEXP close_stats_store();
 
 
 /**
