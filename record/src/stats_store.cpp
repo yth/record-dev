@@ -39,6 +39,10 @@ SEXP initiate_stats_store(SEXP stats) {
 	bytes_serialized_session = 0;
 	bytes_unserialized_session = 0;
 
+	offset = 0;
+	size = 0;
+	count = 0;
+
 	return R_NilValue;
 }
 
@@ -56,11 +60,20 @@ SEXP load_stats_store(SEXP stats) {
 	read_n(stats_file, &bytes_serialized, sizeof(size_t));
 	read_n(stats_file, &bytes_unserialized, sizeof(size_t));
 
+	// Database Information
+	read_n(stats_file, &offset, sizeof(size_t));
+	read_n(stats_file, &size, sizeof(size_t));
+	read_n(stats_file, &count, sizeof(int));
+
+
+
 	return R_NilValue;
 }
 
 SEXP close_stats_store() {
 	if (stats_file) {
+		fseek(stats_file, 0, SEEK_SET);
+
 		write_n(stats_file, &bytes_read, sizeof(size_t));
 		bytes_read = 0;
 
@@ -72,6 +85,16 @@ SEXP close_stats_store() {
 
 		write_n(stats_file, &bytes_unserialized, sizeof(size_t));
 		bytes_unserialized = 0;
+
+		// Database Information
+		write_n(stats_file, &offset, sizeof(size_t));
+		offset = 0;
+
+		write_n(stats_file, &size, sizeof(size_t));
+		size = 0;
+
+		write_n(stats_file, &count, sizeof(int));
+		count = 0;
 
 		write_n(stats_file, (void *) "\n", 1);
 		fflush(stats_file);
@@ -109,6 +132,7 @@ SEXP report() {
 	printf("  Elements tried to be added to the database: %lu\n", count);
 	printf("  Bytes in the generic database: %lu\n", offset);
 	printf("  Elements in simple integer store: %lu\n", i_size);
+	printf("\n");
 
 	return R_NilValue;
 }

@@ -387,10 +387,6 @@ SEXP close_gbov() {
 SEXP create_indices(SEXP indices) {
 	index_file = open_file(indices);
 
-	offset = 0;
-	size = 0;
-	count = 0;
-
 	gbov_map = new std::map<std::string, size_t>;
 	vector = make_vector(1 << 30);
 	return R_NilValue;
@@ -403,10 +399,6 @@ SEXP create_indices(SEXP indices) {
  */
 SEXP load_indices(SEXP indices) {
 	create_indices(indices);
-
-	read_n(index_file, &offset, sizeof(size_t));
-	read_n(index_file, &size, sizeof(size_t));
-	read_n(index_file, &count, sizeof(int));
 
 	size_t start = 0;
 	char hash[20];
@@ -427,18 +419,8 @@ SEXP load_indices(SEXP indices) {
  */
 SEXP close_indices() {
 	if (index_file) {
-		// TODO: Think about ways to reuse rather than overwrite
-		// TODO: Error check
+		// TODO: Think about ways to reuse rather than overwrite each time
 		fseek(index_file, 0, SEEK_SET);
-		// TODO: Create a write_n function or check success here
-		write_n(index_file, &offset, sizeof(size_t));
-		offset = 0;
-
-		write_n(index_file, &size, sizeof(size_t));
-		size = 0;
-
-		write_n(index_file, &count, sizeof(int));
-		count = 0;
 
 		std::map<std::string, size_t>::iterator it;
 		for(it = gbov_map->begin(); it != gbov_map->end(); it++) {
