@@ -18,6 +18,7 @@
 extern size_t count;
 extern size_t size;
 extern size_t offset;
+extern size_t i_size;
 
 // Globals
 FILE *db_file = NULL;
@@ -31,7 +32,6 @@ std::map<std::string, size_t> *gbov_map = NULL;
 int INT_STORE_MAX = 5000;
 int INT_STORE_MIN = -5000;
 FILE *int_file = NULL;
-size_t i_size = 0;               // number of unique ints encountered
 size_t int_db[10001] = { 0 };    // hard wired to accommodate -5000 to 5000
 
 // Reusable buffer for everything
