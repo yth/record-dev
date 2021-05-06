@@ -22,10 +22,6 @@ extern size_t size;
 extern size_t offset;
 extern size_t i_size;
 
-// Pulled in from simple_ints_store.cpp
-extern int INT_STORE_MAX;
-extern int INT_STORE_MIN;
-extern size_t int_db[10001];
 
 // Globals
 FILE *db_file = NULL;
