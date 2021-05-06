@@ -14,7 +14,7 @@ extern "C" {
  * @param  ints        file name
  * @return             R_NilValue on succcecss
  */
-SEXP create_ints(SEXP ints);
+SEXP init_simple_ints_store(SEXP ints);
 
 /**
  * Loads ints.bin in the database

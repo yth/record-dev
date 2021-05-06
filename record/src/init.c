@@ -31,7 +31,7 @@ static const R_CallMethodDef callMethods[] = {
 	{"count_vals",				(DL_FUNC) &count_vals,				0},
 
 	// simple ints store related
-	{"create_ints",				(DL_FUNC) &create_ints,				1},
+	{"init_simple_ints_store",	(DL_FUNC) &init_simple_ints_store,	1},
 	{"load_ints",				(DL_FUNC) &load_ints,				1},
 	{"close_ints",				(DL_FUNC) &close_ints,				0},
 	{"add_int",					(DL_FUNC) &add_int,					1},

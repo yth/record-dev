@@ -37,8 +37,8 @@ open_db <- function(db = "db", create = FALSE) {
 
 			# This must be called second
 			.Call(RCRD_init_stats_store, stats)
+			.Call(RCRD_init_simple_ints_store, ints)
 
-			.Call(RCRD_create_ints, ints)
 			.Call(RCRD_create_indices, indices)
 			.Call(RCRD_create_gbov, gbov)
 		}

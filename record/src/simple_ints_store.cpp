@@ -18,7 +18,7 @@ extern size_t i_size;
  * @param  ints        file name
  * @return             R_NilValue on succcecss
  */
-SEXP create_ints(SEXP ints) {
+SEXP init_simple_ints_store(SEXP ints) {
 	int_file = open_file(ints);
 
 	i_size = 0;
@@ -35,7 +35,7 @@ SEXP create_ints(SEXP ints) {
  * @return R_NilValue on success throw and error otherwise
  */
 SEXP load_ints(SEXP ints) {
-	create_ints(ints);
+	init_simple_ints_store(ints);
 
 	read_n(int_file, &i_size, sizeof(size_t));
 
