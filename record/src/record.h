@@ -124,30 +124,6 @@ SEXP sample_val();
  */
 SEXP report();
 
-// /**
-//  * Create stats.bin in the database
-//  * @method create_stats
-//  * @return R_NilValue on success, throw and error otherwise
-//  */
-// SEXP initiate_stats_store(SEXP stats);
-//
-//
-// /**
-//  * Loads stats.bin in the database
-//  * @method load_stats
-//  * @return R_NilValue on success, throw and error otherwise
-//  */
-// SEXP load_stats_store(SEXP stats);
-//
-//
-// /**
-//  * This function writes database information to file and close the file.
-//  * @method close_stats
-//  * @return R_NilValue on success
-//  */
-// SEXP close_stats_store();
-//
-//
 /**
  * Create the common ints storage
  * @method create_ints
