@@ -88,6 +88,19 @@ SEXP unserialize_val(byte_vector_t vector) {
 	return R_Unserialize(stream);
 }
 
+// Help wrap fclose and intended file pointer to null
+void close_file(FILE **fpp) {
+	// Add 1 byte for safety
+	write_n(*fpp, (void *) "\n", 1);
+
+	fflush(*fpp);
+	if (fclose(*fpp)) {
+		perror("close_file");
+	}
+
+	*fpp = NULL;
+}
+
 #ifdef __cplusplus
 } // extern "C"
 #endif

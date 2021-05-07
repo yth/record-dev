@@ -57,12 +57,7 @@ SEXP close_simple_int_store() {
 			write_n(int_file, &(int_db[i]), sizeof(size_t));
 		}
 
-		write_n(int_file, (void *) "\n", 1);
-
-		fflush(int_file);
-		fclose(int_file);
-
-		int_file = NULL;
+		close_file(&int_file);
 
 		int_db[10001] = { 0 };
 	}

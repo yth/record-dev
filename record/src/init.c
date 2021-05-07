@@ -11,6 +11,7 @@
 
 #include "stats_store.h"
 #include "simple_int_store.h"
+#include "simple_dbl_store.h"
 
 #include "record.h"
 
@@ -25,7 +26,7 @@ static const R_CallMethodDef callMethods[] = {
 	{"init_stats_store",		(DL_FUNC) &init_stats_store,		1},
 	{"load_stats_store",		(DL_FUNC) &load_stats_store,		1},
 	{"close_stats_store",		(DL_FUNC) &close_stats_store,		0},
-	{"report",					(DL_FUNC) &report,					0},
+	{"print_report",			(DL_FUNC) &print_report,			0},
 	{"size_db",					(DL_FUNC) &size_db,					0},
 	{"size_ints",				(DL_FUNC) &size_ints,				0},
 	{"count_vals",				(DL_FUNC) &count_vals,				0},
@@ -39,6 +40,16 @@ static const R_CallMethodDef callMethods[] = {
 	{"have_seen_simple_int",	(DL_FUNC) &have_seen_simple_int,	1},
 	{"get_simple_int",			(DL_FUNC) &get_simple_int,			1},
 
+	// simple doubles store related
+	{"init_simple_dbl_store",	(DL_FUNC) &init_simple_dbl_store,	1},
+	{"load_simple_dbl_store",	(DL_FUNC) &load_simple_dbl_store,	1},
+	{"close_simple_dbl_store",	(DL_FUNC) &close_simple_dbl_store,	0},
+	{"is_simple_dbl",			(DL_FUNC) &is_simple_dbl,			1},
+	{"add_simple_dbl",			(DL_FUNC) &add_simple_dbl,			1},
+	{"have_seen_simple_dbl",	(DL_FUNC) &have_seen_simple_dbl,	1},
+	{"get_simple_dbl",			(DL_FUNC) &get_simple_dbl,			1},
+
+	// generic R value store related
 	{"create_indices",			(DL_FUNC) &create_indices, 			1},
 	{"load_indices",			(DL_FUNC) &load_indices,			1},
 	{"close_indices",			(DL_FUNC) &close_indices,			0},

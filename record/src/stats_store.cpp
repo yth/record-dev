@@ -23,7 +23,8 @@ size_t bytes_unserialized = 0;
 size_t count = 0; // TODO: Consider: Maybe better to make this a double
 size_t size = 0; // TODO: Consider: Maybe better to make this a double
 size_t offset = 0;
-size_t i_size = 0;               // number of unique ints encountered
+size_t i_size = 0; // number of unique simple ints encountered
+size_t d_size = 0; // number of unique simple dbls encountered
 
 /**
  * Create stats.bin in the database
@@ -44,6 +45,7 @@ SEXP init_stats_store(SEXP stats) {
 	count = 0;
 
 	i_size = 0;
+	d_size = 0;
 
 	return R_NilValue;
 }
@@ -67,6 +69,7 @@ SEXP load_stats_store(SEXP stats) {
 	read_n(stats_file, &size, sizeof(size_t));
 	read_n(stats_file, &count, sizeof(int));
 	read_n(stats_file, &i_size, sizeof(size_t));
+	read_n(stats_file, &d_size, sizeof(size_t));
 
 	return R_NilValue;
 }
@@ -100,6 +103,9 @@ SEXP close_stats_store() {
 		write_n(stats_file, &i_size, sizeof(size_t));
 		i_size = 0;
 
+		write_n(stats_file, &d_size, sizeof(size_t));
+		d_size = 0;
+
 		// Safety byte
 		write_n(stats_file, (void *) "\n", 1);
 		fflush(stats_file);
@@ -113,31 +119,32 @@ SEXP close_stats_store() {
 	return R_NilValue;
 }
 
-SEXP report() {
+SEXP print_report() {
 	// Session
-	printf("Session Information:\n");
-	printf("  bytes read: %lu\n", bytes_read_session);
-	printf("  bytes written: %lu\n", bytes_written_session);
-	printf("  bytes serialized: %lu\n", bytes_serialized_session);
-	printf("  bytes unserialized: %lu\n", bytes_unserialized_session);
-	printf("\n");
+	fprintf(stderr, "Session Information:\n");
+	fprintf(stderr, "  bytes read: %lu\n", bytes_read_session);
+	fprintf(stderr, "  bytes written: %lu\n", bytes_written_session);
+	fprintf(stderr, "  bytes serialized: %lu\n", bytes_serialized_session);
+	fprintf(stderr, "  bytes unserialized: %lu\n", bytes_unserialized_session);
+	fprintf(stderr, "\n");
 
 	// Lifetime // Not implemented; just placeholder
-	printf("Database Lifetime Information (APPROXIMATE ONLY):\n");
-	printf("  bytes read: %lu\n", bytes_read);
-	printf("  bytes written: %lu\n", bytes_written);
-	printf("  bytes serialized: %lu\n", bytes_serialized);
-	printf("  bytes unserialized: %lu\n", bytes_unserialized);
-	printf("\n");
+	fprintf(stderr, "Database Lifetime Information (APPROXIMATE ONLY):\n");
+	fprintf(stderr, "  bytes read: %lu\n", bytes_read);
+	fprintf(stderr, "  bytes written: %lu\n", bytes_written);
+	fprintf(stderr, "  bytes serialized: %lu\n", bytes_serialized);
+	fprintf(stderr, "  bytes unserialized: %lu\n", bytes_unserialized);
+	fprintf(stderr, "\n");
 
 	// Database Statistics
 	// TODO: Organize this better
-	printf("Database Statistics (NEED BETTER ORGANIZATION)\n");
-	printf("  Unique elements in the database: %lu\n", size);
-	printf("  Elements tried to be added to the database: %lu\n", count);
-	printf("  Bytes in the generic database: %lu\n", offset);
-	printf("  Elements in simple integer store: %lu\n", i_size);
-	printf("\n");
+	fprintf(stderr, "Database Statistics (NEED BETTER ORGANIZATION)\n");
+	fprintf(stderr, "  Unique elements in the database: %lu\n", size);
+	fprintf(stderr, "  Elements tried to be added to the database: %lu\n", count);
+	fprintf(stderr, "  Bytes in the generic database: %lu\n", offset);
+	fprintf(stderr, "  Elements in simple integer store: %lu\n", i_size);
+	fprintf(stderr, "  Elements in simple double store: %lu\n", d_size);
+	fprintf(stderr, "\n");
 
 	return R_NilValue;
 }

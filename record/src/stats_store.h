@@ -33,7 +33,7 @@ SEXP close_stats_store();
  * Report database statistics
  * @method report
  */
-SEXP report();
+SEXP print_report();
 
 /**
  * This function asks for how many R values the C add_val has seen.

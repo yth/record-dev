@@ -14,6 +14,7 @@
 
 #include "stats_store.h"
 #include "simple_int_store.h"
+// #include "simple_dbl_store.h"
 
 
 // Pulled in from stats_store.cpp
@@ -21,6 +22,7 @@ extern size_t count;
 extern size_t size;
 extern size_t offset;
 extern size_t i_size;
+extern size_t d_size;
 
 
 // Globals
@@ -42,6 +44,8 @@ byte_vector_t vector = NULL;
  * @return R_NilValue on succecss
  */
 SEXP setup() {
+	vector = make_vector(1 << 30);
+
 	return R_NilValue;
 }
 
@@ -53,11 +57,6 @@ SEXP setup() {
  * @return R_NilValue on succecss
  */
 SEXP teardown() {
-	if (gbov_map) {
-		delete gbov_map;
-		gbov_map = NULL;
-	}
-
 	if (vector) {
 		free_vector(vector);
 		vector = NULL;
@@ -78,6 +77,8 @@ SEXP add_val(SEXP val) {
 
 	if (is_simple_int(val)) {
 		return add_simple_int(val);
+	// } else if (is_simple_dbl(val)) {
+	// 	return add_simple_dbl(val);
 	}
 
 	serialize_val(vector, val);
@@ -114,6 +115,8 @@ SEXP add_val(SEXP val) {
 SEXP have_seen(SEXP val) {
 	if (is_simple_int(val)) {
 		return have_seen_simple_int(val);
+	// } else if (is_simple_dbl(val)) {
+	// 	return have_seen_simple_dbl(val);
 	}
 
 	serialize_val(vector, val);
@@ -152,11 +155,13 @@ SEXP sample_val() {
 	int random_index = rand() % size;
 	if (random_index < i_size) {
 		return get_simple_int(random_index);
+	// } else if (random_index - i_size < d_size) {
+	// 	return get_simple_dbl(random_index - i_size);
 	}
 
 	std::map<std::string, size_t>::iterator it;
 	it = gbov_map->begin();
-	std::advance(it, random_index - i_size);
+	std::advance(it, random_index - i_size - d_size);
 
 	// Get the specified value
 
@@ -207,12 +212,7 @@ SEXP load_gbov(SEXP gbov) {
  */
 SEXP close_gbov() {
 	if (db_file) {
-		write_n(db_file, (void *) "\n", 1);
-		fflush(db_file);
-		if (fclose(db_file)) {
-			Rf_error("Could not close the database.");
-		}
-		db_file = NULL;
+		close_file(&db_file);
 	}
 
 	return R_NilValue;
@@ -228,7 +228,7 @@ SEXP create_indices(SEXP indices) {
 	index_file = open_file(indices);
 
 	gbov_map = new std::map<std::string, size_t>;
-	vector = make_vector(1 << 30);
+
 	return R_NilValue;
 }
 
@@ -268,10 +268,12 @@ SEXP close_indices() {
 			write_n(index_file, &(it->second), sizeof(size_t));
 		}
 
-		write_n(index_file, (void *) "\n", 1);
-		fflush(index_file);
-		fclose(index_file);
-		index_file = NULL;
+		close_file(&index_file);
+	}
+
+	if (gbov_map) {
+		delete gbov_map;
+		gbov_map = NULL;
 	}
 
 	return R_NilValue;

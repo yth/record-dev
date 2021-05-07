@@ -15,6 +15,9 @@ extern "C" {
 // Help wrap fopen with checks and unpack SEXP filename
 FILE *open_file(SEXP filename);
 
+// Help wrap fclose and intended file pointer to null
+void close_file(FILE **fpp);
+
 // Help read n bytes into buffer and check error messages
 // Doesn't restore file offset
 void read_n(FILE* file, void *buf, size_t n);
