@@ -124,4 +124,10 @@ test_that("add attributed int", {
 	close_db()
 })
 
+test_that("add simple double", {
+	open_db("test_db/add-simple-double", create = TRUE)
+	expect_equal(add_val(5), 5)
+	close_db()
+})
+
 }
