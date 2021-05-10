@@ -10,6 +10,7 @@ int INT_STORE_MIN = -5000;
 size_t int_db[10001] = { 0 };    // hard wired to accommodate -5000 to 5000
 
 extern size_t size;
+extern size_t count;
 extern size_t i_size;
 
 /**
@@ -59,7 +60,7 @@ SEXP close_simple_int_store() {
 
 		close_file(&int_file);
 
-		int_db[10001] = { 0 };
+		memset(int_db, 0, 10001 * sizeof(size_t));
 	}
 
 	return R_NilValue;
@@ -89,7 +90,7 @@ int is_simple_int(SEXP value) {
  * @return val
  */
 SEXP add_simple_int(SEXP val) {
-	int int_val = Rf_asInteger(val) + 5000; // int_db[0] represents -5000L
+	int int_val = asInteger(val) + 5000; // int_db[0] represents -5000L
 	if(int_db[int_val] == 0) {
 		int_db[int_val] += 1;
 		i_size += 1;
@@ -97,6 +98,7 @@ SEXP add_simple_int(SEXP val) {
 		return val;
 	} else {
 		int_db[int_val] += 1;
+		count += 1;
 
 		return R_NilValue;
 	}
