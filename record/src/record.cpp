@@ -14,7 +14,7 @@
 
 #include "stats_store.h"
 #include "simple_int_store.h"
-// #include "simple_dbl_store.h"
+#include "simple_dbl_store.h"
 
 
 // Pulled in from stats_store.cpp
@@ -77,8 +77,9 @@ SEXP add_val(SEXP val) {
 
 	if (is_simple_int(val)) {
 		return add_simple_int(val);
-	// } else if (is_simple_dbl(val)) {
-	// 	return add_simple_dbl(val);
+	} else if (is_simple_dbl(val)) {
+		// printf("is_simple_dbl: %f\n", *REAL(val));
+		return add_simple_dbl(val);
 	}
 
 	serialize_val(vector, val);
@@ -115,8 +116,8 @@ SEXP add_val(SEXP val) {
 SEXP have_seen(SEXP val) {
 	if (is_simple_int(val)) {
 		return have_seen_simple_int(val);
-	// } else if (is_simple_dbl(val)) {
-	// 	return have_seen_simple_dbl(val);
+	} else if (is_simple_dbl(val)) {
+		return have_seen_simple_dbl(val);
 	}
 
 	serialize_val(vector, val);
@@ -155,8 +156,8 @@ SEXP sample_val() {
 	int random_index = rand() % size;
 	if (random_index < i_size) {
 		return get_simple_int(random_index);
-	// } else if (random_index - i_size < d_size) {
-	// 	return get_simple_dbl(random_index - i_size);
+	} else if (random_index - i_size < d_size) {
+		return get_simple_dbl(random_index - i_size);
 	}
 
 	std::map<std::string, size_t>::iterator it;
@@ -242,7 +243,7 @@ SEXP load_indices(SEXP indices) {
 
 	size_t start = 0;
 	char hash[20];
-	for (size_t i = 0; i < size - i_size; ++i) {
+	for (size_t i = 0; i < size - i_size - d_size; ++i) {
 		read_n(index_file, hash, 20);
 		read_n(index_file, &start, sizeof(size_t));
 		(*gbov_map)[std::string(hash, 20)] = start;
