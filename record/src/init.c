@@ -19,9 +19,15 @@
 
 static const R_CallMethodDef callMethods[] = {
 	/* name						casted ptr to function			# of args */
+	// Testing
 	{"hello",					(DL_FUNC) &hello,					1},
+
+	// Generic record related
 	{"setup",					(DL_FUNC) &setup,					0},
 	{"teardown",				(DL_FUNC) &teardown,				0},
+	{"add_val",					(DL_FUNC) &add_val,					1},
+	{"have_seen",				(DL_FUNC) &have_seen,				1},
+	{"sample_val",				(DL_FUNC) &sample_val,				0},
 
 	// stats store related
 	{"init_stats_store",		(DL_FUNC) &init_stats_store,		1},
@@ -57,12 +63,8 @@ static const R_CallMethodDef callMethods[] = {
 	{"create_gbov",				(DL_FUNC) &create_gbov,				1},
 	{"load_gbov",				(DL_FUNC) &load_gbov,				1},
 	{"close_gbov",				(DL_FUNC) &close_gbov,				0},
-	{"add_val",					(DL_FUNC) &add_val,					1},
-	{"have_seen",				(DL_FUNC) &have_seen,				1},
-	{"sample_val",				(DL_FUNC) &sample_val,				0},
 
-	// TODO: Implement this
-	{"get_vals",				(DL_FUNC) &read_vals,				2},
+	// Must have at the end
 	{NULL,						NULL,								0}
 };
 
