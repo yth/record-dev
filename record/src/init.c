@@ -10,6 +10,7 @@
 #include "hello.h"
 
 #include "stats_store.h"
+#include "generic_store.h"
 #include "simple_int_store.h"
 #include "simple_dbl_store.h"
 

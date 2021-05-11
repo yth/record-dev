@@ -25,6 +25,7 @@ size_t size = 0; // TODO: Consider: Maybe better to make this a double
 size_t offset = 0;
 size_t i_size = 0; // number of unique simple ints encountered
 size_t d_size = 0; // number of unique simple dbls encountered
+size_t g_size = 0; // number of unique generic values encountered
 
 /**
  * Create stats.bin in the database
@@ -46,6 +47,7 @@ SEXP init_stats_store(SEXP stats) {
 
 	i_size = 0;
 	d_size = 0;
+	g_size = 0;
 
 	return R_NilValue;
 }
@@ -70,6 +72,7 @@ SEXP load_stats_store(SEXP stats) {
 	read_n(stats_file, &count, sizeof(int));
 	read_n(stats_file, &i_size, sizeof(size_t));
 	read_n(stats_file, &d_size, sizeof(size_t));
+	read_n(stats_file, &g_size, sizeof(size_t));
 
 	return R_NilValue;
 }
@@ -78,6 +81,8 @@ SEXP close_stats_store() {
 	if (stats_file) {
 		fseek(stats_file, 0, SEEK_SET);
 
+		// Need to reorder writing stuff to file to make sure no information
+		// leakes between sessions
 		write_n(stats_file, &bytes_read, sizeof(size_t));
 		bytes_read = 0;
 
@@ -106,14 +111,10 @@ SEXP close_stats_store() {
 		write_n(stats_file, &d_size, sizeof(size_t));
 		d_size = 0;
 
-		// Safety byte
-		write_n(stats_file, (void *) "\n", 1);
-		fflush(stats_file);
+		write_n(stats_file, &g_size, sizeof(size_t));
+		g_size = 0;
 
-		if (fclose(stats_file)) {
-			Rf_error("Could not close the stats file.");
-		}
-		stats_file = NULL;
+		close_file(&stats_file);
 	}
 
 	return R_NilValue;
