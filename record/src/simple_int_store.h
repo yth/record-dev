@@ -50,9 +50,9 @@ SEXP add_simple_int(SEXP val);
  * This function asks if the C layer has seen a int in range [-5000, 5000]
  * @method have_seen
  * @param  val       R value in form of SEXP
- * @return           R value of True or False as a SEXP
+ * @return           1 if the value has been encountered before, else 0
  */
-SEXP have_seen_simple_int(SEXP val);
+int have_seen_simple_int(SEXP val);
 
 /**
  * This function samples from the simple ints that the database has.

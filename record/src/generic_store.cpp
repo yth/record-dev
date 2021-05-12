@@ -17,8 +17,7 @@ std::map<std::string, size_t> *gbov_map = NULL;
 
 extern size_t offset;
 extern size_t size;
-extern size_t i_size;
-extern size_t d_size;
+extern size_t g_size;
 
 extern byte_vector_t vector;
 
@@ -80,7 +79,7 @@ SEXP load_indices(SEXP indices) {
 
 	size_t start = 0;
 	char hash[20];
-	for (size_t i = 0; i < size - i_size - d_size; ++i) {
+	for (size_t i = 0; i < g_size; ++i) {
 		read_n(index_file, hash, 20);
 		read_n(index_file, &start, sizeof(size_t));
 		(*gbov_map)[std::string(hash, 20)] = start;
@@ -147,6 +146,7 @@ SEXP add_generic(SEXP val) {
 	std::map<std::string, size_t>::iterator it = gbov_map->find(key);
 	if (it == gbov_map->end()) {
 		(*gbov_map)[key] = offset;
+		g_size++;
 		size++;
 
 		// Write the blob
@@ -169,9 +169,9 @@ SEXP add_generic(SEXP val) {
  * This function asks if the C layer has seen an given generic value
  * @method have_seen
  * @param  val       R value in form of SEXP
- * @return           R value of True or False as a SEXP
+ * @return           1 if the value has been encountered before, else 0
  */
-SEXP have_seen_generic(SEXP val) {
+int have_seen_generic(SEXP val) {
 	serialize_val(vector, val);
 
 	// Get the sha1 hash of the serialized value
@@ -184,16 +184,23 @@ SEXP have_seen_generic(SEXP val) {
 	std::string key((char *) sha1sum, 20);
 	std::map<std::string, size_t>::iterator it = gbov_map->find(key);
 
-	SEXP res;
-	PROTECT(res = allocVector(LGLSXP, 1));
-	int *res_ptr = LOGICAL(res);
 	if (it == gbov_map->end()) {
-		res_ptr[0] = 0;
+		return 0;
 	} else {
-		res_ptr[0] = 1;
+		return 1;
 	}
-	UNPROTECT(1);
-	return res;
+
+	//
+	// SEXP res;
+	// PROTECT(res = allocVector(LGLSXP, 1));
+	// int *res_ptr = LOGICAL(res);
+	// if (it == gbov_map->end()) {
+	// 	res_ptr[0] = 0;
+	// } else {
+	// 	res_ptr[0] = 1;
+	// }
+	// UNPROTECT(1);
+	// return res;
 }
 
 /**

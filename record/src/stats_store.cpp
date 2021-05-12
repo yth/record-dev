@@ -4,6 +4,15 @@
 
 FILE *stats_file = NULL;
 
+// Database Statistics
+// TODO: Give count, size, offset, i_size better names
+size_t count = 0; // TODO: Consider: Maybe better to make this a double
+size_t size = 0; // TODO: Consider: Maybe better to make this a double
+size_t offset = 0;
+size_t i_size = 0; // number of unique simple ints encountered
+size_t d_size = 0; // number of unique simple dbls encountered
+size_t g_size = 0; // number of unique generic values encountered
+
 // Useful session counters
 size_t bytes_read_session = 0;
 size_t bytes_written_session = 0;
@@ -17,15 +26,6 @@ size_t bytes_written = 0;
 
 size_t bytes_serialized = 0;
 size_t bytes_unserialized = 0;
-
-// Database Statistics
-// TODO: Give count, size, offset, i_size better names
-size_t count = 0; // TODO: Consider: Maybe better to make this a double
-size_t size = 0; // TODO: Consider: Maybe better to make this a double
-size_t offset = 0;
-size_t i_size = 0; // number of unique simple ints encountered
-size_t d_size = 0; // number of unique simple dbls encountered
-size_t g_size = 0; // number of unique generic values encountered
 
 /**
  * Create stats.bin in the database
@@ -145,6 +145,7 @@ SEXP print_report() {
 	fprintf(stderr, "  Bytes in the generic database: %lu\n", offset);
 	fprintf(stderr, "  Elements in simple integer store: %lu\n", i_size);
 	fprintf(stderr, "  Elements in simple double store: %lu\n", d_size);
+	fprintf(stderr, "  Elements in generic store: %lu\n", g_size);
 	fprintf(stderr, "\n");
 
 	return R_NilValue;

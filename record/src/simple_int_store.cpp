@@ -104,21 +104,15 @@ SEXP add_simple_int(SEXP val) {
 	}
 }
 
-// TODO: Let people pass in ints instead
-SEXP have_seen_simple_int(SEXP val) {
+/**
+ * This function asks if the C layer has seen a int in range [-5000, 5000]
+ * @method have_seen
+ * @param  val       R value in form of SEXP
+ * @return           1 if the value has been encountered before, else 0
+ */
+int have_seen_simple_int(SEXP val) {
 	int index = Rf_asInteger(val) + 5000;
-	int found = 0;
-	if (int_db[index]) {
-		found = 1;
-	}
-
-	SEXP res;
-	R_xlen_t n = 1;
-	PROTECT(res = allocVector(LGLSXP, n));
-	int *res_ptr = LOGICAL(res);
-	res_ptr[0] = found;
-	UNPROTECT(1);
-	return res;
+	return int_db[index];
 }
 
 /**

@@ -71,13 +71,20 @@ SEXP add_val(SEXP val) {
  * @return           R value of True or False as a SEXP
  */
 SEXP have_seen(SEXP val) {
+	SEXP res;
+	PROTECT(res = allocVector(LGLSXP, 1));
+	int *res_ptr = LOGICAL(res);
+
 	if (is_simple_int(val)) {
-		return have_seen_simple_int(val);
+		res_ptr[0] = have_seen_simple_int(val);
 	} else if (is_simple_dbl(val)) {
-		return have_seen_simple_dbl(val);
+		res_ptr[0] = have_seen_simple_dbl(val);
 	} else {
-		return have_seen_generic(val);
+		res_ptr[0] = have_seen_generic(val);
 	}
+
+	UNPROTECT(1);
+	return res;
 }
 
 /**

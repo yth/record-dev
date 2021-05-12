@@ -75,9 +75,9 @@ SEXP add_generic(SEXP val);
  * This function asks if the C layer has seen an given generic value
  * @method have_seen
  * @param  val       R value in form of SEXP
- * @return           R value of True or False as a SEXP
+ * @return           1 if the value has been encountered before, else 0
  */
-SEXP have_seen_generic(SEXP val);
+int have_seen_generic(SEXP val);
 
 /**
  * This function gets the generic at the index'th place in the database.
