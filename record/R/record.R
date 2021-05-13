@@ -22,7 +22,6 @@ open_db <- function(db = "db", create = FALSE) {
 			# Load generic store
 			.Call(RCRD_load_indices, paste0(db, "/indices.bin"))
 			.Call(RCRD_load_gbov, paste0(db, "/gbov.bin"))
-
 		}
 	} else {
 		if (!create) {

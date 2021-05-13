@@ -10,6 +10,7 @@ double DBL_STORE_MIN = -5000;
 size_t dbl_db[10001] = { 0 };    // hard wired to accommodate -5000 to 5000
 
 extern size_t size;
+extern size_t count;
 extern size_t d_size;
 
 /**
@@ -37,9 +38,7 @@ SEXP load_simple_dbl_store(SEXP dbls) {
 	init_simple_dbl_store(dbls);
 
 	for (size_t i = 0; i < 10001; ++i) {
-		// fprintf(stderr, "GOT HERE: %lu\n", i);
 		read_n(dbl_file, dbl_db + i, sizeof(size_t));
-		// fprintf(stderr, "GOT HERE: %lu\n", i);
 	}
 
 	return R_NilValue;
@@ -61,7 +60,7 @@ SEXP close_simple_dbl_store() {
 
 		close_file(&dbl_file);
 
-		dbl_db[10001] = { 0 };
+		memset(dbl_db, 0, 10001 * sizeof(size_t));
 	}
 
 	return R_NilValue;
@@ -102,28 +101,21 @@ SEXP add_simple_dbl(SEXP val) {
 		return val;
 	} else {
 		dbl_db[dbl_val] += 1;
+		count += 1;
 
 		return R_NilValue;
 	}
-
-	return R_NilValue; // Delete later
 }
 
-// TODO: Let people pass in dbls instead
-SEXP have_seen_simple_dbl(SEXP val) {
+/**
+ * This function asks if the C layer has seen a dbl in range [-5000, 5000]
+ * @method have_seen
+ * @param  val       R value in form of SEXP
+ * @return           1 if the value has been encountered before, else 0
+ */
+int have_seen_simple_dbl(SEXP val) {
 	int index = (int) (asReal(val) + 5000);
-	int found = 0;
-	if (dbl_db[index]) {
-		found = 1;
-	}
-
-	SEXP res;
-	R_xlen_t n = 1;
-	PROTECT(res = allocVector(LGLSXP, n));
-	int *res_ptr = LOGICAL(res);
-	res_ptr[0] = found;
-	UNPROTECT(1);
-	return res;
+	return dbl_db[index];
 }
 
 /**

@@ -1,4 +1,3 @@
-#include <R.h>
 #include <Rinternals.h>
 
 #ifndef RCRD_RCRD_H
@@ -8,7 +7,6 @@
 extern "C" {
 #endif
 
-
 /**
  * This function sets up the initiatial state of the database.
  * This function must be called first.
@@ -16,7 +14,6 @@ extern "C" {
  * @return R_NilValue on succecss
  */
 SEXP setup();
-
 
 /**
  * This function tears down all traces of the database after running.
@@ -26,42 +23,17 @@ SEXP setup();
  */
 SEXP teardown();
 
-
 /**
- * Load the indices associated with the gbov.
- * @method load_indices
- * @return R_NilValue on success, throw and error otherwise
- */
-SEXP create_indices(SEXP indices);
-
-
-/**
- * Load the indices associated with the gbov.
- * @method load_indices
- * @return R_NilValue on success, throw and error otherwise
- */
-SEXP load_indices(SEXP indices);
-
-
-/**
- * This function  writes indices to file and closes the file.
- * @method close_indices
- * @return [description]
- */
-SEXP close_indices();
-
-
-/**
- * This functions directly adds an R value to the specified storage.
+ * This functions adds an R value to the database.
  * @method add_val
  * @param  val      R value in form of SEXP
- * @return          R value on success
+ * @return          val on success
  */
 SEXP add_val(SEXP val);
 
-
 /**
  * This function asks if the C layer has seen a R value.
+ * This function is mainly used for testing.
  * @method have_seen
  * @param  val       R value in form of SEXP
  * @return           R value of True or False as a SEXP
@@ -69,46 +41,11 @@ SEXP add_val(SEXP val);
 SEXP have_seen(SEXP val);
 
 /**
- * This function asks if the C layer has seen a R value.
- * @method read_vals
- * @param   from, to
- * @return  values from to
- */
-SEXP read_vals(SEXP from, SEXP to);
-
-
-/**
  * This function returns a random value from the database
  * @method get_random_val
  * @return R value in form of SEXP from the database
  */
 SEXP sample_val();
-
-
-/**
- * Create the gbov.
- * @method load_gbov
- * @return R_NilValue on success, throw and error otherwise
- */
-
-SEXP create_gbov(SEXP gbov);
-
-
-/**
- * Load the gbov.
- * @method load_gbov
- * @return R_NilValue on success, throw and error otherwise
- */
-SEXP load_gbov(SEXP gbov);
-
-
-/**
- * This functions writes generic R val store to file and closes the file.
- * @method close_gbov
- * @return R_NilValue on success
- */
-SEXP close_gbov();
-
 
 #ifdef __cplusplus
 } // extern "C"

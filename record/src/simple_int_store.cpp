@@ -10,6 +10,7 @@ int INT_STORE_MIN = -5000;
 size_t int_db[10001] = { 0 };    // hard wired to accommodate -5000 to 5000
 
 extern size_t size;
+extern size_t count;
 extern size_t i_size;
 
 /**
@@ -59,7 +60,7 @@ SEXP close_simple_int_store() {
 
 		close_file(&int_file);
 
-		int_db[10001] = { 0 };
+		memset(int_db, 0, 10001 * sizeof(size_t));
 	}
 
 	return R_NilValue;
@@ -89,7 +90,7 @@ int is_simple_int(SEXP value) {
  * @return val
  */
 SEXP add_simple_int(SEXP val) {
-	int int_val = Rf_asInteger(val) + 5000; // int_db[0] represents -5000L
+	int int_val = asInteger(val) + 5000; // int_db[0] represents -5000L
 	if(int_db[int_val] == 0) {
 		int_db[int_val] += 1;
 		i_size += 1;
@@ -97,26 +98,21 @@ SEXP add_simple_int(SEXP val) {
 		return val;
 	} else {
 		int_db[int_val] += 1;
+		count += 1;
 
 		return R_NilValue;
 	}
 }
 
-// TODO: Let people pass in ints instead
-SEXP have_seen_simple_int(SEXP val) {
+/**
+ * This function asks if the C layer has seen a int in range [-5000, 5000]
+ * @method have_seen
+ * @param  val       R value in form of SEXP
+ * @return           1 if the value has been encountered before, else 0
+ */
+int have_seen_simple_int(SEXP val) {
 	int index = Rf_asInteger(val) + 5000;
-	int found = 0;
-	if (int_db[index]) {
-		found = 1;
-	}
-
-	SEXP res;
-	R_xlen_t n = 1;
-	PROTECT(res = allocVector(LGLSXP, n));
-	int *res_ptr = LOGICAL(res);
-	res_ptr[0] = found;
-	UNPROTECT(1);
-	return res;
+	return int_db[index];
 }
 
 /**
