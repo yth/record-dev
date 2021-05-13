@@ -67,4 +67,9 @@ static const R_CallMethodDef callMethods[] = {
 
 void R_init_record(DllInfo* dll) {
 	R_registerRoutines(dll, NULL, callMethods, NULL, NULL);
+  R_RegisterCCallable("record", "setup", setup);
+  R_RegisterCCallable("record", "teardown", teardown);
+  R_RegisterCCallable("record", "add_val", add_val);
 }
+
+
