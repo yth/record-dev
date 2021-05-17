@@ -18,7 +18,8 @@ open_db <- function(db = "db", create = FALSE) {
 			# Load specialty stores
 			.Call(RCRD_load_simple_int_store, paste0(db, "/ints.bin"))
 			.Call(RCRD_load_simple_dbl_store, paste0(db, "/dbls.bin"))
-
+      .Call(RCRD_load_simple_raw_store, paste0(db, "/raws.bin"))
+      
 			# Load generic store
 			.Call(RCRD_load_indices, paste0(db, "/indices.bin"))
 			.Call(RCRD_load_gbov, paste0(db, "/gbov.bin"))
@@ -47,6 +48,7 @@ open_db <- function(db = "db", create = FALSE) {
 			# Initialize specialty stores
 			.Call(RCRD_init_simple_int_store, ints)
 			.Call(RCRD_init_simple_dbl_store, dbls)
+      .Call(RCRD_init_simple_raw_store, raws)
 
 			# Initialize generic store
 			.Call(RCRD_create_indices, indices)

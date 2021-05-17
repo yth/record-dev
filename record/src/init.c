@@ -56,6 +56,15 @@ static const R_CallMethodDef callMethods[] = {
 	{"have_seen_simple_dbl",	(DL_FUNC) &have_seen_simple_dbl,	1},
 	{"get_simple_dbl",			(DL_FUNC) &get_simple_dbl,			1},
 
+  // simple raw store related
+	{"init_simple_raw_store",	(DL_FUNC) &init_simple_raw_store,	1},
+	{"load_simple_raw_store",	(DL_FUNC) &load_simple_raw_store,	1},
+	{"close_simple_raw_store",	(DL_FUNC) &close_simple_raw_store,	0},
+	{"is_simple_raw",			(DL_FUNC) &is_simple_raw,			1},
+	{"add_simple_raw",			(DL_FUNC) &add_simple_raw,			1},
+	{"have_seen_simple_raw",	(DL_FUNC) &have_seen_simple_raw,	1},
+	{"get_simple_raw",			(DL_FUNC) &get_simple_raw,			1},
+
 	// generic R value store related
 	{"create_indices",			(DL_FUNC) &create_indices, 			1},
 	{"load_indices",			(DL_FUNC) &load_indices,			1},
