@@ -11,6 +11,7 @@ size_t size = 0; // TODO: Consider: Maybe better to make this a double
 size_t offset = 0;
 size_t i_size = 0; // number of unique simple ints encountered
 size_t d_size = 0; // number of unique simple dbls encountered
+size_t r_size = 0; // number of unique simple raw values  encountered
 size_t g_size = 0; // number of unique generic values encountered
 
 // Useful session counters
@@ -47,6 +48,7 @@ SEXP init_stats_store(SEXP stats) {
 
 	i_size = 0;
 	d_size = 0;
+  r_size = 0;
 	g_size = 0;
 
 	return R_NilValue;
@@ -72,6 +74,7 @@ SEXP load_stats_store(SEXP stats) {
 	read_n(stats_file, &count, sizeof(int));
 	read_n(stats_file, &i_size, sizeof(size_t));
 	read_n(stats_file, &d_size, sizeof(size_t));
+  read_n(stats_file, &r_size, sizeof(size_t));
 	read_n(stats_file, &g_size, sizeof(size_t));
 
 	return R_NilValue;
@@ -111,6 +114,9 @@ SEXP close_stats_store() {
 		write_n(stats_file, &d_size, sizeof(size_t));
 		d_size = 0;
 
+    write_n(stats_file, &r_size, sizeof(size_t));
+		r_size = 0;
+
 		write_n(stats_file, &g_size, sizeof(size_t));
 		g_size = 0;
 
@@ -145,6 +151,7 @@ SEXP print_report() {
 	fprintf(stderr, "  Bytes in the generic database: %lu\n", offset);
 	fprintf(stderr, "  Elements in simple integer store: %lu\n", i_size);
 	fprintf(stderr, "  Elements in simple double store: %lu\n", d_size);
+  fprintf(stderr, "  Elements in simple raw store: %lu\n", r_size);
 	fprintf(stderr, "  Elements in generic store: %lu\n", g_size);
 	fprintf(stderr, "\n");
 

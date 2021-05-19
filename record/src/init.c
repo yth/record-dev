@@ -13,6 +13,7 @@
 #include "generic_store.h"
 #include "simple_int_store.h"
 #include "simple_dbl_store.h"
+#include "simple_raw_store.h"
 
 #include "record.h"
 
@@ -81,5 +82,4 @@ void R_init_record(DllInfo* dll) {
 	R_registerRoutines(dll, NULL, callMethods, NULL, NULL);
   R_RegisterCCallable("record", "add_val", (DL_FUNC) &add_val);
 }
-
 
