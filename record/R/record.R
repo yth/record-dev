@@ -19,7 +19,7 @@ open_db <- function(db = "db", create = FALSE) {
 			.Call(RCRD_load_simple_int_store, paste0(db, "/ints.bin"))
 			.Call(RCRD_load_simple_dbl_store, paste0(db, "/dbls.bin"))
       .Call(RCRD_load_simple_raw_store, paste0(db, "/raws.bin"))
-      
+
 			# Load generic store
 			.Call(RCRD_load_indices, paste0(db, "/indices.bin"))
 			.Call(RCRD_load_gbov, paste0(db, "/gbov.bin"))
@@ -58,7 +58,7 @@ open_db <- function(db = "db", create = FALSE) {
 }
 
 #' @export
-close_db <- function(file) {
+close_db <- function() {
 	# Close generic store
 	.Call(RCRD_close_indices)
 	.Call(RCRD_close_gbov)
@@ -66,6 +66,7 @@ close_db <- function(file) {
 	# Close specialty store
 	.Call(RCRD_close_simple_int_store)
 	.Call(RCRD_close_simple_dbl_store)
+  .Call(RCRD_close_simple_raw_store)
 
 	# This must be called second to last
 	.Call(RCRD_close_stats_store)
