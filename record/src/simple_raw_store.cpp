@@ -6,9 +6,9 @@ FILE *raw_file = NULL;
 
 size_t raw_db[256] = { 0 };
 
-extern size_t size;
-extern size_t count;
-extern size_t i_size;
+extern size_t size;     /* size of the database */
+extern size_t count;    /* how many values have we encountered for the database */
+extern size_t r_size;   /* number of unique raw values in the store */
 
 /**
  * Create the common raw storage
@@ -36,7 +36,7 @@ SEXP load_simple_raw_store(SEXP file) {
 	init_simple_raw_store(file);
 
 	for (size_t i = 0; i < 256; ++i) {
-		read_n(raw_file, raw_db + i, sizeof(Rbyte));     /*  object.size(as.raw(n)) returns 56 bytes */
+		read_n(raw_file, raw_db + i, sizeof(size_t));
 	}
 
 	return R_NilValue;
@@ -53,12 +53,11 @@ SEXP close_simple_raw_store() {
 		fseek(raw_file, 0, SEEK_SET);
 
 		for(int i = 0; i < 256; ++i) {
-			write_n(raw_file, &(raw_db[i]), sizeof(Rbyte));
+			write_n(raw_file, &(raw_db[i]), sizeof(size_t));
+      raw_db[i] = 0;
 		}
 
 		close_file(&raw_file);
-
-		memset(raw_db, 0, 256 * sizeof(Rbyte));
 	}
 
 	return R_NilValue;
@@ -70,8 +69,8 @@ SEXP close_simple_raw_store() {
  * @param  SEXP          Arbitrary R value
  * @return               1 if it is a raw value, 0 otherwise
  */
-int is_scalar_raw (SEXP value) {
-  IS_SCALAR(value, RAWSXP)
+int is_simple_raw (SEXP value) {
+  return IS_SCALAR(value, RAWSXP);
 }
 
 /**
@@ -80,18 +79,16 @@ int is_scalar_raw (SEXP value) {
  * @param  val    an arbitrary raw value
  * @return val
  */
-SEXP add_raw(SEXP val) {
-	Rbyte raw_val = RAW(val);
-  int i = raw_val;
-  //TODO
-	if(raw_db[i] == 0) {
-		raw_db[i] += 1;
-		i_size += 1;
+SEXP add_simple_raw(SEXP val) {
+  Rbyte *raw_val = RAW(val);
+
+	if(raw_db[*raw_val] == 0) {
+		raw_db[*raw_val] += 1;
+		r_size += 1;
 		size += 1;
-		return val;
+    return val;
 	} else {
-		raw_db[i] += 1;
-		count += 1;
+		raw_db[*raw_val] += 1;
 
 		return R_NilValue;
 	}
@@ -103,31 +100,30 @@ SEXP add_raw(SEXP val) {
  * @param  val       R value in form of SEXP
  * @return           1 if the value has been encountered before, else 0
  */
-int have_seen_raw(SEXP val) {
-  Rbyte raw_val = RAW(val);
-  int i = raw_val;
-	return raw_db[i];
+int have_seen_simple_raw(SEXP val) {
+  Rbyte *raw_val = RAW(val);
+	return raw_db[*raw_val];
 }
 
 /**
  * This function gets the ith raw value in the database.
- * @method get_raw
+ * @method get_simple_raw
  * @return [description]
  */
-SEXP get_raw(int i) {
-	if (i_size < 10001) {
-		int values_passed = 0;
-		for (int i = 0; i < 10001; ++i) {
-			if (int_db[i] > 0) {
+SEXP get_simple_raw(int index) {
+	if (r_size < 256) {
+		int values_passed  = 0;
+		for (int i = 0; i < 256; ++i) {
+			if (raw_db[i] > 0) {
 				++values_passed;
 			}
 
 			if (values_passed == index + 1) {
 				SEXP res;
 				R_xlen_t n = 1;
-				PROTECT(res = allocVector(INTSXP, n));
-				int *res_ptr = INTEGER(res);
-				res_ptr[0] = i - INT_STORE_MAX;
+				PROTECT(res = allocVector(RAWSXP, n));
+				Rbyte *res_ptr = RAW(res);
+				res_ptr[0] = i;
 				UNPROTECT(1);
 				return res;
 			}
@@ -135,10 +131,11 @@ SEXP get_raw(int i) {
 	} else {
 		SEXP res;
 		R_xlen_t n = 1;
-		PROTECT(res = allocVector(INTSXP, n));
-		int *res_ptr = INTEGER(res);
-		res_ptr[0] = index - INT_STORE_MAX;
+		PROTECT(res = allocVector(RAWSXP, n));
+		Rbyte *res_ptr = RAW(res);
+		res_ptr[0] = index;
 		UNPROTECT(1);
 		return res;
 	}
 }
+
