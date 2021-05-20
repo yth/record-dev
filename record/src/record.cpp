@@ -107,9 +107,9 @@ SEXP sample_val() {
 		return get_simple_int(random_index);
 	} else if (random_index - i_size < d_size) {
 		return get_simple_dbl(random_index - i_size);
-	} else if (random_index - d_size < r_size) {
-    return get_simple_raw(random_index - d_size);
+	} else if (random_index - i_size - d_size < r_size) {
+    return get_simple_raw(random_index - i_size - d_size);
   } else {
-		return get_generic(random_index - i_size - d_size);
+		return get_generic(random_index - i_size - d_size - r_size);
 	}
 }

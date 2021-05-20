@@ -33,11 +33,12 @@ open_db <- function(db = "db", create = FALSE) {
 			stats = paste0(db, "/stats.bin")
 			ints = paste0(db, "/ints.bin")
 			dbls = paste0(db, "/dbls.bin")
+      raws = paste0(db, "/raws.bin")
 
 			gbov = paste0(db, "/gbov.bin")
 			indices = paste0(db, "/indices.bin")
 
-			file.create(ints, dbls, gbov, indices, stats, showWarnings = TRUE)
+			file.create(ints, dbls, raws, gbov, indices, stats, showWarnings = TRUE)
 
 			# This must be called first
 			.Call(RCRD_setup)
