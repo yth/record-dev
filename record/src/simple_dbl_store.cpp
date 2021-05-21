@@ -10,7 +10,6 @@ double DBL_STORE_MIN = -5000;
 size_t dbl_db[10001] = { 0 };    // hard wired to accommodate -5000 to 5000
 
 extern size_t size;
-extern size_t count;
 extern size_t d_size;
 
 /**

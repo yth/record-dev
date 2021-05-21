@@ -10,7 +10,6 @@ int INT_STORE_MIN = -5000;
 size_t int_db[10001] = { 0 };    // hard wired to accommodate -5000 to 5000
 
 extern size_t size;
-extern size_t count;
 extern size_t i_size;
 
 /**
@@ -98,8 +97,6 @@ SEXP add_simple_int(SEXP val) {
 		return val;
 	} else {
 		int_db[int_val] += 1;
-		count += 1;
-
 		return R_NilValue;
 	}
 }

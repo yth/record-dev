@@ -7,7 +7,6 @@ FILE *raw_file = NULL;
 size_t raw_db[256] = { 0 };
 
 extern size_t size;     /* size of the database */
-extern size_t count;    /* how many values have we encountered for the database */
 extern size_t r_size;   /* number of unique raw values in the store */
 
 /**
