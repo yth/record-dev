@@ -10,10 +10,9 @@ extern size_t size;     /* size of the database */
 extern size_t r_size;   /* number of unique raw values in the store */
 
 /**
- * Create the common raw storage
+ * Load/create a brand new simple raw store.
  * @method init_simple_raw_store
- * @param  file                 file name
- * @return                      R_NilValue on succcecss
+ * @return R_NilValue on success, throw and error otherwise
  */
 SEXP init_simple_raw_store(SEXP file) {
 	raw_file = open_file(file);
@@ -26,10 +25,9 @@ SEXP init_simple_raw_store(SEXP file) {
 }
 
 /**
- * Loads raw.bin in the database
- * @method loads_simple_raw_store
- * @param file                   file name
- * @return R_NilValue            on success throw and error otherwise
+ * Load an existing simple raw store.
+ * @method load_simple_raw_store
+ * @return R_NilValue on success, throw and error otherwise
  */
 SEXP load_simple_raw_store(SEXP file) {
 	init_simple_raw_store(file);
@@ -41,11 +39,10 @@ SEXP load_simple_raw_store(SEXP file) {
 	return R_NilValue;
 }
 
-
 /**
- * This function writes raw data to file and close the file.
- * @method close_simple_raw_store()
- * @return R_NilValue
+ * This functions writes simple raw R val store to file and closes the file.
+ * @method close_simple_raw_store
+ * @return R_NilValue on success
  */
 SEXP close_simple_raw_store() {
 	if (raw_file) {
@@ -53,7 +50,7 @@ SEXP close_simple_raw_store() {
 
 		for(int i = 0; i < 256; ++i) {
 			write_n(raw_file, &(raw_db[i]), sizeof(size_t));
-      raw_db[i] = 0;
+			raw_db[i] = 0;
 		}
 
 		close_file(&raw_file);
@@ -63,20 +60,20 @@ SEXP close_simple_raw_store() {
 }
 
 /**
- * This function checks if the input is a raw value
+ * This function assesses if the input is a simple raw.
  * @method is_simple_raw
- * @param  SEXP          Arbitrary R value
- * @return               1 if it is a raw value, 0 otherwise
+ * @param  SEXP          Any R value
+ * @return               1 if it is a simple raw, 0 otherwise
  */
 int is_simple_raw (SEXP value) {
   return IS_SCALAR(value, RAWSXP);
 }
 
 /**
- * Adds an R scalar integer value to a separate int database.
- * @method add_raw
- * @param  val    an arbitrary raw value
- * @return val
+ * Adds a simple integer R value to the simple raw store.
+ * @method add_simple_raw
+ * @param  val is an R raw value
+ * @return val if val hasn't been added to store before, else R_NilValue
  */
 SEXP add_simple_raw(SEXP val) {
   Rbyte *raw_val = RAW(val);
@@ -85,29 +82,28 @@ SEXP add_simple_raw(SEXP val) {
 		raw_db[*raw_val] += 1;
 		r_size += 1;
 		size += 1;
-    return val;
+		return val;
 	} else {
 		raw_db[*raw_val] += 1;
-
 		return R_NilValue;
 	}
 }
 
 /**
- * This function asks if the C layer has seen a int in range [-5000, 5000]
- * @method have_seen
- * @param  val       R value in form of SEXP
+ * This function asks if the C layer has seen a given simple raw value.
+ * @method have_seen_simple_raw
+ * @param  val       R raw value in form of SEXP
  * @return           1 if the value has been encountered before, else 0
  */
 int have_seen_simple_raw(SEXP val) {
-  Rbyte *raw_val = RAW(val);
+	Rbyte *raw_val = RAW(val);
 	return raw_db[*raw_val];
 }
 
 /**
- * This function gets the ith raw value in the database.
+ * This function gets the simple raw at the index'th place in the database.
  * @method get_simple_raw
- * @return [description]
+ * @return R value
  */
 SEXP get_simple_raw(int index) {
 	if (r_size < 256) {
@@ -137,4 +133,3 @@ SEXP get_simple_raw(int index) {
 		return res;
 	}
 }
-
