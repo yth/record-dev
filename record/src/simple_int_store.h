@@ -9,55 +9,54 @@ extern "C" {
 #endif
 
 /**
- * Create the common ints storage
- * @method create_ints
- * @param  ints        file name
- * @return             R_NilValue on succcecss
+ * Load/create a brand new simple integer store.
+ * @method init_simple_int_store
+ * @return R_NilValue on success, throw and error otherwise
  */
 SEXP init_simple_int_store(SEXP ints);
 
 /**
- * Loads ints.bin in the database
- * @method load_ints
+ * Load an existing simple integer store.
+ * @method load_simple_int_store
  * @return R_NilValue on success, throw and error otherwise
  */
 SEXP load_simple_int_store(SEXP ints);
 
 /**
- * This function writes ints data to file and close the file.
- * @method close_ints
+ * This functions writes simple int R val store to file and closes the file.
+ * @method close_simple_int_store
  * @return R_NilValue on success
  */
 SEXP close_simple_int_store();
 
 /**
- * This function assess if the input is a simple integer
+ * This function assesses if the input is a simple integer.
  * @method is_simple_int
  * @param  SEXP          Any R value
- * @return               1 if it is a simple int, 0 otherwise
+ * @return               1 if it is a simple integer, 0 otherwise
  */
 int is_simple_int(SEXP value);
 
 /**
- * Adds an R scalar integer value to a separate int database.
- * @method add_int
- * @param  val strictly an integer value from -5000 to 5000
- * @return val
+ * Adds a simple integer R value to the simple integer store.
+ * @method add_simple_int
+ * @param  val is a generic R value
+ * @return val if val hasn't been added to store before, else R_NilValue
  */
 SEXP add_simple_int(SEXP val);
 
 /**
- * This function asks if the C layer has seen a int in range [-5000, 5000]
- * @method have_seen
+ * This function asks if the C layer has seen a given simple integer value.
+ * @method have_seen_simple_int
  * @param  val       R value in form of SEXP
  * @return           1 if the value has been encountered before, else 0
  */
 int have_seen_simple_int(SEXP val);
 
 /**
- * This function samples from the simple ints that the database has.
- * @method get_int
- * @return [description]
+ * This function gets the simple integer at the index'th place in the database.
+ * @method get_simple_int
+ * @return R value
  */
 SEXP get_simple_int(int index);
 
