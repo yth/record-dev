@@ -9,50 +9,50 @@ extern "C" {
 #endif
 
 /**
- * Create stats.bin in the database
- * @method create_stats
+ * Load/create a brand new stats store.
+ * @method init_stats_store
  * @return R_NilValue on success, throw and error otherwise
  */
 SEXP init_stats_store(SEXP stats);
 
 /**
- * Loads stats.bin in the database
- * @method load_stats
+ * Load an existing stats store.
+ * @method load_stats_store
  * @return R_NilValue on success, throw and error otherwise
  */
 SEXP load_stats_store(SEXP stats);
 
 /**
- * This function writes database information to file and close the file.
- * @method close_stats
+ * This functions writes database statistics to file and closes the file.
+ * @method close_stats_store
  * @return R_NilValue on success
  */
 SEXP close_stats_store();
 
 /**
  * Report database statistics
- * @method report
+ * @method print_report
  */
 SEXP print_report();
 
 /**
  * This function asks for how many R values the C add_val has seen.
  * @method count_vals
- * @return number of total values encountered by add_val
+ * @return number of times add_val was called
  */
 SEXP count_vals();
 
 /**
  * This function asks for how many values are stored in the database
  * @method size_db
- * @return [description]
+ * @return Non-zero numeric R value in form of a SEXP
  */
 SEXP size_db();
 
 /**
  * This function asks for how many simple integer values stored in the database
  * @method size_ints
- * @return [description]
+ * @return Non-zero numeric R value in form of a SEXP
  */
 SEXP size_ints();
 
