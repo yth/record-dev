@@ -209,12 +209,10 @@ int have_seen_generic(SEXP val) {
  * @return [description]
  */
 SEXP get_generic(int index) {
-	std::map<std::string, size_t>::iterator it;
-	it = gbov_map->begin();
+	std::map<std::string, size_t>::iterator it = gbov_map->begin();
 	std::advance(it, index);
 
 	// Get the specified value
-
 	size_t obj_size;
 	free_content(vector);
 	fseek(db_file, it->second, SEEK_SET);

@@ -1,3 +1,5 @@
+## Primary Functionality
+
 #' @export
 # Open database specified by db
 # If create is TRUE, then create the database.
@@ -78,8 +80,20 @@ add_val <- function(val) {
 }
 
 #' @export
+get_random_val <- function() {
+	.Call(RCRD_sample_val)
+}
+
+## Testing Related Functionality
+
+#' @export
 have_seen <- function(val) {44
 	.Call(RCRD_have_seen, val)
+}
+
+#' @export
+report <- function() {
+	.Call(RCRD_print_report)
 }
 
 #' @export
@@ -95,19 +109,4 @@ size_db <- function() {
 #' @export
 size_ints <- function() {
 	.Call(RCRD_size_ints)
-}
-
-#' @export
-get_vals <- function(from, to) {
-	.Call(RCRD_read_vals, from, to)
-}
-
-#' @export
-get_random_val <- function() {
-	.Call(RCRD_sample_val)
-}
-
-#' @export
-report <- function() {
-	.Call(RCRD_print_report)
 }
