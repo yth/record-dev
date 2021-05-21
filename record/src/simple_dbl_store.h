@@ -9,29 +9,28 @@ extern "C" {
 #endif
 
 /**
- * Create the common dbls storage
- * @method create_dbls
- * @param  dbls        file name
- * @return             R_NilValue on succcecss
+ * Load/create a brand new simple double store.
+ * @method init_simple_dbl_store
+ * @return R_NilValue on success, throw and error otherwise
  */
 SEXP init_simple_dbl_store(SEXP dbls);
 
 /**
- * Loads dbls.bin in the database
- * @method load_dbls
+ * Load an existing simple double store.
+ * @method load_simple_dbl_store
  * @return R_NilValue on success, throw and error otherwise
  */
 SEXP load_simple_dbl_store(SEXP dbls);
 
 /**
- * This function writes dbls data to file and close the file.
- * @method close_dbls
+ * This functions writes simple double R val store to file and closes the file.
+ * @method close_simple_dbl_store
  * @return R_NilValue on success
  */
 SEXP close_simple_dbl_store();
 
 /**
- * This function assess if the input is a simple dbleger
+ * This function assesses if the input is a simple double.
  * @method is_simple_dbl
  * @param  SEXP          Any R value
  * @return               1 if it is a simple dbl, 0 otherwise
@@ -39,25 +38,25 @@ SEXP close_simple_dbl_store();
 int is_simple_dbl(SEXP value);
 
 /**
- * Adds an R scalar dbleger value to a separate dbl database.
- * @method add_dbl
- * @param  val strictly an dbleger value from -5000 to 5000
- * @return val
+ * Adds a simple double R value to the simple double store.
+ * @method add_simple_dbl
+ * @param  val is a generic R value
+ * @return val if val hasn't been added to store before, else R_NilValue
  */
 SEXP add_simple_dbl(SEXP val);
 
 /**
- * This function asks if the C layer has seen a dbl in range [-5000, 5000]
- * @method have_seen
+ * This function asks if the C layer has seen a given simple double value.
+ * @method have_seen_simple_dbl
  * @param  val       R value in form of SEXP
  * @return           1 if the value has been encountered before, else 0
  */
 int have_seen_simple_dbl(SEXP val);
 
 /**
- * This function samples from the simple dbls that the database has.
- * @method get_dbl
- * @return [description]
+ * This function gets the simple double at the index'th place in the database.
+ * @method get_simple_dbl
+ * @return R value
  */
 SEXP get_simple_dbl(int index);
 
