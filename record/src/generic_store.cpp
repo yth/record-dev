@@ -22,7 +22,7 @@ extern byte_vector_t vector;
 
 /**
  * Load/create a brand new generic store.
- * @method load_gbov
+ * @method create_generic_store
  * @return R_NilValue on success, throw and error otherwise
  */
 SEXP create_generic_store(SEXP generics) {
@@ -33,7 +33,7 @@ SEXP create_generic_store(SEXP generics) {
 
 /**
  * Load an existing generic store.
- * @method load_gbov
+ * @method load_generic_store
  * @return R_NilValue on success, throw and error otherwise
  */
 SEXP load_generic_store(SEXP generics) {
@@ -42,7 +42,7 @@ SEXP load_generic_store(SEXP generics) {
 
 /**
  * This functions writes generic R val store to file and closes the file.
- * @method close_gbov
+ * @method close_generic_store
  * @return R_NilValue on success
  */
 SEXP close_generic_store() {
@@ -55,7 +55,7 @@ SEXP close_generic_store() {
 
 /**
  * Load/create a brand new index associated with the generics store.
- * @method load_indices
+ * @method create_generic_index
  * @return R_NilValue on success, throw and error otherwise
  */
 SEXP create_generic_index(SEXP index) {
@@ -68,7 +68,7 @@ SEXP create_generic_index(SEXP index) {
 
 /**
  * Load an existing index associated with the generics store.
- * @method load_indices
+ * @method load_generic_index
  * @return R_NilValue on success, throw and error otherwise
  */
 SEXP load_generic_index(SEXP index) {
@@ -88,7 +88,7 @@ SEXP load_generic_index(SEXP index) {
 /**
  * This function writes the index associated with the generics store to file
  * and closes the file.
- * @method close_indices
+ * @method close_generic_index
  * @return R_NilValue
  */
 SEXP close_generic_index() {
@@ -126,7 +126,7 @@ SEXP close_generic_index() {
 
 /**
  * Adds an generic R value to the generics store.
- * @method add_dbl
+ * @method add_generic
  * @param  val is a generic R value
  * @return val if val hasn't been added to store before, else R_NilValue
  */
@@ -165,7 +165,7 @@ SEXP add_generic(SEXP val) {
 
 /**
  * This function asks if the C layer has seen an given generic value
- * @method have_seen
+ * @method have_seen_generic
  * @param  val       R value in form of SEXP
  * @return           1 if the value has been encountered before, else 0
  */
