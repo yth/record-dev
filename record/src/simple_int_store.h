@@ -40,7 +40,7 @@ int is_simple_int(SEXP value);
 /**
  * Adds a simple integer R value to the simple integer store.
  * @method add_simple_int
- * @param  val is a generic R value
+ * @param  val is a simple int R value
  * @return val if val hasn't been added to store before, else R_NilValue
  */
 SEXP add_simple_int(SEXP val);
@@ -48,7 +48,7 @@ SEXP add_simple_int(SEXP val);
 /**
  * This function asks if the C layer has seen a given simple integer value.
  * @method have_seen_simple_int
- * @param  val       R value in form of SEXP
+ * @param  val       a simple int R value in form of SEXP
  * @return           1 if the value has been encountered before, else 0
  */
 int have_seen_simple_int(SEXP val);

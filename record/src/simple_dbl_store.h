@@ -40,7 +40,7 @@ int is_simple_dbl(SEXP value);
 /**
  * Adds a simple double R value to the simple double store.
  * @method add_simple_dbl
- * @param  val is a generic R value
+ * @param  val is a simple double R value
  * @return val if val hasn't been added to store before, else R_NilValue
  */
 SEXP add_simple_dbl(SEXP val);
@@ -48,7 +48,7 @@ SEXP add_simple_dbl(SEXP val);
 /**
  * This function asks if the C layer has seen a given simple double value.
  * @method have_seen_simple_dbl
- * @param  val       R value in form of SEXP
+ * @param  val       an simple double R value in form of SEXP
  * @return           1 if the value has been encountered before, else 0
  */
 int have_seen_simple_dbl(SEXP val);
