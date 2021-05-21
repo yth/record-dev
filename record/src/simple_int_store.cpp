@@ -34,7 +34,7 @@ SEXP init_simple_int_store(SEXP ints) {
  * @return R_NilValue on success, throw and error otherwise
  */
 SEXP load_simple_int_store(SEXP ints) {
-	init_simple_int_store(ints);
+	int_file = open_file(ints);
 
 	for (size_t i = 0; i < INT_STORE_SIZE; ++i) {
 		read_n(int_file, int_db + i, sizeof(size_t));

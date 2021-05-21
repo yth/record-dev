@@ -36,12 +36,7 @@ size_t bytes_unserialized = 0;
 SEXP init_stats_store(SEXP stats) {
 	stats_file = open_file(stats);
 
-	bytes_read_session = 0;
-	bytes_written_session = 0;
-
-	bytes_serialized_session = 0;
-	bytes_unserialized_session = 0;
-
+	// Database Information
 	offset = 0;
 	size = 0;
 	count = 0;
@@ -50,6 +45,13 @@ SEXP init_stats_store(SEXP stats) {
 	d_size = 0;
 	r_size = 0;
 	g_size = 0;
+
+	// Performance Information
+	bytes_read_session = 0;
+	bytes_written_session = 0;
+
+	bytes_serialized_session = 0;
+	bytes_unserialized_session = 0;
 
 	return R_NilValue;
 }
@@ -60,7 +62,7 @@ SEXP init_stats_store(SEXP stats) {
  * @return R_NilValue on success, throw and error otherwise
  */
 SEXP load_stats_store(SEXP stats) {
-	init_stats_store(stats);
+	stats_file = open_file(stats);
 
 	// Database Information
 	read_n(stats_file, &offset, sizeof(size_t));
