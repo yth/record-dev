@@ -1,5 +1,3 @@
-if (T) {
-
 test_that("test open non existing db", {
 	expect_error(open_db("test_db/non_existing_db", create = FALSE))
 })
@@ -17,5 +15,3 @@ test_that("open existing db", {
 	expect_silent(open_db("test_db/open", create = FALSE))
 	expect_silent(close_db())
 })
-
-}
