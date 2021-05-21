@@ -20,7 +20,7 @@ open_db <- function(db = "db", create = FALSE) {
 			# Load specialty stores
 			.Call(RCRD_load_simple_int_store, paste0(db, "/ints.bin"))
 			.Call(RCRD_load_simple_dbl_store, paste0(db, "/dbls.bin"))
-      .Call(RCRD_load_simple_raw_store, paste0(db, "/raws.bin"))
+			.Call(RCRD_load_simple_raw_store, paste0(db, "/raws.bin"))
 
 			# Load generic store
 			.Call(RCRD_load_indices, paste0(db, "/indices.bin"))
@@ -32,11 +32,15 @@ open_db <- function(db = "db", create = FALSE) {
 		} else {
 			dir.create(db, recursive = TRUE)
 
+			# Create the stats store file
 			stats = paste0(db, "/stats.bin")
+
+			# Create the specialty store files
 			ints = paste0(db, "/ints.bin")
 			dbls = paste0(db, "/dbls.bin")
-      raws = paste0(db, "/raws.bin")
+			raws = paste0(db, "/raws.bin")
 
+			# Create the generic store files
 			gbov = paste0(db, "/gbov.bin")
 			indices = paste0(db, "/indices.bin")
 
@@ -84,7 +88,7 @@ add_val <- function(val) {
 }
 
 #' @export
-get_random_val <- function() {
+sample_val <- function() {
 	.Call(RCRD_sample_val)
 }
 

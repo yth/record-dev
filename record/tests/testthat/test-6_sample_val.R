@@ -4,18 +4,18 @@ test_that("get random val hello after adding hello", {
 	open_db("test_db/get_random_1", create = TRUE)
 	s1 = "hello"
 	add_val(s1)
-	expect_equal(get_random_val(), s1)
+	expect_equal(sample_val(), s1)
 	close_db()
 })
 
 test_that("get random val hello after adding hello redux", {
 	open_db("test_db/get_random_1")
 	s1 = "hello"
-	expect_equal(get_random_val(), s1)
+	expect_equal(sample_val(), s1)
 	close_db()
 })
 
-test_that("get all three added vals by get_random_val in a loop", {
+test_that("get all three added vals by sample_val in a loop", {
 	open_db("test_db/get_random_2", create = TRUE)
 	add_val(TRUE)
 	add_val(1)
@@ -25,7 +25,7 @@ test_that("get all three added vals by get_random_val in a loop", {
 
   rand_vals = vector('list', 100)
 	for (i in seq_along(rand_vals)) {
-		rand_vals[[i]] <- get_random_val()
+		rand_vals[[i]] <- sample_val()
 	}
 
   for(rand_val in rand_vals) {
@@ -35,13 +35,13 @@ test_that("get all three added vals by get_random_val in a loop", {
 	close_db()
 })
 
-test_that("get all three added vals by get_random_val in a loop redux", {
+test_that("get all three added vals by sample_val in a loop redux", {
 	open_db("test_db/get_random_2")
   vals_added <- list(TRUE, 1, "hello")
 
   rand_vals = vector('list', 100)
 	for (i in seq_along(rand_vals)) {
-		rand_vals[[i]] <- get_random_val()
+		rand_vals[[i]] <- sample_val()
 	}
 
   for(rand_val in rand_vals) {
@@ -59,7 +59,7 @@ test_that("get random val from stringr::str_detect from existing db", {
 
 	rand_vals <- vector('list', 100)
 	for (i in seq_along(rand_vals)) {
-		rand_vals[[i]] <- get_random_val()
+		rand_vals[[i]] <- sample_val()
 	}
 
   for(rand_val in rand_vals) {
@@ -81,7 +81,7 @@ test_that("get random val from a database with ints", {
 
 	vals = vector('list', 100)
 	for (i in seq_along(vals)) {
-		  vals[[i]] <- get_random_val()
+		  vals[[i]] <- sample_val()
 	}
 
 	for(val in vals) {
@@ -114,7 +114,7 @@ test_that("get random val from a database with mix ints and vals", {
 
 	vals = vector('list', 100)
 	for (i in seq_along(vals)) {
-		  vals[[i]] <- get_random_val()
+		  vals[[i]] <- sample_val()
 	}
 
 	for (i in seq_along(ints)) {
