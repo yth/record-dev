@@ -13,7 +13,7 @@ extern "C" {
  * @method create_generic_store
  * @return R_NilValue on success, throw and error otherwise
  */
-SEXP create_generic_store(SEXP generics);
+SEXP init_generic_store(SEXP generics);
 
 /**
  * Load an existing generic store.
@@ -34,7 +34,7 @@ SEXP close_generic_store();
  * @method create_generic_index
  * @return R_NilValue on success, throw and error otherwise
  */
-SEXP create_generic_index(SEXP index);
+SEXP init_generic_index(SEXP index);
 
 /**
  * Load an existing index associated with the generics store.

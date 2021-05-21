@@ -67,10 +67,10 @@ static const R_CallMethodDef callMethods[] = {
 	{"get_simple_raw",			(DL_FUNC) &get_simple_raw,			1},
 
 	// generic R value store related
-	{"create_generic_index",	(DL_FUNC) &create_generic_index, 	1},
+	{"init_generic_index",		(DL_FUNC) &init_generic_index, 	1},
 	{"load_generic_index",		(DL_FUNC) &load_generic_index,		1},
 	{"close_generic_index",		(DL_FUNC) &close_generic_index,		0},
-	{"create_generic_store",	(DL_FUNC) &create_generic_store,	1},
+	{"init_generic_store",		(DL_FUNC) &init_generic_store,	1},
 	{"load_generic_store",		(DL_FUNC) &load_generic_store,		1},
 	{"close_generic_store",		(DL_FUNC) &close_generic_store,		0},
 

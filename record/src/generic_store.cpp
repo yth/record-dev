@@ -25,7 +25,7 @@ extern byte_vector_t vector;
  * @method create_generic_store
  * @return R_NilValue on success, throw and error otherwise
  */
-SEXP create_generic_store(SEXP generics) {
+SEXP init_generic_store(SEXP generics) {
 	generics_file = open_file(generics);
 	fseek(generics_file, offset, SEEK_SET);
 	return R_NilValue;
@@ -37,7 +37,7 @@ SEXP create_generic_store(SEXP generics) {
  * @return R_NilValue on success, throw and error otherwise
  */
 SEXP load_generic_store(SEXP generics) {
-	return create_generic_store(generics);
+	return init_generic_store(generics);
 }
 
 /**
@@ -58,7 +58,7 @@ SEXP close_generic_store() {
  * @method create_generic_index
  * @return R_NilValue on success, throw and error otherwise
  */
-SEXP create_generic_index(SEXP index) {
+SEXP init_generic_index(SEXP index) {
 	generics_index_file = open_file(index);
 
 	gbov_map = new std::map<std::string, size_t>;
@@ -72,7 +72,7 @@ SEXP create_generic_index(SEXP index) {
  * @return R_NilValue on success, throw and error otherwise
  */
 SEXP load_generic_index(SEXP index) {
-	create_generic_index(index);
+	init_generic_index(index);
 
 	size_t start = 0;
 	char hash[20];

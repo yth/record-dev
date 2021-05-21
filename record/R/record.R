@@ -64,8 +64,8 @@ open_db <- function(db = "db", create = FALSE) {
       .Call(RCRD_init_simple_raw_store, raws)
 
 			# Initialize generic store
-			.Call(RCRD_create_generic_index, generic_index)
-			.Call(RCRD_create_generic_store, generics)
+			.Call(RCRD_init_generic_index, generic_index)
+			.Call(RCRD_init_generic_store, generics)
 		}
 	}
 }
