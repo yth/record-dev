@@ -9,65 +9,62 @@ extern "C" {
 #endif
 
 /**
- * Load the indices associated with the gbov.
- * @method load_indices
- * @return R_NilValue on success, throw and error otherwise
- */
-SEXP create_indices(SEXP indices);
-
-
-/**
- * Load the indices associated with the gbov.
- * @method load_indices
- * @return R_NilValue on success, throw and error otherwise
- */
-SEXP load_indices(SEXP indices);
-
-
-/**
- * This function  writes indices to file and closes the file.
- * @method close_indices
- * @return [description]
- */
-SEXP close_indices();
-
-/**
- * Create the gbov.
+ * Load/create a brand new generic store.
  * @method load_gbov
  * @return R_NilValue on success, throw and error otherwise
  */
-
-SEXP create_gbov(SEXP gbov);
-
+SEXP create_generic_store(SEXP generics);
 
 /**
- * Load the gbov.
+ * Load an existing generic store.
  * @method load_gbov
  * @return R_NilValue on success, throw and error otherwise
  */
-SEXP load_gbov(SEXP gbov);
-
+SEXP load_generic_store(SEXP generics);
 
 /**
  * This functions writes generic R val store to file and closes the file.
  * @method close_gbov
  * @return R_NilValue on success
  */
-SEXP close_gbov();
+SEXP close_generic_store();
 
 /**
- * This function assess if the input is a generic.
+ * Load/create a brand new index associated with the generics store.
+ * @method load_indices
+ * @return R_NilValue on success, throw and error otherwise
+ */
+SEXP create_generic_index(SEXP index);
+
+/**
+ * Load an existing index associated with the generics store.
+ * @method load_indices
+ * @return R_NilValue on success, throw and error otherwise
+ */
+SEXP load_generic_index(SEXP index);
+
+/**
+ * This function writes the index associated with the generics store to file
+ * and closes the file.
+ * @method close_indices
+ * @return R_NilValue
+ */
+SEXP close_generic_index();
+
+/**
+ * This function assesses if the input is a generic.
+ * This function would always return true, therefore no need to implement it.
  * @method is_generic
  * @param  SEXP          Any R value
- * @return               1, therefore no need to actually implement
+ * @return               1
  */
 // int is_generic(SEXP value);
 
 /**
- * Adds an generic R value to the database.
+ * Adds an generic R value to the generics store.
  * @method add_dbl
  * @param  val is a generic R value
- * @return val
+ * @return val if val hasn't been added to store before, else R_NilValue
  */
 SEXP add_generic(SEXP val);
 
@@ -80,9 +77,9 @@ SEXP add_generic(SEXP val);
 int have_seen_generic(SEXP val);
 
 /**
- * This function gets the generic at the index'th place in the database.
+ * This function gets the generic value at the index'th place in the database.
  * @method get_dbl
- * @return [description]
+ * @return R value
  */
 SEXP get_generic(int index);
 

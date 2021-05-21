@@ -10,9 +10,8 @@
 #include "byte_vector.h"
 #include "sha1.h"
 
-
-FILE *db_file = NULL;
-FILE *index_file = NULL;
+FILE *generics_file = NULL;
+FILE *generics_index_file = NULL;
 std::map<std::string, size_t> *gbov_map = NULL;
 
 extern size_t offset;
@@ -21,48 +20,46 @@ extern size_t g_size;
 
 extern byte_vector_t vector;
 
-
 /**
- * Create the gbov. (Must be called before create_indices)
+ * Load/create a brand new generic store.
  * @method load_gbov
- * @return R_NilValue on success throw and error otherwise
+ * @return R_NilValue on success, throw and error otherwise
  */
-SEXP create_gbov(SEXP gbov) {
-	db_file = open_file(gbov);
-	fseek(db_file, offset, SEEK_SET);
+SEXP create_generic_store(SEXP generics) {
+	generics_file = open_file(generics);
+	fseek(generics_file, offset, SEEK_SET);
 	return R_NilValue;
 }
 
 /**
- * Load the gbov. (Must be called before load_indices)
+ * Load an existing generic store.
  * @method load_gbov
- * @return R_NilValue on success throw and error otherwise
+ * @return R_NilValue on success, throw and error otherwise
  */
-SEXP load_gbov(SEXP gbov) {
-	return create_gbov(gbov);
+SEXP load_generic_store(SEXP generics) {
+	return create_generic_store(generics);
 }
-
 
 /**
  * This functions writes generic R val store to file and closes the file.
  * @method close_gbov
  * @return R_NilValue on success
  */
-SEXP close_gbov() {
-	if (db_file) {
-		close_file(&db_file);
+SEXP close_generic_store() {
+	if (generics_file) {
+		close_file(&generics_file);
 	}
 
 	return R_NilValue;
 }
 
 /**
- * Load the indices associated with the gbov.
+ * Load/create a brand new index associated with the generics store.
  * @method load_indices
- * @return R_NilValue on success throw and error otherwise
+ * @return R_NilValue on success, throw and error otherwise
  */
-SEXP create_indices(SEXP indices) {
-	index_file = open_file(indices);
+SEXP create_generic_index(SEXP index) {
+	generics_index_file = open_file(index);
 
 	gbov_map = new std::map<std::string, size_t>;
 
@@ -70,42 +67,42 @@ SEXP create_indices(SEXP indices) {
 }
 
 /**
- * Load the indices associated with the gbov.
+ * Load an existing index associated with the generics store.
  * @method load_indices
- * @return R_NilValue on success throw and error otherwise
+ * @return R_NilValue on success, throw and error otherwise
  */
-SEXP load_indices(SEXP indices) {
-	create_indices(indices);
+SEXP load_generic_index(SEXP index) {
+	create_generic_index(index);
 
 	size_t start = 0;
 	char hash[20];
 	for (size_t i = 0; i < g_size; ++i) {
-		read_n(index_file, hash, 20);
-		read_n(index_file, &start, sizeof(size_t));
+		read_n(generics_index_file, hash, 20);
+		read_n(generics_index_file, &start, sizeof(size_t));
 		(*gbov_map)[std::string(hash, 20)] = start;
 	}
 
 	return R_NilValue;
 }
 
-
 /**
- * This function  writes indices to file and closes the file.
+ * This function writes the index associated with the generics store to file
+ * and closes the file.
  * @method close_indices
- * @return [description]
+ * @return R_NilValue
  */
-SEXP close_indices() {
-	if (index_file) {
+SEXP close_generic_index() {
+	if (generics_index_file) {
 		// TODO: Think about ways to reuse rather than overwrite each time
-		fseek(index_file, 0, SEEK_SET);
+		fseek(generics_index_file, 0, SEEK_SET);
 
 		std::map<std::string, size_t>::iterator it;
 		for(it = gbov_map->begin(); it != gbov_map->end(); it++) {
-			write_n(index_file, (void *) it->first.c_str(), 20);
-			write_n(index_file, &(it->second), sizeof(size_t));
+			write_n(generics_index_file, (void *) it->first.c_str(), 20);
+			write_n(generics_index_file, &(it->second), sizeof(size_t));
 		}
 
-		close_file(&index_file);
+		close_file(&generics_index_file);
 	}
 
 	if (gbov_map) {
@@ -117,20 +114,21 @@ SEXP close_indices() {
 }
 
 /**
- * This function assess if the input is a generic.
+ * This function assesses if the input is a generic.
+ * This function would always return true, therefore no need to implement it.
  * @method is_generic
  * @param  SEXP          Any R value
- * @return               1, therefore no need to actually implement
+ * @return               1
  */
 // int is_generic(SEXP value) {
 // 	return 1;
 // }
 
 /**
- * Adds an generic R value to the database.
+ * Adds an generic R value to the generics store.
  * @method add_dbl
  * @param  val is a generic R value
- * @return val
+ * @return val if val hasn't been added to store before, else R_NilValue
  */
 SEXP add_generic(SEXP val) {
 	serialize_val(vector, val);
@@ -150,11 +148,11 @@ SEXP add_generic(SEXP val) {
 		size++;
 
 		// Write the blob
-		write_n(db_file, &(vector->size), sizeof(size_t));
-		write_n(db_file, vector->buf, vector->size);
+		write_n(generics_file, &(vector->size), sizeof(size_t));
+		write_n(generics_file, vector->buf, vector->size);
 
 		// Acting as NULL for linked-list next pointer
-		write_n(db_file, &(vector->size), sizeof(size_t));
+		write_n(generics_file, &(vector->size), sizeof(size_t));
 
 		// Modify offset here
 		offset += vector->size + sizeof(size_t) + sizeof(size_t);
@@ -189,24 +187,12 @@ int have_seen_generic(SEXP val) {
 	} else {
 		return 1;
 	}
-
-	//
-	// SEXP res;
-	// PROTECT(res = allocVector(LGLSXP, 1));
-	// int *res_ptr = LOGICAL(res);
-	// if (it == gbov_map->end()) {
-	// 	res_ptr[0] = 0;
-	// } else {
-	// 	res_ptr[0] = 1;
-	// }
-	// UNPROTECT(1);
-	// return res;
 }
 
 /**
- * This function gets the generic at the index'th place in the database.
+ * This function gets the generic value at the index'th place in the database.
  * @method get_dbl
- * @return [description]
+ * @return R value
  */
 SEXP get_generic(int index) {
 	std::map<std::string, size_t>::iterator it = gbov_map->begin();
@@ -215,10 +201,10 @@ SEXP get_generic(int index) {
 	// Get the specified value
 	size_t obj_size;
 	free_content(vector);
-	fseek(db_file, it->second, SEEK_SET);
-	read_n(db_file, &obj_size, sizeof(size_t));
-	read_n(db_file, vector->buf, obj_size);
-	fseek(db_file, offset, SEEK_SET);
+	fseek(generics_file, it->second, SEEK_SET);
+	read_n(generics_file, &obj_size, sizeof(size_t));
+	read_n(generics_file, vector->buf, obj_size);
+	fseek(generics_file, offset, SEEK_SET);
 	vector->capacity = obj_size;
 
 	SEXP res = unserialize_val(vector);
@@ -228,4 +214,3 @@ SEXP get_generic(int index) {
 
 	return res;
 }
-

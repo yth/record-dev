@@ -8,7 +8,7 @@ open_db <- function(db = "db", create = FALSE) {
 	if (dir.exists(db)){
 		if (create) {
 			stop(paste0(db, " already exists."))
-		} else if (!file.exists(paste0(db, "/gbov.bin"))) {
+		} else if (!file.exists(paste0(db, "/generics.bin"))) {
 			stop(paste0(db, " is not a database."))
 		} else {# valid database
 			# This must be called first
@@ -23,8 +23,8 @@ open_db <- function(db = "db", create = FALSE) {
 			.Call(RCRD_load_simple_raw_store, paste0(db, "/raws.bin"))
 
 			# Load generic store
-			.Call(RCRD_load_indices, paste0(db, "/indices.bin"))
-			.Call(RCRD_load_gbov, paste0(db, "/gbov.bin"))
+			.Call(RCRD_load_generic_index, paste0(db, "/generic_index.bin"))
+			.Call(RCRD_load_generic_store, paste0(db, "/generics.bin"))
 		}
 	} else {
 		if (!create) {
@@ -41,10 +41,16 @@ open_db <- function(db = "db", create = FALSE) {
 			raws = paste0(db, "/raws.bin")
 
 			# Create the generic store files
-			gbov = paste0(db, "/gbov.bin")
-			indices = paste0(db, "/indices.bin")
+			generics = paste0(db, "/generics.bin")
+			generic_index = paste0(db, "/generic_index.bin")
 
-			file.create(ints, dbls, raws, gbov, indices, stats, showWarnings = TRUE)
+			file.create(ints,
+						dbls,
+						raws,
+						generics,
+						generic_index,
+						stats,
+						showWarnings = TRUE)
 
 			# This must be called first
 			.Call(RCRD_setup)
@@ -58,8 +64,8 @@ open_db <- function(db = "db", create = FALSE) {
       .Call(RCRD_init_simple_raw_store, raws)
 
 			# Initialize generic store
-			.Call(RCRD_create_indices, indices)
-			.Call(RCRD_create_gbov, gbov)
+			.Call(RCRD_create_generic_index, generic_index)
+			.Call(RCRD_create_generic_store, generics)
 		}
 	}
 }
@@ -67,13 +73,13 @@ open_db <- function(db = "db", create = FALSE) {
 #' @export
 close_db <- function() {
 	# Close generic store
-	.Call(RCRD_close_indices)
-	.Call(RCRD_close_gbov)
+	.Call(RCRD_close_generic_index)
+	.Call(RCRD_close_generic_store)
 
 	# Close specialty store
 	.Call(RCRD_close_simple_int_store)
 	.Call(RCRD_close_simple_dbl_store)
-  .Call(RCRD_close_simple_raw_store)
+	.Call(RCRD_close_simple_raw_store)
 
 	# This must be called second to last
 	.Call(RCRD_close_stats_store)
