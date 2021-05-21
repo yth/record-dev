@@ -7,7 +7,10 @@ FILE *dbl_file = NULL;
 // Small scalar dbl storage
 double DBL_STORE_MAX = 5000;
 double DBL_STORE_MIN = -5000;
-size_t dbl_db[10001] = { 0 };    // hard wired to accommodate -5000 to 5000
+int DBL_STORE_SIZE = DBL_STORE_MAX - DBL_STORE_MIN + 1;
+
+// hard wired to accommodate doubles that represents ints between -5000 to 5000
+size_t dbl_db[10001] = { 0 };
 
 extern size_t size;
 extern size_t d_size;
@@ -20,7 +23,7 @@ extern size_t d_size;
 SEXP init_simple_dbl_store(SEXP dbls) {
 	dbl_file = open_file(dbls);
 
-	for (int i = 0; i < 10001; ++i) {
+	for (int i = 0; i < DBL_STORE_SIZE; ++i) {
 		dbl_db[i] = 0;
 	}
 
@@ -35,13 +38,12 @@ SEXP init_simple_dbl_store(SEXP dbls) {
 SEXP load_simple_dbl_store(SEXP dbls) {
 	init_simple_dbl_store(dbls);
 
-	for (size_t i = 0; i < 10001; ++i) {
+	for (size_t i = 0; i < DBL_STORE_SIZE; ++i) {
 		read_n(dbl_file, dbl_db + i, sizeof(size_t));
 	}
 
 	return R_NilValue;
 }
-
 
 /**
  * This functions writes simple double R val store to file and closes the file.
@@ -52,13 +54,13 @@ SEXP close_simple_dbl_store() {
 	if (dbl_file) {
 		fseek(dbl_file, 0, SEEK_SET);
 
-		for(int i = 0; i < 10001; ++i) {
+		for(int i = 0; i < DBL_STORE_SIZE; ++i) {
 			write_n(dbl_file, &(dbl_db[i]), sizeof(size_t));
 		}
 
 		close_file(&dbl_file);
 
-		memset(dbl_db, 0, 10001 * sizeof(size_t));
+		memset(dbl_db, 0, DBL_STORE_SIZE * sizeof(size_t));
 	}
 
 	return R_NilValue;
@@ -91,7 +93,8 @@ int is_simple_dbl(SEXP value) {
  * @return val if val hasn't been added to store before, else R_NilValue
  */
 SEXP add_simple_dbl(SEXP val) {
-	int dbl_val = (int) (asReal(val) + 5000); // dbl_db[0] represents -5000
+	// dbl_db[0] represents -5000
+	int dbl_val = (int) (asReal(val) - DBL_STORE_MIN);
 	if(dbl_db[dbl_val] == 0) {
 		dbl_db[dbl_val] += 1;
 		d_size += 1;
@@ -110,7 +113,8 @@ SEXP add_simple_dbl(SEXP val) {
  * @return           1 if the value has been encountered before, else 0
  */
 int have_seen_simple_dbl(SEXP val) {
-	int index = (int) (asReal(val) + 5000);
+	// dbl_db[0] represents -5000
+	int index = (int) (asReal(val) - DBL_STORE_MIN);
 	return dbl_db[index];
 }
 
@@ -120,9 +124,9 @@ int have_seen_simple_dbl(SEXP val) {
  * @return R value
  */
 SEXP get_simple_dbl(int index) {
-	if (d_size < 10001) {
+	if (d_size < DBL_STORE_SIZE) {
 		int values_passed = 0;
-		for (int i = 0; i < 10001; ++i) {
+		for (int i = 0; i < DBL_STORE_SIZE; ++i) {
 			if (dbl_db[i] > 0) {
 				++values_passed;
 			}
