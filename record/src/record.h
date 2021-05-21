@@ -27,7 +27,8 @@ SEXP teardown();
  * This functions adds an R value to the database.
  * @method add_val
  * @param  val      R value in form of SEXP
- * @return          val on success
+ * @return          val if val hasn't been added to database before,
+ *                  else R_NilValue
  */
 SEXP add_val(SEXP val);
 

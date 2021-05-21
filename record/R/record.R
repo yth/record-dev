@@ -1,3 +1,5 @@
+## Primary Functionality
+
 #' @export
 # Open database specified by db
 # If create is TRUE, then create the database.
@@ -6,7 +8,7 @@ open_db <- function(db = "db", create = FALSE) {
 	if (dir.exists(db)){
 		if (create) {
 			stop(paste0(db, " already exists."))
-		} else if (!file.exists(paste0(db, "/gbov.bin"))) {
+		} else if (!file.exists(paste0(db, "/generics.bin"))) {
 			stop(paste0(db, " is not a database."))
 		} else {# valid database
 			# This must be called first
@@ -18,11 +20,11 @@ open_db <- function(db = "db", create = FALSE) {
 			# Load specialty stores
 			.Call(RCRD_load_simple_int_store, paste0(db, "/ints.bin"))
 			.Call(RCRD_load_simple_dbl_store, paste0(db, "/dbls.bin"))
-      .Call(RCRD_load_simple_raw_store, paste0(db, "/raws.bin"))
+			.Call(RCRD_load_simple_raw_store, paste0(db, "/raws.bin"))
 
 			# Load generic store
-			.Call(RCRD_load_indices, paste0(db, "/indices.bin"))
-			.Call(RCRD_load_gbov, paste0(db, "/gbov.bin"))
+			.Call(RCRD_load_generic_index, paste0(db, "/generic_index.bin"))
+			.Call(RCRD_load_generic_store, paste0(db, "/generics.bin"))
 		}
 	} else {
 		if (!create) {
@@ -30,15 +32,25 @@ open_db <- function(db = "db", create = FALSE) {
 		} else {
 			dir.create(db, recursive = TRUE)
 
+			# Create the stats store file
 			stats = paste0(db, "/stats.bin")
+
+			# Create the specialty store files
 			ints = paste0(db, "/ints.bin")
 			dbls = paste0(db, "/dbls.bin")
-      raws = paste0(db, "/raws.bin")
+			raws = paste0(db, "/raws.bin")
 
-			gbov = paste0(db, "/gbov.bin")
-			indices = paste0(db, "/indices.bin")
+			# Create the generic store files
+			generics = paste0(db, "/generics.bin")
+			generic_index = paste0(db, "/generic_index.bin")
 
-			file.create(ints, dbls, raws, gbov, indices, stats, showWarnings = TRUE)
+			file.create(ints,
+						dbls,
+						raws,
+						generics,
+						generic_index,
+						stats,
+						showWarnings = TRUE)
 
 			# This must be called first
 			.Call(RCRD_setup)
@@ -52,8 +64,8 @@ open_db <- function(db = "db", create = FALSE) {
       .Call(RCRD_init_simple_raw_store, raws)
 
 			# Initialize generic store
-			.Call(RCRD_create_indices, indices)
-			.Call(RCRD_create_gbov, gbov)
+			.Call(RCRD_init_generic_index, generic_index)
+			.Call(RCRD_init_generic_store, generics)
 		}
 	}
 }
@@ -61,13 +73,13 @@ open_db <- function(db = "db", create = FALSE) {
 #' @export
 close_db <- function() {
 	# Close generic store
-	.Call(RCRD_close_indices)
-	.Call(RCRD_close_gbov)
+	.Call(RCRD_close_generic_index)
+	.Call(RCRD_close_generic_store)
 
 	# Close specialty store
 	.Call(RCRD_close_simple_int_store)
 	.Call(RCRD_close_simple_dbl_store)
-  .Call(RCRD_close_simple_raw_store)
+	.Call(RCRD_close_simple_raw_store)
 
 	# This must be called second to last
 	.Call(RCRD_close_stats_store)
@@ -82,8 +94,20 @@ add_val <- function(val) {
 }
 
 #' @export
+sample_val <- function() {
+	.Call(RCRD_sample_val)
+}
+
+## Testing Related Functionality
+
+#' @export
 have_seen <- function(val) {44
 	.Call(RCRD_have_seen, val)
+}
+
+#' @export
+report <- function() {
+	.Call(RCRD_print_report)
 }
 
 #' @export
@@ -99,19 +123,4 @@ size_db <- function() {
 #' @export
 size_ints <- function() {
 	.Call(RCRD_size_ints)
-}
-
-#' @export
-get_vals <- function(from, to) {
-	.Call(RCRD_read_vals, from, to)
-}
-
-#' @export
-get_random_val <- function() {
-	.Call(RCRD_sample_val)
-}
-
-#' @export
-report <- function() {
-	.Call(RCRD_print_report)
 }

@@ -29,8 +29,8 @@ size_t bytes_serialized = 0;
 size_t bytes_unserialized = 0;
 
 /**
- * Create stats.bin in the database
- * @method initiate_stats_store
+ * Load/create a brand new stats store.
+ * @method init_stats_store
  * @return R_NilValue on success, throw and error otherwise
  */
 SEXP init_stats_store(SEXP stats) {
@@ -48,25 +48,19 @@ SEXP init_stats_store(SEXP stats) {
 
 	i_size = 0;
 	d_size = 0;
-  r_size = 0;
+	r_size = 0;
 	g_size = 0;
 
 	return R_NilValue;
 }
 
 /**
- * Loads stats.bin in the database
- * @method load_stats
+ * Load an existing stats store.
+ * @method load_stats_store
  * @return R_NilValue on success, throw and error otherwise
  */
 SEXP load_stats_store(SEXP stats) {
 	init_stats_store(stats);
-
-	read_n(stats_file, &bytes_read, sizeof(size_t));
-	read_n(stats_file, &bytes_written, sizeof(size_t));
-
-	read_n(stats_file, &bytes_serialized, sizeof(size_t));
-	read_n(stats_file, &bytes_unserialized, sizeof(size_t));
 
 	// Database Information
 	read_n(stats_file, &offset, sizeof(size_t));
@@ -74,29 +68,27 @@ SEXP load_stats_store(SEXP stats) {
 	read_n(stats_file, &count, sizeof(int));
 	read_n(stats_file, &i_size, sizeof(size_t));
 	read_n(stats_file, &d_size, sizeof(size_t));
-  read_n(stats_file, &r_size, sizeof(size_t));
+	read_n(stats_file, &r_size, sizeof(size_t));
 	read_n(stats_file, &g_size, sizeof(size_t));
+
+	// Performance Information
+	read_n(stats_file, &bytes_serialized, sizeof(size_t));
+	read_n(stats_file, &bytes_unserialized, sizeof(size_t));
+
+	read_n(stats_file, &bytes_read, sizeof(size_t));
+	read_n(stats_file, &bytes_written, sizeof(size_t));
 
 	return R_NilValue;
 }
 
+/**
+ * This functions writes database statistics to file and closes the file.
+ * @method close_stats_store
+ * @return R_NilValue on success
+ */
 SEXP close_stats_store() {
 	if (stats_file) {
 		fseek(stats_file, 0, SEEK_SET);
-
-		// Need to reorder writing stuff to file to make sure no information
-		// leakes between sessions
-		write_n(stats_file, &bytes_read, sizeof(size_t));
-		bytes_read = 0;
-
-		write_n(stats_file, &bytes_written, sizeof(size_t));
-		bytes_written = 0;
-
-		write_n(stats_file, &bytes_serialized, sizeof(size_t));
-		bytes_serialized = 0;
-
-		write_n(stats_file, &bytes_unserialized, sizeof(size_t));
-		bytes_unserialized = 0;
 
 		// Database Information
 		write_n(stats_file, &offset, sizeof(size_t));
@@ -114,18 +106,45 @@ SEXP close_stats_store() {
 		write_n(stats_file, &d_size, sizeof(size_t));
 		d_size = 0;
 
-    write_n(stats_file, &r_size, sizeof(size_t));
+		write_n(stats_file, &r_size, sizeof(size_t));
 		r_size = 0;
 
 		write_n(stats_file, &g_size, sizeof(size_t));
 		g_size = 0;
 
+		// Performance Information
+		write_n(stats_file, &bytes_serialized, sizeof(size_t));
+		bytes_serialized = 0;
+
+		write_n(stats_file, &bytes_unserialized, sizeof(size_t));
+		bytes_unserialized = 0;
+
+		write_n(stats_file, &bytes_read, sizeof(size_t));
+		bytes_read = 0;
+
+		// Record the bytes written for write_n and close_file
+		bytes_written += sizeof(size_t) + 1;
+		write_n(stats_file, &bytes_written, sizeof(size_t));
+		// bytes_written = 0; // Must be zeroed out later
+
 		close_file(&stats_file);
+		bytes_written = 0; // close_file cause 1 bytes to be written
+
+		// Zero out session information
+		bytes_read_session = 0;
+		bytes_written_session = 0;
+
+		bytes_serialized_session = 0;
+		bytes_unserialized_session = 0;
 	}
 
 	return R_NilValue;
 }
 
+/**
+ * Report database statistics
+ * @method print_report
+ */
 SEXP print_report() {
 	// Session
 	fprintf(stderr, "Session Information:\n");
@@ -135,12 +154,17 @@ SEXP print_report() {
 	fprintf(stderr, "  bytes unserialized: %lu\n", bytes_unserialized_session);
 	fprintf(stderr, "\n");
 
-	// Lifetime // Not implemented; just placeholder
-	fprintf(stderr, "Database Lifetime Information (APPROXIMATE ONLY):\n");
+	// Lifetime
+	fprintf(stderr, "Database Lifetime Information:\n");
 	fprintf(stderr, "  bytes read: %lu\n", bytes_read);
 	fprintf(stderr, "  bytes written: %lu\n", bytes_written);
 	fprintf(stderr, "  bytes serialized: %lu\n", bytes_serialized);
 	fprintf(stderr, "  bytes unserialized: %lu\n", bytes_unserialized);
+	fprintf(stderr, "\n");
+
+	fprintf(stderr, "Database Lifetime Performance Information:\n");
+	fprintf(stderr, "  Number of times add_val was called: %lu\n",
+			count);
 	fprintf(stderr, "\n");
 
 	// Database Statistics
@@ -151,13 +175,18 @@ SEXP print_report() {
 	fprintf(stderr, "  Bytes in the generic database: %lu\n", offset);
 	fprintf(stderr, "  Elements in simple integer store: %lu\n", i_size);
 	fprintf(stderr, "  Elements in simple double store: %lu\n", d_size);
-  fprintf(stderr, "  Elements in simple raw store: %lu\n", r_size);
+	fprintf(stderr, "  Elements in simple raw store: %lu\n", r_size);
 	fprintf(stderr, "  Elements in generic store: %lu\n", g_size);
 	fprintf(stderr, "\n");
 
 	return R_NilValue;
 }
 
+/**
+ * This function asks for how many R values the C add_val has seen.
+ * @method count_vals
+ * @return number of times add_val was called
+ */
 SEXP count_vals() {
 	SEXP ret = PROTECT(allocVector(INTSXP, 1));
 	INTEGER(ret)[0] = count;
@@ -166,6 +195,11 @@ SEXP count_vals() {
 	return ret;
 }
 
+/**
+ * This function asks for how many values are stored in the database
+ * @method size_db
+ * @return Non-zero numeric R value in form of a SEXP
+ */
 SEXP size_db() {
 	SEXP ret = PROTECT(allocVector(INTSXP, 1));
 	INTEGER(ret)[0] = size;
@@ -174,6 +208,11 @@ SEXP size_db() {
 	return ret;
 }
 
+/**
+ * This function asks for how many simple integer values stored in the database
+ * @method size_ints
+ * @return Non-zero numeric R value in form of a SEXP
+ */
 SEXP size_ints() {
 	SEXP ret = PROTECT(allocVector(INTSXP, 1));
 	INTEGER(ret)[0] = i_size;

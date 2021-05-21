@@ -67,12 +67,12 @@ static const R_CallMethodDef callMethods[] = {
 	{"get_simple_raw",			(DL_FUNC) &get_simple_raw,			1},
 
 	// generic R value store related
-	{"create_indices",			(DL_FUNC) &create_indices, 			1},
-	{"load_indices",			(DL_FUNC) &load_indices,			1},
-	{"close_indices",			(DL_FUNC) &close_indices,			0},
-	{"create_gbov",				(DL_FUNC) &create_gbov,				1},
-	{"load_gbov",				(DL_FUNC) &load_gbov,				1},
-	{"close_gbov",				(DL_FUNC) &close_gbov,				0},
+	{"init_generic_index",		(DL_FUNC) &init_generic_index, 	1},
+	{"load_generic_index",		(DL_FUNC) &load_generic_index,		1},
+	{"close_generic_index",		(DL_FUNC) &close_generic_index,		0},
+	{"init_generic_store",		(DL_FUNC) &init_generic_store,	1},
+	{"load_generic_store",		(DL_FUNC) &load_generic_store,		1},
+	{"close_generic_store",		(DL_FUNC) &close_generic_store,		0},
 
 	// Must have at the end
 	{NULL,						NULL,								0}

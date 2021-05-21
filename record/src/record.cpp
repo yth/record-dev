@@ -51,7 +51,8 @@ SEXP teardown() {
  * This functions adds an R value to the database.
  * @method add_val
  * @param  val      R value in form of SEXP
- * @return          val on success
+ * @return          val if val hasn't been added to database before,
+ *                  else R_NilValue
  */
 SEXP add_val(SEXP val) {
 	count += 1;
@@ -61,8 +62,8 @@ SEXP add_val(SEXP val) {
 	} else if (is_simple_dbl(val)) {
 		return add_simple_dbl(val);
 	} else if (is_simple_raw(val)) {
-    return add_simple_raw(val);
-  } else {
+		return add_simple_raw(val);
+	} else {
 		return add_generic(val);
 	}
 }
@@ -84,9 +85,8 @@ SEXP have_seen(SEXP val) {
 	} else if (is_simple_dbl(val)) {
 		res_ptr[0] = have_seen_simple_dbl(val);
 	} else if (is_simple_raw(val)) {
-    res_ptr[0] = have_seen_simple_raw(val);
-  }
-  else {
+		res_ptr[0] = have_seen_simple_raw(val);
+	} else {
 		res_ptr[0] = have_seen_generic(val);
 	}
 
@@ -100,7 +100,7 @@ SEXP have_seen(SEXP val) {
  * @return R value in form of SEXP from the database
  */
 SEXP sample_val() {
-	// TODO: Find a better rand() function that can return any size_t value
+	// TODO: Make a better rand() function that can return random size_t value
 	int random_index = rand() % size;
 
 	if (random_index < i_size) {
@@ -108,8 +108,8 @@ SEXP sample_val() {
 	} else if (random_index - i_size < d_size) {
 		return get_simple_dbl(random_index - i_size);
 	} else if (random_index - i_size - d_size < r_size) {
-    return get_simple_raw(random_index - i_size - d_size);
-  } else {
+		return get_simple_raw(random_index - i_size - d_size);
+	} else {
 		return get_generic(random_index - i_size - d_size - r_size);
 	}
 }
