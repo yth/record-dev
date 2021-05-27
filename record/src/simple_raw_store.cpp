@@ -30,7 +30,7 @@ SEXP init_simple_raw_store(SEXP file) {
  * @return R_NilValue on success, throw and error otherwise
  */
 SEXP load_simple_raw_store(SEXP file) {
-	init_simple_raw_store(file);
+	raw_file = open_file(file);
 
 	for (size_t i = 0; i < 256; ++i) {
 		read_n(raw_file, raw_db + i, sizeof(size_t));

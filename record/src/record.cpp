@@ -8,6 +8,7 @@
 #include "simple_int_store.h"
 #include "simple_dbl_store.h"
 #include "simple_raw_store.h"
+#include "simple_str_store.h"
 
 // Reusable buffer for everything
 byte_vector_t vector = NULL;
@@ -18,6 +19,7 @@ extern size_t size;
 extern size_t i_size;
 extern size_t d_size;
 extern size_t r_size;
+extern size_t s_size;
 extern size_t g_size;
 
 /**
@@ -63,6 +65,8 @@ SEXP add_val(SEXP val) {
 		return add_simple_dbl(val);
 	} else if (is_simple_raw(val)) {
 		return add_simple_raw(val);
+	} else if (is_simple_str(val)) {
+		return add_simple_str(val);
 	} else {
 		return add_generic(val);
 	}
@@ -86,6 +90,8 @@ SEXP have_seen(SEXP val) {
 		res_ptr[0] = have_seen_simple_dbl(val);
 	} else if (is_simple_raw(val)) {
 		res_ptr[0] = have_seen_simple_raw(val);
+	} else if (is_simple_str(val)) {
+		res_ptr[0] = have_seen_simple_str(val);
 	} else {
 		res_ptr[0] = have_seen_generic(val);
 	}
@@ -109,7 +115,9 @@ SEXP sample_val() {
 		return get_simple_dbl(random_index - i_size);
 	} else if (random_index - i_size - d_size < r_size) {
 		return get_simple_raw(random_index - i_size - d_size);
+	} else if (random_index - i_size - d_size - r_size < s_size) {
+		return get_simple_str(random_index - i_size - d_size - r_size);
 	} else {
-		return get_generic(random_index - i_size - d_size - r_size);
+		return get_generic(random_index - i_size - d_size - r_size - s_size);
 	}
 }

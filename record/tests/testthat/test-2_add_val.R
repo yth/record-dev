@@ -70,16 +70,17 @@ test_that("add duplicate simple val again", {
 test_that("add duplicate logicals", {
 	open_db("test_db/logical", create = TRUE)
 	for(i in 1:10) {
-    add_val(TRUE)
-    add_val(FALSE)
-  }
-  expect_equal(size_db(), 2)
+		add_val(TRUE)
+		add_val(FALSE)
+	}
+
+	expect_equal(size_db(), 2)
 	close_db()
 })
 
 test_that("add int 1L", {
 	open_db("test_db/add-1L", create = TRUE)
-  expect_equal(add_val(1L), 1L)
+	expect_equal(add_val(1L), 1L)
 	close_db()
 })
 
@@ -103,7 +104,7 @@ test_that("add 5000L", {
 
 test_that("add 5000L again", {
 	open_db("test_db/add-5000L", create = FALSE)
-  expect_equal(add_val(5000L), NULL)
+	expect_equal(add_val(5000L), NULL)
 	close_db()
 })
 
@@ -116,11 +117,11 @@ test_that("add 5001L", {
 test_that("add attributed int", {
 	open_db("test_db/add-attributed-0", create = TRUE)
 
-  x <- 0
-  attr(x, "name") <- "attributed 0"
+	x <- 0
+	attr(x, "name") <- "attributed 0"
 
-  expect_equal(add_val(x), x)
-  expect_equal(size_db(), 1)
+	expect_equal(add_val(x), x)
+	expect_equal(size_db(), 1)
 	close_db()
 })
 

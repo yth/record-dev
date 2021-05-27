@@ -36,7 +36,7 @@ SEXP init_simple_dbl_store(SEXP dbls) {
  * @return R_NilValue on success, throw and error otherwise
  */
 SEXP load_simple_dbl_store(SEXP dbls) {
-	init_simple_dbl_store(dbls);
+	dbl_file = open_file(dbls);
 
 	for (size_t i = 0; i < DBL_STORE_SIZE; ++i) {
 		read_n(dbl_file, dbl_db + i, sizeof(size_t));

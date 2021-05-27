@@ -22,6 +22,10 @@ open_db <- function(db = "db", create = FALSE) {
 			.Call(RCRD_load_simple_dbl_store, paste0(db, "/dbls.bin"))
 			.Call(RCRD_load_simple_raw_store, paste0(db, "/raws.bin"))
 
+			# Load specialty store with index
+			.Call(RCRD_load_simple_str_index, paste0(db, "/str_index.bin"))
+			.Call(RCRD_load_simple_str_store, paste0(db, "/strs.bin"))
+
 			# Load generic store
 			.Call(RCRD_load_generic_index, paste0(db, "/generic_index.bin"))
 			.Call(RCRD_load_generic_store, paste0(db, "/generics.bin"))
@@ -40,6 +44,10 @@ open_db <- function(db = "db", create = FALSE) {
 			dbls = paste0(db, "/dbls.bin")
 			raws = paste0(db, "/raws.bin")
 
+			# Create specialty store with index
+			strs = paste0(db, "/strs.bin")
+			str_index = paste0(db, "/str_index.bin")
+
 			# Create the generic store files
 			generics = paste0(db, "/generics.bin")
 			generic_index = paste0(db, "/generic_index.bin")
@@ -47,6 +55,8 @@ open_db <- function(db = "db", create = FALSE) {
 			file.create(ints,
 						dbls,
 						raws,
+						strs,
+						str_index,
 						generics,
 						generic_index,
 						stats,
@@ -61,7 +71,11 @@ open_db <- function(db = "db", create = FALSE) {
 			# Initialize specialty stores
 			.Call(RCRD_init_simple_int_store, ints)
 			.Call(RCRD_init_simple_dbl_store, dbls)
-      .Call(RCRD_init_simple_raw_store, raws)
+			.Call(RCRD_init_simple_raw_store, raws)
+
+			# Initialize specialty store with index
+			.Call(RCRD_init_simple_str_index, str_index)
+			.Call(RCRD_init_simple_str_store, strs)
 
 			# Initialize generic store
 			.Call(RCRD_init_generic_index, generic_index)
@@ -81,6 +95,10 @@ close_db <- function() {
 	.Call(RCRD_close_simple_dbl_store)
 	.Call(RCRD_close_simple_raw_store)
 
+	# Close specialty store with index
+	.Call(RCRD_close_simple_str_index)
+	.Call(RCRD_close_simple_str_store)
+
 	# This must be called second to last
 	.Call(RCRD_close_stats_store)
 
@@ -98,7 +116,7 @@ sample_val <- function() {
 	.Call(RCRD_sample_val)
 }
 
-## Testing Related Functionality
+## Testing/Information Gathering Related Functionality
 
 #' @export
 have_seen <- function(val) {44

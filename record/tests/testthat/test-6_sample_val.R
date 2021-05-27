@@ -21,39 +21,39 @@ test_that("get all three added vals by sample_val in a loop", {
 	add_val(1)
 	add_val("hello")
 
-  vals_added <- list(TRUE, 1, "hello")
+	vals_added <- list(TRUE, 1, "hello")
 
-  rand_vals = vector('list', 100)
+	rand_vals = vector('list', 100)
 	for (i in seq_along(rand_vals)) {
 		rand_vals[[i]] <- sample_val()
 	}
 
-  for(rand_val in rand_vals) {
-    expect_true(list(rand_val) %in% vals_added)
-  }
+	for(rand_val in rand_vals) {
+		expect_true(list(rand_val) %in% vals_added)
+	}
 
 	close_db()
 })
 
 test_that("get all three added vals by sample_val in a loop redux", {
 	open_db("test_db/get_random_2")
-  vals_added <- list(TRUE, 1, "hello")
+	vals_added <- list(TRUE, 1, "hello")
 
-  rand_vals = vector('list', 100)
+	rand_vals = vector('list', 100)
 	for (i in seq_along(rand_vals)) {
 		rand_vals[[i]] <- sample_val()
 	}
 
-  for(rand_val in rand_vals) {
-    expect_true(list(rand_val) %in% vals_added)
-  }
+	for(rand_val in rand_vals) {
+		expect_true(list(rand_val) %in% vals_added)
+	}
 
 	close_db()
 })
 
 test_that("get random val from stringr::str_detect from existing db", {
-  val_list <- readRDS("../resource/values.RDS")
-  vals <- lapply(val_list, function(x) x[[3]])
+	val_list <- readRDS("../resource/values.RDS")
+	vals <- lapply(val_list, function(x) x[[3]])
 
 	open_db("test_db/str_detect")
 
@@ -62,9 +62,9 @@ test_that("get random val from stringr::str_detect from existing db", {
 		rand_vals[[i]] <- sample_val()
 	}
 
-  for(rand_val in rand_vals) {
-    expect_true(list(rand_val) %in% vals)
-  }
+	for(rand_val in rand_vals) {
+		expect_true(list(rand_val) %in% vals)
+	}
 
 	close_db()
 })

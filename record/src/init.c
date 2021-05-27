@@ -1,11 +1,9 @@
 #define R_NO_REMAP
 
-
 #include <R.h>
 #include <R_ext/Rdynload.h>
 #include <Rinternals.h>
 #include <stdlib.h> // for NULL // Based on evil suggestion
-
 
 #include "hello.h"
 
@@ -14,9 +12,9 @@
 #include "simple_int_store.h"
 #include "simple_dbl_store.h"
 #include "simple_raw_store.h"
+#include "simple_str_store.h"
 
 #include "record.h"
-
 
 static const R_CallMethodDef callMethods[] = {
 	/* name						casted ptr to function			# of args */
@@ -43,34 +41,30 @@ static const R_CallMethodDef callMethods[] = {
 	{"init_simple_int_store",	(DL_FUNC) &init_simple_int_store,	1},
 	{"load_simple_int_store",	(DL_FUNC) &load_simple_int_store,	1},
 	{"close_simple_int_store",	(DL_FUNC) &close_simple_int_store,	0},
-	{"is_simple_int",			(DL_FUNC) &is_simple_int,			1},
-	{"add_simple_int",			(DL_FUNC) &add_simple_int,			1},
-	{"have_seen_simple_int",	(DL_FUNC) &have_seen_simple_int,	1},
-	{"get_simple_int",			(DL_FUNC) &get_simple_int,			1},
 
 	// simple doubles store related
 	{"init_simple_dbl_store",	(DL_FUNC) &init_simple_dbl_store,	1},
 	{"load_simple_dbl_store",	(DL_FUNC) &load_simple_dbl_store,	1},
 	{"close_simple_dbl_store",	(DL_FUNC) &close_simple_dbl_store,	0},
-	{"is_simple_dbl",			(DL_FUNC) &is_simple_dbl,			1},
-	{"add_simple_dbl",			(DL_FUNC) &add_simple_dbl,			1},
-	{"have_seen_simple_dbl",	(DL_FUNC) &have_seen_simple_dbl,	1},
-	{"get_simple_dbl",			(DL_FUNC) &get_simple_dbl,			1},
 
-  // simple raw store related
+	// simple raw store related
 	{"init_simple_raw_store",	(DL_FUNC) &init_simple_raw_store,	1},
 	{"load_simple_raw_store",	(DL_FUNC) &load_simple_raw_store,	1},
 	{"close_simple_raw_store",	(DL_FUNC) &close_simple_raw_store,	0},
-	{"is_simple_raw",			(DL_FUNC) &is_simple_raw,			1},
-	{"add_simple_raw",			(DL_FUNC) &add_simple_raw,			1},
-	{"have_seen_simple_raw",	(DL_FUNC) &have_seen_simple_raw,	1},
-	{"get_simple_raw",			(DL_FUNC) &get_simple_raw,			1},
+
+	// simple string store related
+	{"init_simple_str_index",	(DL_FUNC) &init_simple_str_index,	1},
+	{"load_simple_str_index",	(DL_FUNC) &load_simple_str_index,	1},
+	{"close_simple_str_index",	(DL_FUNC) &close_simple_str_index,	0},
+	{"init_simple_str_store",	(DL_FUNC) &init_simple_str_store,	1},
+	{"load_simple_str_store",	(DL_FUNC) &load_simple_str_store,	1},
+	{"close_simple_str_store",	(DL_FUNC) &close_simple_str_store,	0},
 
 	// generic R value store related
-	{"init_generic_index",		(DL_FUNC) &init_generic_index, 	1},
+	{"init_generic_index",		(DL_FUNC) &init_generic_index,		1},
 	{"load_generic_index",		(DL_FUNC) &load_generic_index,		1},
 	{"close_generic_index",		(DL_FUNC) &close_generic_index,		0},
-	{"init_generic_store",		(DL_FUNC) &init_generic_store,	1},
+	{"init_generic_store",		(DL_FUNC) &init_generic_store,		1},
 	{"load_generic_store",		(DL_FUNC) &load_generic_store,		1},
 	{"close_generic_store",		(DL_FUNC) &close_generic_store,		0},
 
