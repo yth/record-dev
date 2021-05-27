@@ -179,8 +179,7 @@ SEXP print_report() {
 	fprintf(stderr, "\n");
 
 	fprintf(stderr, "Database Lifetime Performance Information:\n");
-	fprintf(stderr, "  Number of times add_val was called: %lu\n",
-			count);
+	fprintf(stderr, "  Number of times add_val was called: %lu\n", count);
 	fprintf(stderr, "\n");
 
 	// Database Statistics
