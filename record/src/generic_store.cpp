@@ -140,7 +140,7 @@ SEXP add_generic(SEXP val) {
 
 	std::string key((char *) sha1sum, 20);
 	std::map<std::string, size_t>::iterator it = generic_index->find(key);
-	if (it == generic_index->end()) {
+	if (it == generic_index->end()) { // TODO: Deal with collision
 		(*generic_index)[key] = g_offset;
 		g_size++;
 		size++;
