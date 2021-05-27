@@ -2,6 +2,7 @@ if (T) {
 
 test_that("print some report", {
 	report()
+
 	open_db("test_db/some_report", create = TRUE)
 	s1 = "hello"
 	add_val(s1)
