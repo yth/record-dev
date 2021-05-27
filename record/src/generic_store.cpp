@@ -3,7 +3,6 @@
 #include "helper.h"
 
 #include <map> // std::map
-#include <random> // rand
 #include <iterator> //advance
 #include <string> // std::string, strlen
 
@@ -12,11 +11,12 @@
 
 FILE *generics_file = NULL;
 FILE *generics_index_file = NULL;
-std::map<std::string, size_t> *gbov_map = NULL;
+std::map<std::string, size_t> *generic_index = NULL;
 
-extern size_t offset;
+
 extern size_t size;
 extern size_t g_size;
+extern size_t g_offset;
 
 extern byte_vector_t vector;
 
@@ -27,7 +27,7 @@ extern byte_vector_t vector;
  */
 SEXP init_generic_store(SEXP generics) {
 	generics_file = open_file(generics);
-	fseek(generics_file, offset, SEEK_SET);
+	fseek(generics_file, g_offset, SEEK_SET);
 	return R_NilValue;
 }
 
@@ -60,9 +60,7 @@ SEXP close_generic_store() {
  */
 SEXP init_generic_index(SEXP index) {
 	generics_index_file = open_file(index);
-
-	gbov_map = new std::map<std::string, size_t>;
-
+	generic_index = new std::map<std::string, size_t>;
 	return R_NilValue;
 }
 
@@ -79,7 +77,7 @@ SEXP load_generic_index(SEXP index) {
 	for (size_t i = 0; i < g_size; ++i) {
 		read_n(generics_index_file, hash, 20);
 		read_n(generics_index_file, &start, sizeof(size_t));
-		(*gbov_map)[std::string(hash, 20)] = start;
+		(*generic_index)[std::string(hash, 20)] = start;
 	}
 
 	return R_NilValue;
@@ -97,7 +95,7 @@ SEXP close_generic_index() {
 		fseek(generics_index_file, 0, SEEK_SET);
 
 		std::map<std::string, size_t>::iterator it;
-		for(it = gbov_map->begin(); it != gbov_map->end(); it++) {
+		for(it = generic_index->begin(); it != generic_index->end(); it++) {
 			write_n(generics_index_file, (void *) it->first.c_str(), 20);
 			write_n(generics_index_file, &(it->second), sizeof(size_t));
 		}
@@ -105,9 +103,9 @@ SEXP close_generic_index() {
 		close_file(&generics_index_file);
 	}
 
-	if (gbov_map) {
-		delete gbov_map;
-		gbov_map = NULL;
+	if (generic_index) {
+		delete generic_index;
+		generic_index = NULL;
 	}
 
 	return R_NilValue;
@@ -141,9 +139,9 @@ SEXP add_generic(SEXP val) {
 	sha1_finish(&ctx, sha1sum);
 
 	std::string key((char *) sha1sum, 20);
-	std::map<std::string, size_t>::iterator it = gbov_map->find(key);
-	if (it == gbov_map->end()) {
-		(*gbov_map)[key] = offset;
+	std::map<std::string, size_t>::iterator it = generic_index->find(key);
+	if (it == generic_index->end()) {
+		(*generic_index)[key] = g_offset;
 		g_size++;
 		size++;
 
@@ -154,8 +152,8 @@ SEXP add_generic(SEXP val) {
 		// Acting as NULL for linked-list next pointer
 		write_n(generics_file, &(vector->size), sizeof(size_t));
 
-		// Modify offset here
-		offset += vector->size + sizeof(size_t) + sizeof(size_t);
+		// Modify g_offset here
+		g_offset += vector->size + sizeof(size_t) + sizeof(size_t);
 
 		return val;
 	} else {
@@ -180,9 +178,9 @@ int have_seen_generic(SEXP val) {
 	sha1_finish(&ctx, sha1sum);
 
 	std::string key((char *) sha1sum, 20);
-	std::map<std::string, size_t>::iterator it = gbov_map->find(key);
+	std::map<std::string, size_t>::iterator it = generic_index->find(key);
 
-	if (it == gbov_map->end()) {
+	if (it == generic_index->end()) {
 		return 0;
 	} else {
 		return 1;
@@ -195,7 +193,7 @@ int have_seen_generic(SEXP val) {
  * @return R value
  */
 SEXP get_generic(int index) {
-	std::map<std::string, size_t>::iterator it = gbov_map->begin();
+	std::map<std::string, size_t>::iterator it = generic_index->begin();
 	std::advance(it, index);
 
 	// Get the specified value
@@ -204,7 +202,7 @@ SEXP get_generic(int index) {
 	fseek(generics_file, it->second, SEEK_SET);
 	read_n(generics_file, &obj_size, sizeof(size_t));
 	read_n(generics_file, vector->buf, obj_size);
-	fseek(generics_file, offset, SEEK_SET);
+	fseek(generics_file, g_offset, SEEK_SET);
 	vector->capacity = obj_size;
 
 	SEXP res = unserialize_val(vector);
