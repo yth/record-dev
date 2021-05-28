@@ -5,7 +5,6 @@
 FILE *stats_file = NULL;
 
 // Database Statistics
-// TODO: Give count, size, g_offset, i_size better names
 size_t count = 0; // TODO: Consider: Maybe better to make this a double
 size_t size = 0; // TODO: Consider: Maybe better to make this a double
 size_t i_size = 0; // number of unique simple ints encountered
@@ -206,7 +205,6 @@ SEXP print_report() {
 	fprintf(stderr, "\n");
 
 	// Database Statistics
-	// TODO: Organize this better
 	fprintf(stderr, "Database Statistics\n");
 	fprintf(stderr, "  Unique elements in the database: %lu\n", size);
 	fprintf(stderr, "  Number of times add_val was called: %lu\n", count);
