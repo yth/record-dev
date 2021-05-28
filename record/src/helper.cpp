@@ -17,12 +17,18 @@ extern size_t bytes_written_session;
 extern size_t bytes_serialized_session;
 extern size_t bytes_unserialized_session;
 
-// Useful lifetime counters // Not implemented yet
+// Useful lifetime counters
 extern size_t bytes_read;
 extern size_t bytes_written;
 
 extern size_t bytes_serialized;
 extern size_t bytes_unserialized;
+
+// Useful lifetime generic store value counters
+extern size_t i_count;
+extern size_t d_count;
+extern size_t r_count;
+extern size_t s_count;
 
 FILE *open_file(SEXP filename) {
 	const char* cfilename = CHAR(STRING_ELT(filename, 0));
@@ -103,6 +109,12 @@ void close_file(FILE **fpp) {
 
 // Track how many values of a particular type was recorded in the generic store
 void track_type(SEXP val) {
+	switch(TYPEOF(val)) {
+		case INTSXP: i_count++; break;
+		case REALSXP: d_count++; break;
+		case STRSXP: s_count++; break;
+		case RAWSXP: r_count++; break;
+	}
 	return;
 }
 

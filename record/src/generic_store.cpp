@@ -155,6 +155,8 @@ SEXP add_generic(SEXP val) {
 		// Modify g_offset here
 		g_offset += vector->size + sizeof(size_t) + sizeof(size_t);
 
+		track_type(val);
+
 		return val;
 	} else {
 		return R_NilValue;
