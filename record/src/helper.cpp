@@ -101,6 +101,11 @@ void close_file(FILE **fpp) {
 	*fpp = NULL;
 }
 
+// Track how many values of a particular type was recorded in the generic store
+void track_type(SEXP val) {
+	return;
+}
+
 #ifdef __cplusplus
 } // extern "C"
 #endif
