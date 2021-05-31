@@ -5,7 +5,6 @@
 FILE *stats_file = NULL;
 
 // Database Statistics
-// TODO: Give count, size, g_offset, i_size better names
 size_t count = 0; // TODO: Consider: Maybe better to make this a double
 size_t size = 0; // TODO: Consider: Maybe better to make this a double
 size_t i_size = 0; // number of unique simple ints encountered
@@ -15,6 +14,11 @@ size_t s_size = 0; // number of unique simple strs encountered
 size_t s_offset = 0; // number of bytes in simple str store
 size_t g_size = 0; // number of unique generic values encountered
 size_t g_offset = 0; // number of bytes in generic store
+
+size_t i_count = 0; // number of ints in generic store
+size_t d_count = 0; // number of dbls in generic store
+size_t r_count = 0; // number of raws in generic store
+size_t s_count = 0; // number of strs in generic store
 
 // Useful session counters
 size_t bytes_read_session = 0;
@@ -50,6 +54,11 @@ SEXP init_stats_store(SEXP stats) {
 	g_size = 0;
 	g_offset = 0;
 
+	i_count = 0;
+	d_count = 0;
+	r_count = 0;
+	s_count = 0;
+
 	// Performance Information
 	bytes_read_session = 0;
 	bytes_written_session = 0;
@@ -78,6 +87,11 @@ SEXP load_stats_store(SEXP stats) {
 	read_n(stats_file, &s_offset, sizeof(size_t));
 	read_n(stats_file, &g_size, sizeof(size_t));
 	read_n(stats_file, &g_offset, sizeof(size_t));
+
+	read_n(stats_file, &i_count, sizeof(size_t));
+	read_n(stats_file, &d_count, sizeof(size_t));
+	read_n(stats_file, &r_count, sizeof(size_t));
+	read_n(stats_file, &s_count, sizeof(size_t));
 
 	// Performance Information
 	read_n(stats_file, &bytes_serialized, sizeof(size_t));
@@ -127,6 +141,18 @@ SEXP close_stats_store() {
 
 		write_n(stats_file, &g_offset, sizeof(size_t));
 		g_offset = 0;
+
+		write_n(stats_file, &i_count, sizeof(size_t));
+		i_count = 0;
+
+		write_n(stats_file, &d_count, sizeof(size_t));
+		d_count = 0;
+
+		write_n(stats_file, &r_count, sizeof(size_t));
+		r_count = 0;
+
+		write_n(stats_file, &s_count, sizeof(size_t));
+		s_count = 0;
 
 		// Performance Information
 		write_n(stats_file, &bytes_serialized, sizeof(size_t));
@@ -178,22 +204,33 @@ SEXP print_report() {
 	fprintf(stderr, "  bytes unserialized: %lu\n", bytes_unserialized);
 	fprintf(stderr, "\n");
 
-	fprintf(stderr, "Database Lifetime Performance Information:\n");
-	fprintf(stderr, "  Number of times add_val was called: %lu\n",
-			count);
+	// Database Statistics
+	fprintf(stderr, "Database Statistics\n");
+	fprintf(stderr, "  Unique elements in the database: %lu\n", size);
+	fprintf(stderr, "  Number of times add_val was called: %lu\n", count);
 	fprintf(stderr, "\n");
 
-	// Database Statistics
-	// TODO: Organize this better
-	fprintf(stderr, "Database Statistics (NEED BETTER ORGANIZATION)\n");
-	fprintf(stderr, "  Unique elements in the database: %lu\n", size);
-	fprintf(stderr, "  Elements tried to be added to the database: %lu\n", count);
-	fprintf(stderr, "  Elements in simple integer store: %lu\n", i_size);
-	fprintf(stderr, "  Elements in simple double store: %lu\n", d_size);
-	fprintf(stderr, "  Elements in simple raw store: %lu\n", r_size);
-	fprintf(stderr, "  Elements in simple string store: %lu\n", s_size);
-	fprintf(stderr, "  Elements in generic store: %lu\n", g_size);
-	fprintf(stderr, "  Bytes in the generic database: %lu\n", g_offset);
+	fprintf(stderr, "Database Stores Statistics\n");
+	fprintf(stderr, "  Database Specialty Stores Statistics\n");
+	fprintf(stderr, "    Elements in simple integer store: %lu\n", i_size);
+	fprintf(stderr, "    Elements in simple double store: %lu\n", d_size);
+	fprintf(stderr, "    Elements in simple raw store: %lu\n", r_size);
+	fprintf(stderr, "    Elements in simple string store: %lu\n", s_size);
+
+	fprintf(stderr, "  Database Generic Store Statistics\n");
+	fprintf(stderr, "    Elements in generic store: %lu\n", g_size);
+	fprintf(stderr, "      Integers in generic store: (%lu/%lu)\n",
+					i_count, g_size);
+	fprintf(stderr, "      Doubles in generic store: (%lu/%lu)\n",
+					d_count, g_size);
+	fprintf(stderr, "      Raws in generic store: (%lu/%lu)\n",
+					r_count, g_size);
+	fprintf(stderr, "      Strings in generic store: (%lu/%lu)\n",
+					s_count, g_size);
+	fprintf(stderr, "      Other values in generic store: (%lu/%lu)\n",
+					g_size - i_count - d_count - r_count - s_count, g_size);
+
+	fprintf(stderr, "    Bytes in the generic database: %lu\n", g_offset);
 	fprintf(stderr, "\n");
 
 	return R_NilValue;

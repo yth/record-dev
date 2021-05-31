@@ -32,6 +32,9 @@ void serialize_val(byte_vector_t vector, SEXP val);
 // Unserialize val stored in vector
 SEXP unserialize_val(byte_vector_t vector);
 
+// Track how many values of a particular type was recorded in the generic store
+void track_type(SEXP val);
+
 #ifdef __cplusplus
 } // extern "C"
 #endif

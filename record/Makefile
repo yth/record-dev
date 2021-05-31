@@ -1,12 +1,14 @@
+R = R
+
 .PHONY: all build check document test write trace
 
 all: document build # check
 
 build: document
-	R CMD build .
+	$(R) CMD build .
 
 check: build
-	R CMD check record*tar.gz
+	$(R) CMD check record*tar.gz
 
 clean:
 	-rm -f record*tar.gz
@@ -16,19 +18,19 @@ clean:
 	-rm -f trace
 
 document:
-	Rscript -e 'devtools::document()'
+	$(R) -e 'devtools::document()'
 
 test:
-	Rscript -e 'devtools::test()'
+	$(R) -e 'devtools::test()'
 
 trace:
 	strace Rscript -e 'devtools::test()' 2> trace
 
 lintr:
-	R --slave -e "lintr::lint_package()"
+	$(R) --slave -e "lintr::lint_package()"
 
 install: clean
-	R CMD INSTALL .
+	$(R) CMD INSTALL .
 
 write:
 	cat trace | grep -w "write"
