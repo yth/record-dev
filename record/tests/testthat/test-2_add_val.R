@@ -131,4 +131,13 @@ test_that("add simple double", {
 	close_db()
 })
 
+test_that("add many strings", {
+	open_db("test_db/add-many-strings", create = TRUE)
+	for (i in 1:3000) {
+		expect_equal(add_val(as.character(i)), as.character(i))
+	}
+	report()
+	close_db()
+})
+
 }
