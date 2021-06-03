@@ -70,12 +70,12 @@ SEXP init_simple_str_index(SEXP index) {
 SEXP load_simple_str_index(SEXP index) {
 	init_simple_str_index(index);
 
+	uint32_t hash = 0;
+	size_t idx = 0;
 	for (size_t i = 0; i < s_size; ++i) {
-		uint32_t hash = 0;
-		size_t index = 0;
 		read_n(str_index_file, &hash, sizeof(uint32_t));
-		read_n(str_index_file, &index, sizeof(size_t));
-		(*str_index)[hash] = index;
+		read_n(str_index_file, &idx, sizeof(size_t));
+		(*str_index)[hash] = idx;
 	}
 
 	return R_NilValue;
