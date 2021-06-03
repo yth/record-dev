@@ -128,4 +128,14 @@ test_that("get random val from a database with mix ints and vals", {
 	close_db()
 })
 
+test_that("sample few strings", {
+	open_db("test_db/add-few-strings")
+
+	for (i in 1:100) {
+		expect_true(have_seen(sample_val()))
+	}
+
+	close_db()
+})
+
 }

@@ -131,10 +131,28 @@ test_that("add simple double", {
 	close_db()
 })
 
+test_that("add few strings", {
+	open_db("test_db/add-few-strings", create = TRUE)
+	for (i in 1:10) {
+		expect_equal(add_val(paste(as.character(i))), as.character(i))
+	}
+	report()
+	close_db()
+})
+
 test_that("add many strings", {
 	open_db("test_db/add-many-strings", create = TRUE)
 	for (i in 1:3000) {
-		expect_equal(add_val(as.character(i)), as.character(i))
+		expect_equal(add_val(paste(as.character(i))), as.character(i))
+	}
+	report()
+	close_db()
+})
+
+test_that("add huge number of strings", {
+	open_db("test_db/add-many-many-strings", create = TRUE)
+	for (i in 99990000:100002000) {
+		expect_equal(add_val(paste(as.character(i))), as.character(i))
 	}
 	report()
 	close_db()
