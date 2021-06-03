@@ -237,7 +237,7 @@ SEXP print_report() {
 }
 
 /**
- * This function asks for how many R values the C add_val has seen.
+ * This function asks for how many times C add_val has been called.
  * @method count_vals
  * @return number of times add_val was called
  */
