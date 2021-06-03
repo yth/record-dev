@@ -132,4 +132,6 @@ SEXP get_simple_raw(int index) {
 		UNPROTECT(1);
 		return res;
 	}
+
+	return R_NilValue;
 }

@@ -145,4 +145,6 @@ SEXP get_simple_int(int index) {
 		UNPROTECT(1);
 		return res;
 	}
+
+	return R_NilValue;
 }

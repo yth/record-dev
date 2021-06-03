@@ -141,8 +141,6 @@ SEXP get_simple_dbl(int index) {
 				return res;
 			}
 		}
-
-		return R_NilValue; // Delete later
 	} else {
 		SEXP res;
 		R_xlen_t n = 1;
@@ -152,4 +150,6 @@ SEXP get_simple_dbl(int index) {
 		UNPROTECT(1);
 		return res;
 	}
+
+	return R_NilValue;
 }
