@@ -79,4 +79,14 @@ test_that("remove all information after closing database", {
 	expect_false(size_db() == length(u_vals))
 })
 
+test_that("have seen few strings", {
+	open_db("test_db/add-few-strings")
+
+	for (i in 1:10) {
+		expect_equal(have_seen(paste(as.character(i))), TRUE)
+	}
+
+	close_db()
+})
+
 }
