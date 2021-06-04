@@ -138,4 +138,11 @@ test_that("sample few strings", {
 	close_db()
 })
 
+test_that("sample empty string", {
+	open_db("test_db/empty-string")
+	expect_equal(sample_val(""), "")
+	report()
+	close_db()
+})
+
 }
