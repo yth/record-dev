@@ -158,4 +158,11 @@ test_that("add huge number of strings", {
 	close_db()
 })
 
+test_that("add empty string", {
+	open_db("test_db/empty-string", create = TRUE)
+	expect_equal(add_val(""), "")
+	report()
+	close_db()
+})
+
 }

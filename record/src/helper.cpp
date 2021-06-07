@@ -54,6 +54,10 @@ void read_n(FILE* file, void *buf, size_t n) {
 // Help write n bytes into file and check error messages
 // Doesn't restore file offset
 void write_n(FILE* file, void *buf, size_t n) {
+	if (n == 0) {
+		return;
+	}
+
 	if (!(fwrite(buf, n, 1, file))) {
 		perror("write_n");
 		abort();
