@@ -27,7 +27,7 @@ size_t bytes_written_session = 0;
 size_t bytes_serialized_session = 0;
 size_t bytes_unserialized_session = 0;
 
-// Useful lifetime counters // Not implemented yet
+// Useful lifetime counters
 size_t bytes_read = 0;
 size_t bytes_written = 0;
 
