@@ -129,6 +129,17 @@ report <- function() {
 }
 
 #' @export
+print_vals <- function () {
+	if (size_db()) {
+		for(i in 0:size_db() - 1) {
+			print(.Call(RCRD_get_val, i))
+		}
+	} else {
+		stop("There are no values in the database.")
+	}
+}
+
+#' @export
 count_vals <- function() {
 	.Call(RCRD_count_vals)
 }
