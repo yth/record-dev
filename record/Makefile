@@ -1,8 +1,9 @@
 R=R
+Rscript=Rscript
 
 .PHONY: all build check document test write trace
 
-all: document build # check
+all: document build check
 
 build: document
 	$R CMD build .
@@ -18,10 +19,10 @@ clean:
 	-rm -f trace
 
 document:
-	$R -e 'devtools::document()'
+	$Rscript -e 'devtools::document()'
 
 test:
-	$R -e 'devtools::test()'
+	$Rscript -e 'devtools::test()'
 
 trace:
 	strace Rscript -e 'devtools::test()' 2> trace

@@ -27,6 +27,7 @@ static const R_CallMethodDef callMethods[] = {
 	{"add_val",					(DL_FUNC) &add_val,					1},
 	{"have_seen",				(DL_FUNC) &have_seen,				1},
 	{"sample_val",				(DL_FUNC) &sample_val,				0},
+	{"get_val",					(DL_FUNC) &get_val,					1},
 
 	// stats store related
 	{"init_stats_store",		(DL_FUNC) &init_stats_store,		1},

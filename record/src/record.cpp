@@ -102,7 +102,7 @@ SEXP have_seen(SEXP val) {
 
 /**
  * This function returns a random value from the database
- * @method get_random_val
+ * @method sample_val
  * @return R value in form of SEXP from the database
  */
 SEXP sample_val() {
@@ -119,5 +119,28 @@ SEXP sample_val() {
 		return get_simple_str(random_index - i_size - d_size - r_size);
 	} else {
 		return get_generic(random_index - i_size - d_size - r_size - s_size);
+	}
+}
+
+/**
+ * This function returns a value from the database specified by an order
+ * @method get_val
+ * @param  i       R value in form of SEXP that is an index,
+ *                 it must be non-negative
+ * @return R value in form of SEXP from the database at ith position
+ */
+SEXP get_val(SEXP i) {
+	int index = asInteger(i);
+
+	if (index < i_size) {
+		return get_simple_int(index);
+	} else if (index - i_size < d_size) {
+		return get_simple_dbl(index - i_size);
+	} else if (index - i_size - d_size < r_size) {
+		return get_simple_raw(index - i_size - d_size);
+	} else if (index - i_size - d_size - r_size < s_size) {
+		return get_simple_str(index - i_size - d_size - r_size);
+	} else {
+		return get_generic(index - i_size - d_size - r_size - s_size);
 	}
 }
