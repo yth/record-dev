@@ -30,4 +30,12 @@ test_that("print no value", {
 	close_db()
 })
 
+test_that("print 1 int value", {
+	open_db("test_db/print_vals_one_int", create = TRUE)
+	add_val(1L)
+	print_vals()
+	close_db()
+	expect_equal(T, T)
+})
+
 }
