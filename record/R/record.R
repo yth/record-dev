@@ -142,12 +142,12 @@ print_vals <- function () {
 
 #' @export
 view_db <- function() {
-  if(size_db() == 0) {
-    viewer <- list()
-  } else {
-    viewer <- lapply(seq(from=0, to=size_db()-1), function(i) .Call(RCRD_get_val, i))
-  }
-  viewer
+	if(size_db() == 0) {
+		viewer <- list()
+	} else {
+		viewer <- lapply(seq(from=0, to=size_db()-1), function(i) .Call(RCRD_get_val, i))
+	}
+	viewer
 }
 
 #' @export
