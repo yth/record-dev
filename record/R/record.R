@@ -5,7 +5,8 @@
 # If create is TRUE, then create the database.
 # If create is FALSE, then load the database.
 open_db <- function(db = "db", create = FALSE) {
-	if (dir.exists(db)){
+	# TODO: Create a better way to see if we are working with a record db
+	if (dir.exists(db)) {
 		if (create) {
 			stop(paste0(db, " already exists."))
 		} else if (!file.exists(paste0(db, "/generics.bin"))) {
@@ -131,7 +132,7 @@ report <- function() {
 #' @export
 print_vals <- function () {
 	if (size_db()) {
-		for(i in 0:size_db() - 1) {
+		for(i in 0:(size_db() - 1)) {
 			print(.Call(RCRD_get_val, i))
 		}
 	} else {
