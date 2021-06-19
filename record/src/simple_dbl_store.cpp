@@ -46,6 +46,32 @@ SEXP load_simple_dbl_store(SEXP dbls) {
 }
 
 /**
+ * This functions merges another ints store into the current int store.
+ * @param  other_dbls is the path to the dbls store on disk of a different db.
+ * @method merge_simple_dbl_store
+ * @return R_NilValue on success
+ */
+SEXP merge_simple_dbl_store(SEXP other_dbls) {
+	FILE *other_dbls_file = open_file(other_dbls);
+	size_t other_dbl_count;
+
+	for (size_t i = 0; i < DBL_STORE_SIZE; ++i) {
+		read_n(other_dbls_file, &other_dbl_count, sizeof(size_t));
+
+		if (dbl_db[i] == 0 && other_dbl_count > 0) {
+			size += 1;
+			d_size += 1;
+		}
+
+		dbl_db[i] += other_dbl_count;
+	}
+
+	close_file(&other_dbls_file);
+
+	return R_NilValue;
+}
+
+/**
  * This functions writes simple double R val store to file and closes the file.
  * @method close_simple_dbl_store
  * @return R_NilValue on success

@@ -108,6 +108,30 @@ close_db <- function() {
 }
 
 #' @export
+merge_db <- function(other_db = "db") {
+	# TODO: Create a better way to see if we are working with a record db
+	# TODO: Create a better way to see if we are working with another record db
+	if (dir.exists(other_db) &&
+		file.exists(paste0(other_db, "/generics.bin"))) {
+		ints = paste0(other_db, "/ints.bin")
+		dbls = paste0(other_db, "/dbls.bin")
+		raws = paste0(other_db, "/raws.bin")
+		strs = paste0(other_db, "/strs.bin")
+		str_index = paste0(other_db, "/str_index.bin")
+		generics = paste0(other_db, "/generics.bin")
+		generic_index = paste0(other_db, "/generic_index.bin")
+		# stats = paste0(other_db, "/stats.bin") # No needed right now
+
+		.Call(RCRD_merge_simple_int_store, ints)
+		.Call(RCRD_merge_simple_dbl_store, dbls)
+		.Call(RCRD_merge_simple_raw_store, raws)
+		.Call(RCRD_merge_simple_str_store, strs, str_index)
+		.Call(RCRD_merge_generic_store, generics, generic_index)
+		.Call(RCRD_merge_stats_store)
+	}
+}
+
+#' @export
 add_val <- function(val) {
 	.Call(RCRD_add_val, val)
 }

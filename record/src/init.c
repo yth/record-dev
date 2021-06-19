@@ -32,7 +32,7 @@ static const R_CallMethodDef callMethods[] = {
 	// stats store related
 	{"init_stats_store",		(DL_FUNC) &init_stats_store,		1},
 	{"load_stats_store",		(DL_FUNC) &load_stats_store,		1},
-	{"close_stats_store",		(DL_FUNC) &close_stats_store,		0},
+	{"merge_stats_store",		(DL_FUNC) &merge_stats_store,		0},		{"close_stats_store",		(DL_FUNC) &close_stats_store,		0},
 	{"print_report",			(DL_FUNC) &print_report,			0},
 	{"size_db",					(DL_FUNC) &size_db,					0},
 	{"size_ints",				(DL_FUNC) &size_ints,				0},
@@ -41,32 +41,34 @@ static const R_CallMethodDef callMethods[] = {
 	// simple ints store related
 	{"init_simple_int_store",	(DL_FUNC) &init_simple_int_store,	1},
 	{"load_simple_int_store",	(DL_FUNC) &load_simple_int_store,	1},
-	{"close_simple_int_store",	(DL_FUNC) &close_simple_int_store,	0},
+	{"merge_simple_int_store",	(DL_FUNC) &merge_simple_int_store,	1},	{"close_simple_int_store",	(DL_FUNC) &close_simple_int_store,	0},
 
 	// simple doubles store related
 	{"init_simple_dbl_store",	(DL_FUNC) &init_simple_dbl_store,	1},
 	{"load_simple_dbl_store",	(DL_FUNC) &load_simple_dbl_store,	1},
-	{"close_simple_dbl_store",	(DL_FUNC) &close_simple_dbl_store,	0},
+	{"merge_simple_dbl_store",	(DL_FUNC) &merge_simple_dbl_store,	1},		{"close_simple_dbl_store",	(DL_FUNC) &close_simple_dbl_store,	0},
 
 	// simple raw store related
 	{"init_simple_raw_store",	(DL_FUNC) &init_simple_raw_store,	1},
-	{"load_simple_raw_store",	(DL_FUNC) &load_simple_raw_store,	1},
+	{"load_simple_raw_store",	(DL_FUNC) &load_simple_raw_store,	1},	{"merge_simple_raw_store",	(DL_FUNC) &merge_simple_raw_store,	1},
 	{"close_simple_raw_store",	(DL_FUNC) &close_simple_raw_store,	0},
 
 	// simple string store related
 	{"init_simple_str_index",	(DL_FUNC) &init_simple_str_index,	1},
-	{"load_simple_str_index",	(DL_FUNC) &load_simple_str_index,	1},
-	{"close_simple_str_index",	(DL_FUNC) &close_simple_str_index,	0},
 	{"init_simple_str_store",	(DL_FUNC) &init_simple_str_store,	1},
+	{"load_simple_str_index",	(DL_FUNC) &load_simple_str_index,	1},
 	{"load_simple_str_store",	(DL_FUNC) &load_simple_str_store,	1},
+	{"merge_simple_str_store",	(DL_FUNC) &merge_simple_str_store,	2},
+	{"close_simple_str_index",	(DL_FUNC) &close_simple_str_index,	0},
 	{"close_simple_str_store",	(DL_FUNC) &close_simple_str_store,	0},
 
 	// generic R value store related
 	{"init_generic_index",		(DL_FUNC) &init_generic_index,		1},
-	{"load_generic_index",		(DL_FUNC) &load_generic_index,		1},
-	{"close_generic_index",		(DL_FUNC) &close_generic_index,		0},
 	{"init_generic_store",		(DL_FUNC) &init_generic_store,		1},
+	{"load_generic_index",		(DL_FUNC) &load_generic_index,		1},
 	{"load_generic_store",		(DL_FUNC) &load_generic_store,		1},
+	{"merge_generic_store",		(DL_FUNC) &merge_generic_store,		2},
+	{"close_generic_index",		(DL_FUNC) &close_generic_index,		0},
 	{"close_generic_store",		(DL_FUNC) &close_generic_store,		0},
 
 	// Must have at the end

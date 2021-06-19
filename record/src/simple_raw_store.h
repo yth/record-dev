@@ -23,6 +23,14 @@ SEXP init_simple_raw_store(SEXP file);
 SEXP load_simple_raw_store(SEXP raw);
 
 /**
+ * This functions merges another raws store into the current raws store.
+ * @param  other_raws is the path to the raws store on disk of a different db.
+ * @method merge_simple_dbl_store
+ * @return R_NilValue on success
+ */
+SEXP merge_simple_raw_store(SEXP other_raws);
+
+/**
  * This functions writes simple raw R val store to file and closes the file.
  * @method close_simple_raw_store
  * @return R_NilValue on success

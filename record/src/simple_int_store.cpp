@@ -44,6 +44,32 @@ SEXP load_simple_int_store(SEXP ints) {
 }
 
 /**
+ * This functions merges another ints store into the current int store.
+ * @param  other_ints is the path to the ints store on disk of a different db.
+ * @method merge_simple_int_store
+ * @return R_NilValue on success
+ */
+SEXP merge_simple_int_store(SEXP other_ints) {
+	FILE *other_ints_file = open_file(other_ints);
+	size_t other_int_count;
+
+	for (size_t i = 0; i < INT_STORE_SIZE; ++i) {
+		read_n(other_ints_file, &other_int_count, sizeof(size_t));
+
+		if (int_db[i] == 0 && other_int_count > 0) {
+			size += 1;
+			i_size += 1;
+		}
+
+		int_db[i] += other_int_count;
+	}
+
+	close_file(&other_ints_file);
+
+	return R_NilValue;
+}
+
+/**
  * This functions writes simple int R val store to file and closes the file.
  * @method close_simple_int_store
  * @return R_NilValue on success

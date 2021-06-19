@@ -23,6 +23,14 @@ SEXP init_simple_dbl_store(SEXP dbls);
 SEXP load_simple_dbl_store(SEXP dbls);
 
 /**
+ * This functions merges another dbl store into the current dbl store.
+ * @param  other_dbls is the path to the dbls store on disk of a different db.
+ * @method merge_simple_dbl_store
+ * @return R_NilValue on success
+ */
+SEXP merge_simple_dbl_store(SEXP other_dbls);
+
+/**
  * This functions writes simple double R val store to file and closes the file.
  * @method close_simple_dbl_store
  * @return R_NilValue on success

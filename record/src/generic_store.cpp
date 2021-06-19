@@ -112,6 +112,52 @@ SEXP close_generic_index() {
 }
 
 /**
+ * This functions merges another str store into the current str store.
+ * @param  other_generics is the path to the generics store of a different db.
+ * @param  other_index is the path to the index of other_generics on disk.
+ * @method merge_generic_store
+ * @return R_NilValue on success
+ */
+SEXP merge_generic_store(SEXP other_generics, SEXP other_index) {
+	FILE *other_generics_file = open_file(other_generics);
+	FILE *other_generic_index_file = open_file(other_index);
+
+	fseek(other_generic_index_file, 0, SEEK_END);
+	long int sz = ftell(other_generic_index_file) / (20 + sizeof(size_t));
+	fseek(other_generic_index_file, 0, SEEK_SET);
+
+	unsigned char other_sha1sum[20] = { 0 };
+	size_t other_offset = 0;
+	for (long int i = 0; i < sz; ++i) {
+		read_n(other_generic_index_file, other_sha1sum, 20);
+		read_n(other_generic_index_file, &other_offset, sizeof(size_t));
+
+		size_t new_generic_size = 0;
+		fseek(other_generics_file, other_offset, SEEK_SET);
+		read_n(other_generics_file, &new_generic_size, sizeof(size_t));
+
+		free_content(vector);
+		read_n(other_generics_file, vector->buf, new_generic_size);
+		vector->capacity = new_generic_size;
+
+		// TODO: Think about how to minimizing serializing and unserialize.
+		//       They are used in unserialize_val and add_generic.
+		SEXP val = unserialize_val(vector);
+		vector->capacity = 1 << 30;
+
+		add_generic(val);
+	}
+
+	fseek(other_generics_file, -1, SEEK_END);
+	fseek(other_generic_index_file, -1, SEEK_END);
+
+	close_file(&other_generics_file);
+	close_file(&other_generic_index_file);
+
+	return R_NilValue;
+}
+
+/**
  * This function assesses if the input is a generic.
  * This function would always return true, therefore no need to implement it.
  * @method is_generic

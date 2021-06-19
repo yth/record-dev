@@ -23,6 +23,15 @@ SEXP init_simple_str_store(SEXP generics);
 SEXP load_simple_str_store(SEXP generics);
 
 /**
+ * This functions merges another str store into the current str store.
+ * @param  other_strs is the path to the strs store on disk of a different db.
+ * @param  other_index is the path to the index of other_strs on disk
+ * @method merge_simple_str_store
+ * @return R_NilValue on success
+ */
+SEXP merge_simple_str_store(SEXP other_strs, SEXP other_index);
+
+/**
  * This functions writes simple string store to file and closes the file.
  * @method close_simple_str_store
  * @return R_NilValue on success

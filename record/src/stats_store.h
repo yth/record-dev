@@ -23,6 +23,13 @@ SEXP init_stats_store(SEXP stats);
 SEXP load_stats_store(SEXP stats);
 
 /**
+ * This functions adjust information in the stats store based on the merge.
+ * @method merge_stats_store
+ * @return R_NilValue on success
+ */
+SEXP merge_stats_store();
+
+/**
  * This functions writes database statistics to file and closes the file.
  * @method close_stats_store
  * @return R_NilValue on success

@@ -10,6 +10,7 @@ extern "C" {
 
 /**
  * Load/create a brand new simple integer store.
+ * @param  ints is the path to an empty file.
  * @method init_simple_int_store
  * @return R_NilValue on success, throw and error otherwise
  */
@@ -17,10 +18,19 @@ SEXP init_simple_int_store(SEXP ints);
 
 /**
  * Load an existing simple integer store.
+ * @param  ints is the path to an ints store on disk.
  * @method load_simple_int_store
  * @return R_NilValue on success, throw and error otherwise
  */
 SEXP load_simple_int_store(SEXP ints);
+
+/**
+ * This functions merges another ints store into the current int store.
+ * @param  other_ints is the path to the ints store on disk of a different db.
+ * @method merge_simple_int_store
+ * @return R_NilValue on success
+ */
+SEXP merge_simple_int_store(SEXP other_ints);
 
 /**
  * This functions writes simple int R val store to file and closes the file.

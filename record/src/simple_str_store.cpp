@@ -82,6 +82,56 @@ SEXP load_simple_str_index(SEXP index) {
 }
 
 /**
+ * This functions merges another str store into the current str store.
+ * @param  other_strs is the path to the strs store on disk of a different db.
+ * @param  other_index is the path to the index of other_strs on disk
+ * @method merge_simple_str_store
+ * @return R_NilValue on success
+ */
+SEXP merge_simple_str_store(SEXP other_strs, SEXP other_index) {
+	FILE *other_strs_file = open_file(other_strs);
+	FILE *other_str_index_file = open_file(other_index);
+
+	fseek(other_strs_file, 0, SEEK_END);
+	long int sz = ftell(other_strs_file) / 8;
+
+	uint32_t hash = 0;
+	size_t idx = 0;
+	for (long int i = 0; i < sz; ++i) {
+		read_n(other_str_index_file, &hash, sizeof(uint32_t));
+		read_n(other_str_index_file, &idx, sizeof(size_t));
+
+		std::map<uint32_t, size_t>::iterator it = str_index->find(hash);
+		if (it == str_index->end()) { // TODO: Deal with collisions
+			(*str_index)[hash] = s_size;
+			s_size++;
+			size++;
+
+			char buf [9] = { 0 };
+			fseek(other_strs_file, idx * 8, SEEK_SET);
+			read_n(other_strs_file, buf, 8);
+
+			size_t len = strlen(buf);
+			write_n(str_file, buf, len);
+			if (len < MAX_LENGTH) {
+				char empty [MAX_LENGTH] = { 0 };
+				write_n(str_file, empty, MAX_LENGTH - len);
+			}
+
+			s_offset += MAX_LENGTH;
+		}
+	}
+
+	fseek(other_strs_file, -1, SEEK_END);
+	fseek(other_str_index_file, -1, SEEK_END);
+
+	close_file(&other_strs_file);
+	close_file(&other_str_index_file);
+
+	return R_NilValue;
+}
+
+/**
  * This function writes the index associated with the simple str store to file
  * and closes the file.
  * @method close_simple_str_index

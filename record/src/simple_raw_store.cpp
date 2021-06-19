@@ -40,6 +40,32 @@ SEXP load_simple_raw_store(SEXP file) {
 }
 
 /**
+ * This functions merges another raws store into the current raws store.
+ * @param  other_raws is the path to the raws store on disk of a different db.
+ * @method merge_simple_dbl_store
+ * @return R_NilValue on success
+ */
+SEXP merge_simple_raw_store(SEXP other_raws) {
+	FILE *other_raws_file = open_file(other_raws);
+	size_t other_raw_count;
+
+	for (size_t i = 0; i < 256; ++i) {
+		read_n(other_raws_file, &other_raw_count, sizeof(size_t));
+
+		if (raw_db[i] == 0 && other_raw_count > 0) {
+			size += 1;
+			r_size += 1;
+		}
+
+		raw_db[i] += other_raw_count;
+	}
+
+	close_file(&other_raws_file);
+
+	return R_NilValue;
+}
+
+/**
  * This functions writes simple raw R val store to file and closes the file.
  * @method close_simple_raw_store
  * @return R_NilValue on success

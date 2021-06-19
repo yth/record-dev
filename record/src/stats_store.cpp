@@ -20,6 +20,8 @@ size_t d_count = 0; // number of dbls in generic store
 size_t r_count = 0; // number of raws in generic store
 size_t s_count = 0; // number of strs in generic store
 
+size_t m_count = 0; // number of times this database has merged another one
+
 // Useful session counters
 size_t bytes_read_session = 0;
 size_t bytes_written_session = 0;
@@ -59,6 +61,8 @@ SEXP init_stats_store(SEXP stats) {
 	r_count = 0;
 	s_count = 0;
 
+	m_count = 0;
+
 	// Performance Information
 	bytes_read_session = 0;
 	bytes_written_session = 0;
@@ -93,6 +97,8 @@ SEXP load_stats_store(SEXP stats) {
 	read_n(stats_file, &r_count, sizeof(size_t));
 	read_n(stats_file, &s_count, sizeof(size_t));
 
+	read_n(stats_file, &m_count, sizeof(size_t));
+
 	// Performance Information
 	read_n(stats_file, &bytes_serialized, sizeof(size_t));
 	read_n(stats_file, &bytes_unserialized, sizeof(size_t));
@@ -101,6 +107,17 @@ SEXP load_stats_store(SEXP stats) {
 	bytes_read += bytes_read_session - sizeof(size_t);
 
 	read_n(stats_file, &bytes_written, sizeof(size_t));
+
+	return R_NilValue;
+}
+
+/**
+ * This functions adjust information in the stats store based on the merge.
+ * @method merge_stats_store
+ * @return R_NilValue on success
+ */
+SEXP merge_stats_store() {
+	m_count += 1;
 
 	return R_NilValue;
 }
@@ -153,6 +170,9 @@ SEXP close_stats_store() {
 
 		write_n(stats_file, &s_count, sizeof(size_t));
 		s_count = 0;
+
+		write_n(stats_file, &m_count, sizeof(size_t));
+		m_count = 0;
 
 		// Performance Information
 		write_n(stats_file, &bytes_serialized, sizeof(size_t));
@@ -208,6 +228,7 @@ SEXP print_report() {
 	fprintf(stderr, "Database Statistics\n");
 	fprintf(stderr, "  Unique elements in the database: %lu\n", size);
 	fprintf(stderr, "  Number of times add_val was called: %lu\n", count);
+	fprintf(stderr, "  Number of times this database has merged another: %lu\n", m_count);
 	fprintf(stderr, "\n");
 
 	fprintf(stderr, "Database Stores Statistics\n");
