@@ -35,6 +35,9 @@ SEXP unserialize_val(byte_vector_t vector);
 // Track how many values of a particular type was recorded in the generic store
 void track_type(SEXP val);
 
+// Generate random size_t
+size_t rand_size_t();
+
 #ifdef __cplusplus
 } // extern "C"
 #endif

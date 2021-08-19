@@ -122,6 +122,20 @@ void track_type(SEXP val) {
 	return;
 }
 
+// Generate random size_t
+size_t rand_size_t() {
+	size_t rand_size = sizeof(int);
+	size_t target_size = sizeof(size_t);
+
+	size_t res = 0;
+	for(int i = 0; i <  target_size / rand_size; ++i) {
+		res = res << (rand_size * 8);
+		res += rand();
+	}
+
+	return res;
+}
+
 #ifdef __cplusplus
 } // extern "C"
 #endif

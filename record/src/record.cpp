@@ -1,6 +1,7 @@
 #include "record.h"
 
 #include "byte_vector.h"
+#include "helper.h" // rand_size_t
 
 // Include all stores
 #include "stats_store.h"
@@ -80,8 +81,7 @@ SEXP add_val(SEXP val) {
  * @return           R value of True or False as a SEXP
  */
 SEXP have_seen(SEXP val) {
-	SEXP res;
-	PROTECT(res = allocVector(LGLSXP, 1));
+	SEXP res = PROTECT(allocVector(LGLSXP, 1));
 	int *res_ptr = LOGICAL(res);
 
 	if (is_simple_int(val)) {
@@ -106,8 +106,7 @@ SEXP have_seen(SEXP val) {
  * @return R value in form of SEXP from the database
  */
 SEXP sample_val() {
-	// TODO: Make a better rand() function that can return random size_t value
-	int random_index = rand() % size;
+	size_t random_index = rand_size_t() % size;
 
 	if (random_index < i_size) {
 		return get_simple_int(random_index);

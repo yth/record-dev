@@ -1,12 +1,8 @@
 #include "byte_vector.h"
 
 
-// TODO: Use malloc instead since nothing is returned to R interpreter directly
-#include <R_ext/RS.h> // R's allocations
-
-
-#include <stdlib.h> //size_t
-
+#include <stdlib.h> // size_t
+#include <string.h> // memcpy
 
 byte_vector_t make_vector(size_t capacity) {
 	byte_vector_t v = (byte_vector_t) malloc(sizeof (struct byte_vector_st));
