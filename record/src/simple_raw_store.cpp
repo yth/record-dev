@@ -7,7 +7,7 @@ FILE *raw_file = NULL;
 size_t raw_db[256] = { 0 };
 
 extern size_t size;     /* size of the database */
-extern size_t r_size;   /* number of unique raw values in the store */
+extern size_t s_r_size;   /* number of unique raw values in the store */
 
 /**
  * Load/create a brand new simple raw store.
@@ -54,7 +54,7 @@ SEXP merge_simple_raw_store(SEXP other_raws) {
 
 		if (raw_db[i] == 0 && other_raw_count > 0) {
 			size += 1;
-			r_size += 1;
+			s_r_size += 1;
 		}
 
 		raw_db[i] += other_raw_count;
@@ -106,7 +106,7 @@ SEXP add_simple_raw(SEXP val) {
 
 	if(raw_db[*raw_val] == 0) {
 		raw_db[*raw_val] += 1;
-		r_size += 1;
+		s_r_size += 1;
 		size += 1;
 		return val;
 	} else {
@@ -132,7 +132,7 @@ int have_seen_simple_raw(SEXP val) {
  * @return R value
  */
 SEXP get_simple_raw(int index) {
-	if (r_size < 256) {
+	if (s_r_size < 256) {
 		int values_passed  = 0;
 		for (int i = 0; i < 256; ++i) {
 			if (raw_db[i] > 0) {

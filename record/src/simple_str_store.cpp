@@ -15,8 +15,8 @@ std::map<uint32_t, size_t> *str_index = NULL;
 size_t MAX_LENGTH = 8;
 
 extern size_t size;
-extern size_t s_size;
-extern size_t s_offset;
+extern size_t s_s_size;
+extern size_t s_s_offset;
 
 /**
  * Load/create a brand new simple string store.
@@ -25,7 +25,7 @@ extern size_t s_offset;
  */
 SEXP init_simple_str_store(SEXP strs) {
 	str_file = open_file(strs);
-	fseek(str_file, s_offset, SEEK_SET);
+	fseek(str_file, s_s_offset, SEEK_SET);
 	return R_NilValue;
 }
 
@@ -72,7 +72,7 @@ SEXP load_simple_str_index(SEXP index) {
 
 	uint32_t hash = 0;
 	size_t idx = 0;
-	for (size_t i = 0; i < s_size; ++i) {
+	for (size_t i = 0; i < s_s_size; ++i) {
 		read_n(str_index_file, &hash, sizeof(uint32_t));
 		read_n(str_index_file, &idx, sizeof(size_t));
 		(*str_index)[hash] = idx;
@@ -103,8 +103,8 @@ SEXP merge_simple_str_store(SEXP other_strs, SEXP other_index) {
 
 		std::map<uint32_t, size_t>::iterator it = str_index->find(hash);
 		if (it == str_index->end()) { // TODO: Deal with collisions
-			(*str_index)[hash] = s_size;
-			s_size++;
+			(*str_index)[hash] = s_s_size;
+			s_s_size++;
 			size++;
 
 			char buf [9] = { 0 };
@@ -118,7 +118,7 @@ SEXP merge_simple_str_store(SEXP other_strs, SEXP other_index) {
 				write_n(str_file, empty, MAX_LENGTH - len);
 			}
 
-			s_offset += MAX_LENGTH;
+			s_s_offset += MAX_LENGTH;
 		}
 	}
 
@@ -185,8 +185,8 @@ SEXP add_simple_str(SEXP val) {
 	uint32_t hash = CRC32(c_val);
 	std::map<uint32_t, size_t>::iterator it = str_index->find(hash);
 	if (it == str_index->end()) { // TODO: Deal with collisions
-		(*str_index)[hash] = s_size;
-		s_size++;
+		(*str_index)[hash] = s_s_size;
+		s_s_size++;
 		size++;
 
 		size_t len = strlen(c_val);
@@ -196,7 +196,7 @@ SEXP add_simple_str(SEXP val) {
 			write_n(str_file, buf, MAX_LENGTH - len);
 		}
 
-		s_offset += MAX_LENGTH;
+		s_s_offset += MAX_LENGTH;
 
 		return val;
 	}
@@ -233,7 +233,7 @@ SEXP get_simple_str(int index) {
 
 	fseek(str_file, index * 8, SEEK_SET);
 	read_n(str_file, buf, 8);
-	fseek(str_file, s_offset, SEEK_SET);
+	fseek(str_file, s_s_offset, SEEK_SET);
 
 	SEXP r_res = PROTECT(allocVector(STRSXP, 1));
 	SET_STRING_ELT(r_res, 0, mkChar(buf));

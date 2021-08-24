@@ -7,11 +7,11 @@ FILE *stats_file = NULL;
 // Database Statistics
 size_t count = 0; // TODO: Consider: Maybe better to make this a double
 size_t size = 0; // TODO: Consider: Maybe better to make this a double
-size_t i_size = 0; // number of unique simple ints encountered
-size_t d_size = 0; // number of unique simple dbls encountered
-size_t r_size = 0; // number of unique simple raws encountered
-size_t s_size = 0; // number of unique simple strs encountered
-size_t s_offset = 0; // number of bytes in simple str store
+size_t s_i_size = 0; // number of unique simple ints encountered
+size_t s_d_size = 0; // number of unique simple dbls encountered
+size_t s_r_size = 0; // number of unique simple raws encountered
+size_t s_s_size = 0; // number of unique simple strs encountered
+size_t s_s_offset = 0; // number of bytes in simple str store
 size_t g_size = 0; // number of unique generic values encountered
 size_t g_offset = 0; // number of bytes in generic store
 
@@ -48,11 +48,11 @@ SEXP init_stats_store(SEXP stats) {
 	size = 0;
 	count = 0;
 
-	i_size = 0;
-	d_size = 0;
-	r_size = 0;
-	s_size = 0;
-	s_offset = 0;
+	s_i_size = 0;
+	s_d_size = 0;
+	s_r_size = 0;
+	s_s_size = 0;
+	s_s_offset = 0;
 	g_size = 0;
 	g_offset = 0;
 
@@ -84,11 +84,11 @@ SEXP load_stats_store(SEXP stats) {
 	// Database Information
 	read_n(stats_file, &size, sizeof(size_t));
 	read_n(stats_file, &count, sizeof(int));
-	read_n(stats_file, &i_size, sizeof(size_t));
-	read_n(stats_file, &d_size, sizeof(size_t));
-	read_n(stats_file, &r_size, sizeof(size_t));
-	read_n(stats_file, &s_size, sizeof(size_t));
-	read_n(stats_file, &s_offset, sizeof(size_t));
+	read_n(stats_file, &s_i_size, sizeof(size_t));
+	read_n(stats_file, &s_d_size, sizeof(size_t));
+	read_n(stats_file, &s_r_size, sizeof(size_t));
+	read_n(stats_file, &s_s_size, sizeof(size_t));
+	read_n(stats_file, &s_s_offset, sizeof(size_t));
 	read_n(stats_file, &g_size, sizeof(size_t));
 	read_n(stats_file, &g_offset, sizeof(size_t));
 
@@ -138,20 +138,20 @@ SEXP close_stats_store() {
 		write_n(stats_file, &count, sizeof(int));
 		count = 0;
 
-		write_n(stats_file, &i_size, sizeof(size_t));
-		i_size = 0;
+		write_n(stats_file, &s_i_size, sizeof(size_t));
+		s_i_size = 0;
 
-		write_n(stats_file, &d_size, sizeof(size_t));
-		d_size = 0;
+		write_n(stats_file, &s_d_size, sizeof(size_t));
+		s_d_size = 0;
 
-		write_n(stats_file, &r_size, sizeof(size_t));
-		r_size = 0;
+		write_n(stats_file, &s_r_size, sizeof(size_t));
+		s_r_size = 0;
 
-		write_n(stats_file, &s_size, sizeof(size_t));
-		s_size = 0;
+		write_n(stats_file, &s_s_size, sizeof(size_t));
+		s_s_size = 0;
 
-		write_n(stats_file, &s_offset, sizeof(size_t));
-		s_offset = 0;
+		write_n(stats_file, &s_s_offset, sizeof(size_t));
+		s_s_offset = 0;
 
 		write_n(stats_file, &g_size, sizeof(size_t));
 		g_size = 0;
@@ -233,10 +233,10 @@ SEXP print_report() {
 
 	fprintf(stderr, "Database Stores Statistics\n");
 	fprintf(stderr, "  Database Specialty Stores Statistics\n");
-	fprintf(stderr, "    Elements in simple integer store: %lu\n", i_size);
-	fprintf(stderr, "    Elements in simple double store: %lu\n", d_size);
-	fprintf(stderr, "    Elements in simple raw store: %lu\n", r_size);
-	fprintf(stderr, "    Elements in simple string store: %lu\n", s_size);
+	fprintf(stderr, "    Elements in simple integer store: %lu\n", s_i_size);
+	fprintf(stderr, "    Elements in simple double store: %lu\n", s_d_size);
+	fprintf(stderr, "    Elements in simple raw store: %lu\n", s_r_size);
+	fprintf(stderr, "    Elements in simple string store: %lu\n", s_s_size);
 
 	fprintf(stderr, "  Database Generic Store Statistics\n");
 	fprintf(stderr, "    Elements in generic store: %lu\n", g_size);
@@ -290,7 +290,7 @@ SEXP size_db() {
  */
 SEXP size_ints() {
 	SEXP ret = PROTECT(allocVector(INTSXP, 1));
-	INTEGER(ret)[0] = i_size;
+	INTEGER(ret)[0] = s_i_size;
 	UNPROTECT(1);
 
 	return ret;

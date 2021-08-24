@@ -11,7 +11,7 @@ int INT_STORE_SIZE = INT_STORE_MAX - INT_STORE_MIN + 1;
 size_t int_db[10001] = { 0 };    // hard wired to accommodate -5000 to 5000
 
 extern size_t size;
-extern size_t i_size;
+extern size_t s_i_size;
 
 /**
  * Load/create a brand new simple integer store.
@@ -58,7 +58,7 @@ SEXP merge_simple_int_store(SEXP other_ints) {
 
 		if (int_db[i] == 0 && other_int_count > 0) {
 			size += 1;
-			i_size += 1;
+			s_i_size += 1;
 		}
 
 		int_db[i] += other_int_count;
@@ -118,7 +118,7 @@ SEXP add_simple_int(SEXP val) {
 	int int_val = asInteger(val) - INT_STORE_MIN;
 	if(int_db[int_val] == 0) {
 		int_db[int_val] += 1;
-		i_size += 1;
+		s_i_size += 1;
 		size += 1;
 		return val;
 	} else {
@@ -145,7 +145,7 @@ int have_seen_simple_int(SEXP val) {
  * @return R value
  */
 SEXP get_simple_int(int index) {
-	if (i_size < INT_STORE_SIZE) {
+	if (s_i_size < INT_STORE_SIZE) {
 		int values_passed = 0;
 		for (int i = 0; i < INT_STORE_SIZE; ++i) {
 			if (int_db[i] > 0) {

@@ -13,7 +13,7 @@ int DBL_STORE_SIZE = DBL_STORE_MAX - DBL_STORE_MIN + 1;
 size_t dbl_db[10001] = { 0 };
 
 extern size_t size;
-extern size_t d_size;
+extern size_t s_d_size;
 
 /**
  * Load/create a brand new simple double store.
@@ -60,7 +60,7 @@ SEXP merge_simple_dbl_store(SEXP other_dbls) {
 
 		if (dbl_db[i] == 0 && other_dbl_count > 0) {
 			size += 1;
-			d_size += 1;
+			s_d_size += 1;
 		}
 
 		dbl_db[i] += other_dbl_count;
@@ -123,7 +123,7 @@ SEXP add_simple_dbl(SEXP val) {
 	int dbl_val = (int) (asReal(val) - DBL_STORE_MIN);
 	if(dbl_db[dbl_val] == 0) {
 		dbl_db[dbl_val] += 1;
-		d_size += 1;
+		s_d_size += 1;
 		size += 1;
 		return val;
 	} else {
@@ -150,7 +150,7 @@ int have_seen_simple_dbl(SEXP val) {
  * @return R value
  */
 SEXP get_simple_dbl(int index) {
-	if (d_size < DBL_STORE_SIZE) {
+	if (s_d_size < DBL_STORE_SIZE) {
 		int values_passed = 0;
 		for (int i = 0; i < DBL_STORE_SIZE; ++i) {
 			if (dbl_db[i] > 0) {

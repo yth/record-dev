@@ -1,7 +1,7 @@
 #include "record.h"
 
 #include "byte_vector.h"
-#include "helper.h" // rand_size_t
+#include "helper.h" // rans_d_size_t
 
 // Include all stores
 #include "stats_store.h"
@@ -17,10 +17,10 @@ byte_vector_t vector = NULL;
 // Pulled in from stats_store.cpp
 extern size_t count;
 extern size_t size;
-extern size_t i_size;
-extern size_t d_size;
-extern size_t r_size;
-extern size_t s_size;
+extern size_t s_i_size;
+extern size_t s_d_size;
+extern size_t s_r_size;
+extern size_t s_s_size;
 extern size_t g_size;
 
 /**
@@ -108,16 +108,16 @@ SEXP have_seen(SEXP val) {
 SEXP sample_val() {
 	size_t random_index = rand_size_t() % size;
 
-	if (random_index < i_size) {
+	if (random_index < s_i_size) {
 		return get_simple_int(random_index);
-	} else if (random_index - i_size < d_size) {
-		return get_simple_dbl(random_index - i_size);
-	} else if (random_index - i_size - d_size < r_size) {
-		return get_simple_raw(random_index - i_size - d_size);
-	} else if (random_index - i_size - d_size - r_size < s_size) {
-		return get_simple_str(random_index - i_size - d_size - r_size);
+	} else if (random_index - s_i_size < s_d_size) {
+		return get_simple_dbl(random_index - s_i_size);
+	} else if (random_index - s_i_size - s_d_size < s_r_size) {
+		return get_simple_raw(random_index - s_i_size - s_d_size);
+	} else if (random_index - s_i_size - s_d_size - s_r_size < s_s_size) {
+		return get_simple_str(random_index - s_i_size - s_d_size - s_r_size);
 	} else {
-		return get_generic(random_index - i_size - d_size - r_size - s_size);
+		return get_generic(random_index - s_i_size - s_d_size - s_r_size - s_s_size);
 	}
 }
 
@@ -131,15 +131,15 @@ SEXP sample_val() {
 SEXP get_val(SEXP i) {
 	int index = asInteger(i);
 
-	if (index < i_size) {
+	if (index < s_i_size) {
 		return get_simple_int(index);
-	} else if (index - i_size < d_size) {
-		return get_simple_dbl(index - i_size);
-	} else if (index - i_size - d_size < r_size) {
-		return get_simple_raw(index - i_size - d_size);
-	} else if (index - i_size - d_size - r_size < s_size) {
-		return get_simple_str(index - i_size - d_size - r_size);
+	} else if (index - s_i_size < s_d_size) {
+		return get_simple_dbl(index - s_i_size);
+	} else if (index - s_i_size - s_d_size < s_r_size) {
+		return get_simple_raw(index - s_i_size - s_d_size);
+	} else if (index - s_i_size - s_d_size - s_r_size < s_s_size) {
+		return get_simple_str(index - s_i_size - s_d_size - s_r_size);
 	} else {
-		return get_generic(index - i_size - d_size - r_size - s_size);
+		return get_generic(index - s_i_size - s_d_size - s_r_size - s_s_size);
 	}
 }
