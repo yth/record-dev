@@ -137,8 +137,16 @@ add_val <- function(val) {
 }
 
 #' @export
-sample_val <- function() {
-	.Call(RCRD_sample_val)
+sample_val <- function(type = "any") {
+	if (type == "any") {
+		.Call(RCRD_sample_val)
+	} else if (type == "null") {
+		.Call(RCRD_sample_null)
+	} else if (type == "integer") {
+		.Call(RCRD_sample_simple_int)
+	} else {
+		stop("Trying to sample unknown type")
+	}
 }
 
 ## Testing/Information Gathering Related Functionality
