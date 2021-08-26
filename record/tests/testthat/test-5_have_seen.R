@@ -58,6 +58,16 @@ test_that("have seen alphabet", {
 	close_db()
 })
 
+test_that("have seen few strings", {
+	open_db("test_db/add-few-strings")
+
+	for (i in 1:10) {
+		expect_equal(have_seen(paste(as.character(i))), TRUE)
+	}
+
+	close_db()
+})
+
 # real values from stringr::str_detect
 val_list <- readRDS("../resource/values.RDS")
 vals <- lapply(val_list, function(x) x[[3]])
@@ -77,16 +87,6 @@ test_that("have seen real vals from stringr::str_detect", {
 test_that("remove all information after closing database", {
 	u_vals <- unique(vals)
 	expect_false(size_db() == length(u_vals))
-})
-
-test_that("have seen few strings", {
-	open_db("test_db/add-few-strings")
-
-	for (i in 1:10) {
-		expect_equal(have_seen(paste(as.character(i))), TRUE)
-	}
-
-	close_db()
 })
 
 }

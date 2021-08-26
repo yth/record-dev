@@ -114,7 +114,6 @@ void close_file(FILE **fpp) {
 // Track how many values of a particular type was recorded in the generic store
 void track_type(SEXP val) {
 	switch(TYPEOF(val)) {
-		case INTSXP: i_count++; break;
 		case REALSXP: d_count++; break;
 		case STRSXP: s_count++; break;
 		case RAWSXP: r_count++; break;

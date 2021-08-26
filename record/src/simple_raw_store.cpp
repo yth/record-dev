@@ -2,7 +2,7 @@
 
 #include "helper.h"
 
-FILE *raw_file = NULL;
+FILE *s_raws_file = NULL;
 
 size_t raw_db[256] = { 0 };
 
@@ -15,7 +15,7 @@ extern size_t s_r_size;   /* number of unique raw values in the store */
  * @return R_NilValue on success, throw and error otherwise
  */
 SEXP init_simple_raw_store(SEXP file) {
-	raw_file = open_file(file);
+	s_raws_file = open_file(file);
 
 	for (int i = 0; i < 256; ++i) {
 		raw_db[i] = 0;
@@ -30,10 +30,10 @@ SEXP init_simple_raw_store(SEXP file) {
  * @return R_NilValue on success, throw and error otherwise
  */
 SEXP load_simple_raw_store(SEXP file) {
-	raw_file = open_file(file);
+	s_raws_file = open_file(file);
 
 	for (size_t i = 0; i < 256; ++i) {
-		read_n(raw_file, raw_db + i, sizeof(size_t));
+		read_n(s_raws_file, raw_db + i, sizeof(size_t));
 	}
 
 	return R_NilValue;
@@ -71,15 +71,15 @@ SEXP merge_simple_raw_store(SEXP other_raws) {
  * @return R_NilValue on success
  */
 SEXP close_simple_raw_store() {
-	if (raw_file) {
-		fseek(raw_file, 0, SEEK_SET);
+	if (s_raws_file) {
+		fseek(s_raws_file, 0, SEEK_SET);
 
 		for(int i = 0; i < 256; ++i) {
-			write_n(raw_file, &(raw_db[i]), sizeof(size_t));
+			write_n(s_raws_file, &(raw_db[i]), sizeof(size_t));
 			raw_db[i] = 0;
 		}
 
-		close_file(&raw_file);
+		close_file(&s_raws_file);
 	}
 
 	return R_NilValue;

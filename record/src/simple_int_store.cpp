@@ -2,7 +2,7 @@
 
 #include "helper.h"
 
-FILE *int_file = NULL;
+FILE *s_ints_file = NULL;
 
 // Small scalar int storage
 int INT_STORE_MAX = 5000;
@@ -19,7 +19,7 @@ extern size_t s_i_size;
  * @return R_NilValue on success, throw and error otherwise
  */
 SEXP init_simple_int_store(SEXP ints) {
-	int_file = open_file(ints);
+	s_ints_file = open_file(ints);
 
 	for (int i = 0; i < INT_STORE_SIZE; ++i) {
 		int_db[i] = 0;
@@ -34,10 +34,10 @@ SEXP init_simple_int_store(SEXP ints) {
  * @return R_NilValue on success, throw and error otherwise
  */
 SEXP load_simple_int_store(SEXP ints) {
-	int_file = open_file(ints);
+	s_ints_file = open_file(ints);
 
 	for (size_t i = 0; i < INT_STORE_SIZE; ++i) {
-		read_n(int_file, int_db + i, sizeof(size_t));
+		read_n(s_ints_file, int_db + i, sizeof(size_t));
 	}
 
 	return R_NilValue;
@@ -75,14 +75,14 @@ SEXP merge_simple_int_store(SEXP other_ints) {
  * @return R_NilValue on success
  */
 SEXP close_simple_int_store() {
-	if (int_file) {
-		fseek(int_file, 0, SEEK_SET);
+	if (s_ints_file) {
+		fseek(s_ints_file, 0, SEEK_SET);
 
 		for(int i = 0; i < INT_STORE_SIZE; ++i) {
-			write_n(int_file, &(int_db[i]), sizeof(size_t));
+			write_n(s_ints_file, &(int_db[i]), sizeof(size_t));
 		}
 
-		close_file(&int_file);
+		close_file(&s_ints_file);
 
 		memset(int_db, 0, INT_STORE_SIZE * sizeof(size_t));
 	}

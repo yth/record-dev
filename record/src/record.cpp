@@ -1,3 +1,5 @@
+// TODO: Add sampling for logical, integer, double, complex, character, raw, list
+
 #include "record.h"
 
 #include "byte_vector.h"
@@ -6,7 +8,10 @@
 // Include all stores
 #include "stats_store.h"
 #include "generic_store.h"
+
+#include "int_store.h"
 #include "simple_int_store.h"
+
 #include "simple_dbl_store.h"
 #include "simple_raw_store.h"
 #include "simple_str_store.h"
@@ -17,7 +22,10 @@ byte_vector_t vector = NULL;
 // Pulled in from stats_store.cpp
 extern size_t count;
 extern size_t size;
+
+extern size_t i_size;
 extern size_t s_i_size;
+
 extern size_t s_d_size;
 extern size_t s_r_size;
 extern size_t s_s_size;
@@ -62,6 +70,8 @@ SEXP add_val(SEXP val) {
 
 	if (is_simple_int(val)) {
 		return add_simple_int(val);
+	} else if (is_int(val)) {
+		return add_int(val);
 	} else if (is_simple_dbl(val)) {
 		return add_simple_dbl(val);
 	} else if (is_simple_raw(val)) {
@@ -108,8 +118,8 @@ SEXP have_seen(SEXP val) {
 SEXP sample_val() {
 	size_t random_index = rand_size_t() % size;
 
-	if (random_index < s_i_size) {
-		return get_simple_int(random_index);
+	if (random_index < s_i_size + i_size) {
+		return sample_int();
 	} else if (random_index - s_i_size < s_d_size) {
 		return get_simple_dbl(random_index - s_i_size);
 	} else if (random_index - s_i_size - s_d_size < s_r_size) {
@@ -133,13 +143,15 @@ SEXP get_val(SEXP i) {
 
 	if (index < s_i_size) {
 		return get_simple_int(index);
-	} else if (index - s_i_size < s_d_size) {
-		return get_simple_dbl(index - s_i_size);
-	} else if (index - s_i_size - s_d_size < s_r_size) {
-		return get_simple_raw(index - s_i_size - s_d_size);
-	} else if (index - s_i_size - s_d_size - s_r_size < s_s_size) {
-		return get_simple_str(index - s_i_size - s_d_size - s_r_size);
+	} if (index - s_i_size < i_size) {
+		return get_int(index - s_i_size);
+	} else if (index - s_i_size - i_size < s_d_size) {
+		return get_simple_dbl(index - s_i_size - i_size );
+	} else if (index - s_i_size - s_d_size - i_size  < s_r_size) {
+		return get_simple_raw(index - s_i_size - s_d_size - i_size );
+	} else if (index - s_i_size - s_d_size - s_r_size - i_size  < s_s_size) {
+		return get_simple_str(index - s_i_size - s_d_size - s_r_size - i_size );
 	} else {
-		return get_generic(index - s_i_size - s_d_size - s_r_size - s_s_size);
+		return get_generic(index - s_i_size - s_d_size - s_r_size - s_s_size - i_size );
 	}
 }

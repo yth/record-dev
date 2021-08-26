@@ -1,12 +1,48 @@
 if (T) {
 
+## Integer Section
+
+test_that("merge empty simple ints", {
+	open_db("test_db/s_ints1", create = T)
+	close_db()
+
+	open_db("test_db/s_ints2", create = T)
+	add_val(3L)
+	add_val(4L)
+	expect_true(size_db() == 2)
+	merge_db("test_db/s_ints1")
+	expect_true(size_db() == 2)
+	close_db()
+})
+
+test_that("merge simple ints", {
+	open_db("test_db/s_ints1")
+	add_val(1L)
+	add_val(2L)
+	expect_true(size_db() == 2)
+	close_db()
+
+	open_db("test_db/s_ints2")
+	merge_db("test_db/s_ints1")
+	expect_true(size_db() == 4)
+	close_db()
+})
+
+test_that("merge simple ints reverse", {
+	open_db("test_db/s_ints1")
+	expect_true(size_db() == 2)
+	merge_db("test_db/s_ints2")
+	expect_true(size_db() == 4)
+	close_db()
+})
+
 test_that("merge empty ints", {
 	open_db("test_db/ints1", create = T)
 	close_db()
 
 	open_db("test_db/ints2", create = T)
-	add_val(3L)
-	add_val(4L)
+	add_val(30000L)
+	add_val(40000L)
 	expect_true(size_db() == 2)
 	merge_db("test_db/ints1")
 	expect_true(size_db() == 2)
@@ -15,8 +51,8 @@ test_that("merge empty ints", {
 
 test_that("merge ints", {
 	open_db("test_db/ints1")
-	add_val(1L)
-	add_val(2L)
+	add_val(10000L)
+	add_val(20000L)
 	expect_true(size_db() == 2)
 	close_db()
 
@@ -33,6 +69,8 @@ test_that("merge ints reverse", {
 	expect_true(size_db() == 4)
 	close_db()
 })
+
+## Other Section
 
 test_that("merge empty dbls", {
 	open_db("test_db/dbls1", create = T)

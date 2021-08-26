@@ -1,5 +1,9 @@
 if (T) {
 
+## Integer Section
+
+## Other Section
+
 test_that("print some report", {
 	print("Call report() before opening a new database")
 	report()

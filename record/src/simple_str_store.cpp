@@ -9,8 +9,8 @@
 #include <string> // strlen
 #include <cstdint> // uint32_t
 
-FILE *str_file = NULL;
-FILE *str_index_file = NULL;
+FILE *s_strs_file = NULL;
+FILE *s_str_index_file = NULL;
 std::map<uint32_t, size_t> *str_index = NULL;
 size_t MAX_LENGTH = 8;
 
@@ -24,8 +24,8 @@ extern size_t s_s_offset;
  * @return R_NilValue on success, throw and error otherwise
  */
 SEXP init_simple_str_store(SEXP strs) {
-	str_file = open_file(strs);
-	fseek(str_file, s_s_offset, SEEK_SET);
+	s_strs_file = open_file(strs);
+	fseek(s_strs_file, s_s_offset, SEEK_SET);
 	return R_NilValue;
 }
 
@@ -44,8 +44,8 @@ SEXP load_simple_str_store(SEXP strs) {
  * @return R_NilValue on success
  */
 SEXP close_simple_str_store() {
-	if (str_file) {
-		close_file(&str_file);
+	if (s_strs_file) {
+		close_file(&s_strs_file);
 	}
 
 	return R_NilValue;
@@ -57,7 +57,7 @@ SEXP close_simple_str_store() {
  * @return R_NilValue on success, throw and error otherwise
  */
 SEXP init_simple_str_index(SEXP index) {
-	str_index_file = open_file(index);
+	s_str_index_file = open_file(index);
 	str_index = new std::map<uint32_t, size_t>;
 	return R_NilValue;
 }
@@ -73,8 +73,8 @@ SEXP load_simple_str_index(SEXP index) {
 	uint32_t hash = 0;
 	size_t idx = 0;
 	for (size_t i = 0; i < s_s_size; ++i) {
-		read_n(str_index_file, &hash, sizeof(uint32_t));
-		read_n(str_index_file, &idx, sizeof(size_t));
+		read_n(s_str_index_file, &hash, sizeof(uint32_t));
+		read_n(s_str_index_file, &idx, sizeof(size_t));
 		(*str_index)[hash] = idx;
 	}
 
@@ -90,7 +90,7 @@ SEXP load_simple_str_index(SEXP index) {
  */
 SEXP merge_simple_str_store(SEXP other_strs, SEXP other_index) {
 	FILE *other_strs_file = open_file(other_strs);
-	FILE *other_str_index_file = open_file(other_index);
+	FILE *other_s_str_index_file = open_file(other_index);
 
 	fseek(other_strs_file, 0, SEEK_END);
 	long int sz = ftell(other_strs_file) / 8;
@@ -98,8 +98,8 @@ SEXP merge_simple_str_store(SEXP other_strs, SEXP other_index) {
 	uint32_t hash = 0;
 	size_t idx = 0;
 	for (long int i = 0; i < sz; ++i) {
-		read_n(other_str_index_file, &hash, sizeof(uint32_t));
-		read_n(other_str_index_file, &idx, sizeof(size_t));
+		read_n(other_s_str_index_file, &hash, sizeof(uint32_t));
+		read_n(other_s_str_index_file, &idx, sizeof(size_t));
 
 		std::map<uint32_t, size_t>::iterator it = str_index->find(hash);
 		if (it == str_index->end()) { // TODO: Deal with collisions
@@ -112,10 +112,10 @@ SEXP merge_simple_str_store(SEXP other_strs, SEXP other_index) {
 			read_n(other_strs_file, buf, 8);
 
 			size_t len = strlen(buf);
-			write_n(str_file, buf, len);
+			write_n(s_strs_file, buf, len);
 			if (len < MAX_LENGTH) {
 				char empty [MAX_LENGTH] = { 0 };
-				write_n(str_file, empty, MAX_LENGTH - len);
+				write_n(s_strs_file, empty, MAX_LENGTH - len);
 			}
 
 			s_s_offset += MAX_LENGTH;
@@ -123,10 +123,10 @@ SEXP merge_simple_str_store(SEXP other_strs, SEXP other_index) {
 	}
 
 	fseek(other_strs_file, -1, SEEK_END);
-	fseek(other_str_index_file, -1, SEEK_END);
+	fseek(other_s_str_index_file, -1, SEEK_END);
 
 	close_file(&other_strs_file);
-	close_file(&other_str_index_file);
+	close_file(&other_s_str_index_file);
 
 	return R_NilValue;
 }
@@ -138,17 +138,17 @@ SEXP merge_simple_str_store(SEXP other_strs, SEXP other_index) {
  * @return R_NilValue
  */
 SEXP close_simple_str_index() {
-	if (str_index_file) {
+	if (s_str_index_file) {
 		// TODO: Think about ways to reuse rather than overwrite each time
-		fseek(str_index_file, 0, SEEK_SET);
+		fseek(s_str_index_file, 0, SEEK_SET);
 
 		std::map<uint32_t, size_t>::iterator it;
 		for(it = str_index->begin(); it != str_index->end(); it++) {
-			write_n(str_index_file, (void *) &(it->first), sizeof(uint32_t));
-			write_n(str_index_file, &(it->second), sizeof(size_t));
+			write_n(s_str_index_file, (void *) &(it->first), sizeof(uint32_t));
+			write_n(s_str_index_file, &(it->second), sizeof(size_t));
 		}
 
-		close_file(&str_index_file);
+		close_file(&s_str_index_file);
 	}
 
 	if (str_index) {
@@ -190,10 +190,10 @@ SEXP add_simple_str(SEXP val) {
 		size++;
 
 		size_t len = strlen(c_val);
-		write_n(str_file, (void *) c_val, len);
+		write_n(s_strs_file, (void *) c_val, len);
 		if (len < MAX_LENGTH) {
 			char buf [MAX_LENGTH] = { 0 };
-			write_n(str_file, buf, MAX_LENGTH - len);
+			write_n(s_strs_file, buf, MAX_LENGTH - len);
 		}
 
 		s_s_offset += MAX_LENGTH;
@@ -231,9 +231,9 @@ int have_seen_simple_str(SEXP val) {
 SEXP get_simple_str(int index) {
 	char buf [9] = { 0 };
 
-	fseek(str_file, index * 8, SEEK_SET);
-	read_n(str_file, buf, 8);
-	fseek(str_file, s_s_offset, SEEK_SET);
+	fseek(s_strs_file, index * 8, SEEK_SET);
+	read_n(s_strs_file, buf, 8);
+	fseek(s_strs_file, s_s_offset, SEEK_SET);
 
 	SEXP r_res = PROTECT(allocVector(STRSXP, 1));
 	SET_STRING_ELT(r_res, 0, mkChar(buf));

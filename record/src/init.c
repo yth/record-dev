@@ -9,7 +9,10 @@
 
 #include "stats_store.h"
 #include "generic_store.h"
+
+#include "int_store.h"
 #include "simple_int_store.h"
+
 #include "simple_dbl_store.h"
 #include "simple_raw_store.h"
 #include "simple_str_store.h"
@@ -37,6 +40,17 @@ static const R_CallMethodDef callMethods[] = {
 	{"size_db",					(DL_FUNC) &size_db,					0},
 	{"size_ints",				(DL_FUNC) &size_ints,				0},
 	{"count_vals",				(DL_FUNC) &count_vals,				0},
+
+	// int value store related
+	{"init_int_index",			(DL_FUNC) &init_int_index,			1},
+	{"init_int_store",			(DL_FUNC) &init_int_store,			1},
+	{"load_int_index",			(DL_FUNC) &load_int_index,			1},
+	{"load_int_store",			(DL_FUNC) &load_int_store,			1},
+	{"merge_int_store",			(DL_FUNC) &merge_int_store,			2},
+	{"close_int_index",			(DL_FUNC) &close_int_index,			0},
+	{"close_int_store",			(DL_FUNC) &close_int_store,			0},
+	{"sample_int",				(DL_FUNC) &sample_int,				0},
+
 
 	// simple ints store related
 	{"init_simple_int_store",	(DL_FUNC) &init_simple_int_store,	1},

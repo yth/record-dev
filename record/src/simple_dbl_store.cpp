@@ -2,7 +2,7 @@
 
 #include "helper.h"
 
-FILE *dbl_file = NULL;
+FILE *s_dbls_file = NULL;
 
 // Small scalar dbl storage
 double DBL_STORE_MAX = 5000;
@@ -21,7 +21,7 @@ extern size_t s_d_size;
  * @return R_NilValue on success, throw and error otherwise
  */
 SEXP init_simple_dbl_store(SEXP dbls) {
-	dbl_file = open_file(dbls);
+	s_dbls_file = open_file(dbls);
 
 	for (int i = 0; i < DBL_STORE_SIZE; ++i) {
 		dbl_db[i] = 0;
@@ -36,10 +36,10 @@ SEXP init_simple_dbl_store(SEXP dbls) {
  * @return R_NilValue on success, throw and error otherwise
  */
 SEXP load_simple_dbl_store(SEXP dbls) {
-	dbl_file = open_file(dbls);
+	s_dbls_file = open_file(dbls);
 
 	for (size_t i = 0; i < DBL_STORE_SIZE; ++i) {
-		read_n(dbl_file, dbl_db + i, sizeof(size_t));
+		read_n(s_dbls_file, dbl_db + i, sizeof(size_t));
 	}
 
 	return R_NilValue;
@@ -77,14 +77,14 @@ SEXP merge_simple_dbl_store(SEXP other_dbls) {
  * @return R_NilValue on success
  */
 SEXP close_simple_dbl_store() {
-	if (dbl_file) {
-		fseek(dbl_file, 0, SEEK_SET);
+	if (s_dbls_file) {
+		fseek(s_dbls_file, 0, SEEK_SET);
 
 		for(int i = 0; i < DBL_STORE_SIZE; ++i) {
-			write_n(dbl_file, &(dbl_db[i]), sizeof(size_t));
+			write_n(s_dbls_file, &(dbl_db[i]), sizeof(size_t));
 		}
 
-		close_file(&dbl_file);
+		close_file(&s_dbls_file);
 
 		memset(dbl_db, 0, DBL_STORE_SIZE * sizeof(size_t));
 	}
