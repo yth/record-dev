@@ -13,7 +13,9 @@
 #include "int_store.h"
 #include "simple_int_store.h"
 
+#include "dbl_store.h"
 #include "simple_dbl_store.h"
+
 #include "simple_raw_store.h"
 #include "simple_str_store.h"
 
@@ -51,11 +53,20 @@ static const R_CallMethodDef callMethods[] = {
 	{"close_int_store",			(DL_FUNC) &close_int_store,			0},
 	{"sample_int",				(DL_FUNC) &sample_int,				0},
 
-
 	// simple ints store related
 	{"init_simple_int_store",	(DL_FUNC) &init_simple_int_store,	1},
 	{"load_simple_int_store",	(DL_FUNC) &load_simple_int_store,	1},
 	{"merge_simple_int_store",	(DL_FUNC) &merge_simple_int_store,	1},	{"close_simple_int_store",	(DL_FUNC) &close_simple_int_store,	0},
+
+	// int value store related
+	{"init_dbl_index",			(DL_FUNC) &init_dbl_index,			1},
+	{"init_dbl_store",			(DL_FUNC) &init_dbl_store,			1},
+	{"load_dbl_index",			(DL_FUNC) &load_dbl_index,			1},
+	{"load_dbl_store",			(DL_FUNC) &load_dbl_store,			1},
+	{"merge_dbl_store",			(DL_FUNC) &merge_dbl_store,			2},
+	{"close_dbl_index",			(DL_FUNC) &close_dbl_index,			0},
+	{"close_dbl_store",			(DL_FUNC) &close_dbl_store,			0},
+	{"sample_dbl",				(DL_FUNC) &sample_dbl,				0},
 
 	// simple doubles store related
 	{"init_simple_dbl_store",	(DL_FUNC) &init_simple_dbl_store,	1},

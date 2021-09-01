@@ -25,15 +25,16 @@ extern size_t bytes_serialized;
 extern size_t bytes_unserialized;
 
 // Useful lifetime generic store value counters
-extern size_t i_count;
-extern size_t d_count;
 extern size_t r_count;
 extern size_t s_count;
 
 FILE *open_file(SEXP filename) {
 	const char* cfilename = CHAR(STRING_ELT(filename, 0));
+
 	FILE *fp = fopen(cfilename, "r+");
 	if (fp == NULL) {
+		fprintf(stderr, "cfilename = %s\n", cfilename);
+
 		Rf_error("%s does not exist", cfilename);
 	}
 	return fp;
@@ -43,6 +44,10 @@ FILE *open_file(SEXP filename) {
 // Doesn't restore file offset
 void read_n(FILE* file, void *buf, size_t n) {
 	if (!(fread(buf, n, 1, file))) {
+		fprintf(stderr, "file = %p\n", file);
+		fprintf(stderr, "buf = %p\n", buf);
+		fprintf(stderr, "n = %lu\n", n);
+
 		perror("read_n");
 		abort();
 	}
@@ -114,7 +119,6 @@ void close_file(FILE **fpp) {
 // Track how many values of a particular type was recorded in the generic store
 void track_type(SEXP val) {
 	switch(TYPEOF(val)) {
-		case REALSXP: d_count++; break;
 		case STRSXP: s_count++; break;
 		case RAWSXP: r_count++; break;
 	}

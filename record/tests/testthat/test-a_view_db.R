@@ -1,9 +1,5 @@
 if (T) {
 
-## Integer Section
-
-## Other Section
-
 test_that("view db", {
 	open_db("test_db/view_db", create = TRUE)
 	add_val("1")

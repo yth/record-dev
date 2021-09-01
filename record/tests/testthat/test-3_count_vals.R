@@ -14,7 +14,7 @@ test_that("count one val again", {
 })
 
 test_that("count 101 vals", {
-	open_db("test_db/count-101", create = T)
+	open_db("test_db/3_count_val/count-101", create = T)
 	for(i in 1:100) {
 		add_val(i)
 	}
@@ -24,13 +24,13 @@ test_that("count 101 vals", {
 })
 
 test_that("count 101 vals again", {
-	open_db("test_db/count-101")
+	open_db("test_db/3_count_val/count-101")
 	expect_equal(count_vals(), 101)
 	close_db()
 })
 
 test_that("count two vals", {
-	open_db("test_db/count-two", create = T)
+	open_db("test_db/3_count_val/count-two", create = T)
 	add_val(1:10)
 	add_val("hello")
 	expect_equal(count_vals(), 2)
@@ -38,7 +38,7 @@ test_that("count two vals", {
 })
 
 test_that("count two vals again", {
-	open_db("test_db/count-two")
+	open_db("test_db/3_count_val/count-two")
 	expect_equal(count_vals(), 2)
 	close_db()
 })

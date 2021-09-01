@@ -1,14 +1,10 @@
 if (T) {
 
-## Integer Section
-
-## Other Section
-
 test_that("print some report", {
 	print("Call report() before opening a new database")
 	report()
 
-	open_db("test_db/some_report", create = TRUE)
+	open_db("test_db/7_report/some_report", create = TRUE)
 	add_val("hello")
 	add_val("a really long string should be in generic store")
 	add_val(as.raw(1))
@@ -22,7 +18,7 @@ test_that("print some report", {
 	expect_silent(report())
 	close_db()
 
-	open_db("test_db/some_report")
+	open_db("test_db/7_report/some_report")
 	print("Call report() after reopening the database")
 	report()
 	close_db()

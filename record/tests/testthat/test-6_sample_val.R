@@ -51,11 +51,28 @@ test_that("get all three added vals by sample_val in a loop redux", {
 	close_db()
 })
 
+# real values from stringr::str_detect
+val_list <- readRDS("../resource/values.RDS")
+vals <- lapply(val_list, function(x) x[[3]])
+
+test_that("have seen real vals from stringr::str_detect", {
+	open_db("test_db/6_sample_val/str_detect", create = TRUE)
+
+	lapply(vals, add_val)
+
+	for(val in vals) {
+		expect_equal(have_seen(val), TRUE)
+	}
+
+	close_db()
+})
+
+
 test_that("get random val from stringr::str_detect from existing db", {
 	val_list <- readRDS("../resource/values.RDS")
 	vals <- lapply(val_list, function(x) x[[3]])
 
-	open_db("test_db/str_detect")
+	open_db("test_db/6_sample_val/str_detect")
 
 	rand_vals <- vector('list', 100)
 	for (i in seq_along(rand_vals)) {
@@ -129,19 +146,24 @@ test_that("get random val from a database with mix ints and vals", {
 })
 
 test_that("sample few strings", {
-	open_db("test_db/add-few-strings")
+	open_db("test_db/6_sample_val/add-few-strings", create = TRUE)
+	for (i in 1:10) {
+		expect_equal(add_val(paste(as.character(i))), as.character(i))
+	}
+	close_db()
 
+	open_db("test_db/6_sample_val/add-few-strings")
 	for (i in 1:100) {
 		expect_true(have_seen(sample_val()))
 	}
-
 	close_db()
 })
 
 test_that("sample empty string", {
-	open_db("test_db/empty-string")
+	open_db("test_db/6_sample_val/empty-string", create = TRUE)
+	expect_equal(add_val(""), "")
 	expect_equal(sample_val(), "")
-	report()
+	expect_equal(size_db(), 1)
 	close_db()
 })
 

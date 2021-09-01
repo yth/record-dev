@@ -12,7 +12,9 @@
 #include "int_store.h"
 #include "simple_int_store.h"
 
+#include "dbl_store.h"
 #include "simple_dbl_store.h"
+
 #include "simple_raw_store.h"
 #include "simple_str_store.h"
 
@@ -26,7 +28,9 @@ extern size_t size;
 extern size_t i_size;
 extern size_t s_i_size;
 
+extern size_t d_size;
 extern size_t s_d_size;
+
 extern size_t s_r_size;
 extern size_t s_s_size;
 extern size_t g_size;
@@ -74,6 +78,8 @@ SEXP add_val(SEXP val) {
 		return add_int(val);
 	} else if (is_simple_dbl(val)) {
 		return add_simple_dbl(val);
+	} else if (is_dbl(val)) {
+		return add_dbl(val);
 	} else if (is_simple_raw(val)) {
 		return add_simple_raw(val);
 	} else if (is_simple_str(val)) {
@@ -120,8 +126,8 @@ SEXP sample_val() {
 
 	if (random_index < s_i_size + i_size) {
 		return sample_int();
-	} else if (random_index - s_i_size < s_d_size) {
-		return get_simple_dbl(random_index - s_i_size);
+	} else if (random_index - (s_i_size + i_size) < s_d_size + d_size) {
+		return sample_dbl();
 	} else if (random_index - s_i_size - s_d_size < s_r_size) {
 		return get_simple_raw(random_index - s_i_size - s_d_size);
 	} else if (random_index - s_i_size - s_d_size - s_r_size < s_s_size) {
@@ -141,17 +147,21 @@ SEXP sample_val() {
 SEXP get_val(SEXP i) {
 	int index = asInteger(i);
 
+	// TODO: Let int db understand simple int db and etc
+
 	if (index < s_i_size) {
 		return get_simple_int(index);
 	} if (index - s_i_size < i_size) {
 		return get_int(index - s_i_size);
 	} else if (index - s_i_size - i_size < s_d_size) {
-		return get_simple_dbl(index - s_i_size - i_size );
-	} else if (index - s_i_size - s_d_size - i_size  < s_r_size) {
-		return get_simple_raw(index - s_i_size - s_d_size - i_size );
-	} else if (index - s_i_size - s_d_size - s_r_size - i_size  < s_s_size) {
-		return get_simple_str(index - s_i_size - s_d_size - s_r_size - i_size );
+		return get_simple_dbl(index - s_i_size - i_size);
+	} else if (index - s_i_size - i_size - s_d_size < d_size) {
+		return get_dbl(index - s_i_size - i_size - s_d_size);
+	} else if (index - s_i_size - i_size - s_d_size - d_size < s_r_size) {
+		return get_simple_raw(index - s_i_size - i_size - s_d_size - d_size);
+	} else if (index - s_i_size - i_size - s_d_size - d_size - s_r_size < s_s_size) {
+		return get_simple_str(index - s_i_size - i_size - s_d_size - d_size - s_r_size);
 	} else {
-		return get_generic(index - s_i_size - s_d_size - s_r_size - s_s_size - i_size );
+		return get_generic(index - s_i_size - i_size - s_d_size - d_size - s_r_size - s_s_size);
 	}
 }

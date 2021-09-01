@@ -20,59 +20,81 @@ test_that("add vector int", {
 	close_db()
 })
 
-if (T) {
-
-test_that("add 10 vals", {
-	open_db("test_db/add_val/add-10-vals", create = T)
-	expect_equal(add_val(1:10), 1:10)
-	report()
-	close_db()
-})
-
-test_that("add 100 vals", {
-	open_db("test_db/add-100-vals", create = T)
-	expect_equal(add_val(1:100), 1:100)
-	close_db()
-})
-
-test_that("add large vals", {
-	open_db("test_db/add-large-vals", create = T)
-	expect_equal(add_val(c(1:500, 600:100000)), c(1:500, 600:100000))
-	close_db()
-})
-
-test_that("add int 1L", {
-	open_db("test_db/add-1L", create = TRUE)
-	expect_equal(add_val(1L), 1L)
-	close_db()
-})
-
 test_that("add -5000L", {
-	open_db("test_db/add--5000L", create = TRUE)
+	open_db("test_db/2_add_val/add--5000L", create = TRUE)
 	expect_equal(add_val(-5000L), -5000L)
 	close_db()
 })
 
 test_that("add 5000L", {
-	open_db("test_db/add-5000L", create = TRUE)
+	open_db("test_db/2_add_val/add-5000L", create = TRUE)
   expect_equal(add_val(5000L), 5000L)
 	close_db()
 })
 
 test_that("add 5000L again", {
-	open_db("test_db/add-5000L", create = FALSE)
+	open_db("test_db/2_add_val/add-5000L", create = FALSE)
 	expect_equal(add_val(5000L), NULL)
 	close_db()
 })
 
 test_that("add 5001L", {
-	open_db("test_db/add-5001L", create = TRUE)
+	open_db("test_db/2_add_val/add-5001L", create = TRUE)
   expect_equal(add_val(5001L), 5001L)
 	close_db()
 })
 
+test_that("add 10 vals", {
+	open_db("test_db/2_add_val/add-10-vals", create = T)
+	expect_equal(add_val(1:10), 1:10)
+	close_db()
+})
+
+test_that("add 100 vals", {
+	open_db("test_db/2_add_val/add-100-vals", create = T)
+	expect_equal(add_val(1:100), 1:100)
+	close_db()
+})
+
+test_that("add large vals", {
+	open_db("test_db/2_add_val/add-large-vals", create = T)
+	expect_equal(add_val(c(1:500, 600:100000)), c(1:500, 600:100000))
+	close_db()
+})
+
 test_that("add attributed int", {
-	open_db("test_db/add-attributed-0", create = TRUE)
+	open_db("test_db/2_add_val/add-attributed-0L", create = TRUE)
+
+	x <- 0L
+	attr(x, "name") <- "attributed 0"
+
+	expect_equal(add_val(x), x)
+	expect_equal(size_db(), 1)
+	close_db()
+})
+
+## Double Section
+
+test_that("add simple dbl", {
+	open_db("test_db/2_add_val/simple_dbl_1", create = T)
+	expect_equal(add_val(1), 1)
+	close_db()
+})
+
+test_that("add scalar int", {
+	open_db("test_db/2_add_val/dbl_1", create = T)
+	expect_equal(add_val(10000), 10000)
+	close_db()
+})
+
+test_that("add vector dbl", {
+	open_db("test_db/2_add_val/dbl_1")
+	expect_equal(add_val(c(1, 2, 3)), c(1, 2, 3))
+	close_db()
+})
+
+test_that("add attributed dbl", {
+	open_db("test_db/2_add_val/add-attributed-0", create = TRUE)
 
 	x <- 0
 	attr(x, "name") <- "attributed 0"
@@ -82,11 +104,9 @@ test_that("add attributed int", {
 	close_db()
 })
 
-}
-
 ## Other Section
 
-if (T) {
+if (F) {
 
 test_that("add hello", {
 	open_db("test_db/add-hello", create = T)
