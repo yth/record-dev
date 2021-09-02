@@ -76,6 +76,8 @@ SEXP teardown() {
 SEXP add_val(SEXP val) {
 	count += 1;
 
+	if (TYPEOF(val) == FREESXP) { return R_NilValue; }
+
 	if (is_simple_int(val)) {
 		return add_simple_int(val);
 	} else if (is_int(val)) {
