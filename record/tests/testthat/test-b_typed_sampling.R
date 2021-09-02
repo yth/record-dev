@@ -48,6 +48,30 @@ test_that("sample dbl database with some dbl values", {
 	close_db()
 })
 
+## Raw Section
+
+test_that("sample raw database with no values", {
+	open_db("test_db/b_sample_val/simple_raw_sampling", create = T)
+	expect_error(sample_val("raw"))
+	close_db()
+})
+
+test_that("sample raw database with some raw values", {
+	open_db("test_db/b_sample_val/simple_raw_sampling")
+	add_val(as.raw(1))
+	expect_silent(sample_val("raw"))
+	expect_equal(sample_val("raw"), as.raw(1))
+	close_db()
+})
+
+test_that("sample raw database with some raw values", {
+	open_db("test_db/b_sample_val/raw_sampling", create = T)
+	add_val(c(as.raw(1), as.raw(2), as.raw(3)))
+	expect_silent(sample_val("raw"))
+	expect_equal(sample_val("raw"), c(as.raw(1), as.raw(2), as.raw(3)))
+	close_db()
+})
+
 }
 
 if (F) {

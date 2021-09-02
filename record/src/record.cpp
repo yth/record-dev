@@ -15,7 +15,9 @@
 #include "dbl_store.h"
 #include "simple_dbl_store.h"
 
+#include "raw_store.h"
 #include "simple_raw_store.h"
+
 #include "simple_str_store.h"
 
 // Reusable buffer for everything
@@ -31,7 +33,9 @@ extern size_t s_i_size;
 extern size_t d_size;
 extern size_t s_d_size;
 
+extern size_t r_size;
 extern size_t s_r_size;
+
 extern size_t s_s_size;
 extern size_t g_size;
 
@@ -82,6 +86,8 @@ SEXP add_val(SEXP val) {
 		return add_dbl(val);
 	} else if (is_simple_raw(val)) {
 		return add_simple_raw(val);
+	} else if (is_raw(val)) {
+		return add_raw(val);
 	} else if (is_simple_str(val)) {
 		return add_simple_str(val);
 	} else {
@@ -100,6 +106,7 @@ SEXP have_seen(SEXP val) {
 	SEXP res = PROTECT(allocVector(LGLSXP, 1));
 	int *res_ptr = LOGICAL(res);
 
+	// TODO: Add have_seen interface for the various databases
 	if (is_simple_int(val)) {
 		res_ptr[0] = have_seen_simple_int(val);
 	} else if (is_simple_dbl(val)) {
@@ -151,7 +158,7 @@ SEXP get_val(SEXP i) {
 
 	if (index < s_i_size) {
 		return get_simple_int(index);
-	} if (index - s_i_size < i_size) {
+	} else if (index - s_i_size < i_size) {
 		return get_int(index - s_i_size);
 	} else if (index - s_i_size - i_size < s_d_size) {
 		return get_simple_dbl(index - s_i_size - i_size);
@@ -159,9 +166,11 @@ SEXP get_val(SEXP i) {
 		return get_dbl(index - s_i_size - i_size - s_d_size);
 	} else if (index - s_i_size - i_size - s_d_size - d_size < s_r_size) {
 		return get_simple_raw(index - s_i_size - i_size - s_d_size - d_size);
-	} else if (index - s_i_size - i_size - s_d_size - d_size - s_r_size < s_s_size) {
-		return get_simple_str(index - s_i_size - i_size - s_d_size - d_size - s_r_size);
+	} else if (index - s_i_size - i_size - s_d_size - d_size - s_r_size < r_size) {
+		return get_raw(index - s_i_size - i_size - s_d_size - d_size - s_r_size);
+	} else if (index - s_i_size - i_size - s_d_size - d_size - s_r_size - r_size < s_s_size) {
+		return get_simple_str(index - s_i_size - i_size - s_d_size - d_size - s_r_size - r_size);
 	} else {
-		return get_generic(index - s_i_size - i_size - s_d_size - d_size - s_r_size - s_s_size);
+		return get_generic(index - s_i_size - i_size - s_d_size - d_size - s_r_size - r_size - s_s_size);
 	}
 }

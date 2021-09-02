@@ -28,8 +28,10 @@ open_db <- function(db = "db", create = FALSE) {
 			.Call(RCRD_load_dbl_store, paste0(db, "/dbls.bin"))
 			.Call(RCRD_load_simple_dbl_store, paste0(db, "/s_dbls.bin"))
 
-			# Load specialty stores
-			.Call(RCRD_load_simple_raw_store, paste0(db, "/raws.bin"))
+			# Load Raw stores
+			.Call(RCRD_load_raw_index, paste0(db, "/raw_index.bin"))
+			.Call(RCRD_load_raw_store, paste0(db, "/raws.bin"))
+			.Call(RCRD_load_simple_raw_store, paste0(db, "/s_raws.bin"))
 
 			# Load specialty store with index
 			.Call(RCRD_load_simple_str_index, paste0(db, "/str_index.bin"))
@@ -60,6 +62,8 @@ open_db <- function(db = "db", create = FALSE) {
 
 			# Create the specialty store files
 			raws = paste0(db, "/raws.bin")
+			raw_index = paste0(db, "/raw_index.bin")
+			s_raws = paste0(db, "/s_raws.bin")
 
 			# Create specialty store with index
 			strs = paste0(db, "/strs.bin")
@@ -76,6 +80,8 @@ open_db <- function(db = "db", create = FALSE) {
 						dbl_index,
 						s_dbls,
 						raws,
+						raw_index,
+						s_raws,
 						strs,
 						str_index,
 						generics,
@@ -100,7 +106,9 @@ open_db <- function(db = "db", create = FALSE) {
 			.Call(RCRD_init_simple_dbl_store, s_dbls)
 
 			# Initialize specialty stores
-			.Call(RCRD_init_simple_raw_store, raws)
+			.Call(RCRD_init_raw_index, raw_index)
+			.Call(RCRD_init_raw_store, raws)
+			.Call(RCRD_init_simple_raw_store, s_raws)
 
 			# Initialize specialty store with index
 			.Call(RCRD_init_simple_str_index, str_index)
@@ -129,7 +137,9 @@ close_db <- function() {
 	.Call(RCRD_close_dbl_store)
 	.Call(RCRD_close_simple_dbl_store)
 
-	# Close specialty store
+	# Close Raw store
+	.Call(RCRD_close_raw_index)
+	.Call(RCRD_close_raw_store)
 	.Call(RCRD_close_simple_raw_store)
 
 	# Close specialty store with index
@@ -155,18 +165,22 @@ merge_db <- function(other_db = "db") {
 	if (dir.exists(other_db) &&
 		file.exists(paste0(other_db, "/generics.bin"))) {
 
-		# Create Int Stores
+		# Create Int Store Names
 		ints = paste0(other_db, "/ints.bin")
 		int_index = paste0(other_db, "/int_index.bin")
 		s_ints = paste0(other_db, "/s_ints.bin")
 
-		# Create Dbl Stores
+		# Create Dbl Stores Names
 		dbls = paste0(other_db, "/dbls.bin")
 		dbl_index = paste0(other_db, "/dbl_index.bin")
 		s_dbls = paste0(other_db, "/s_dbls.bin")
 
-		# Merge Specialty Stores
+		# Create Raw Stores Names
 		raws = paste0(other_db, "/raws.bin")
+		raw_index = paste0(other_db, "/raw_index.bin")
+		s_raws = paste0(other_db, "/s_raws.bin")
+
+		# Merge Specialty Stores
 		strs = paste0(other_db, "/strs.bin")
 		str_index = paste0(other_db, "/str_index.bin")
 		generics = paste0(other_db, "/generics.bin")
@@ -181,8 +195,11 @@ merge_db <- function(other_db = "db") {
 		.Call(RCRD_merge_dbl_store, dbls, dbl_index)
 		.Call(RCRD_merge_simple_dbl_store, s_dbls)
 
+		# Merge Raws
+		.Call(RCRD_merge_raw_store, raws, raw_index)
+		.Call(RCRD_merge_simple_raw_store, s_raws)
+
 		# Merge Rest
-		.Call(RCRD_merge_simple_raw_store, raws)
 		.Call(RCRD_merge_simple_str_store, strs, str_index)
 		.Call(RCRD_merge_generic_store, generics, generic_index)
 		.Call(RCRD_merge_stats_store)
@@ -199,6 +216,8 @@ sample_val <- function(type = "any") {
 		.Call(RCRD_sample_int)
 	} else if (type == "double") {
 		.Call(RCRD_sample_dbl)
+	} else if (type == "raw") {
+		.Call(RCRD_sample_raw)
 	} else {
 		stop("Trying to sample unknown type")
 	}

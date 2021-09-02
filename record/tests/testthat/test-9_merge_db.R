@@ -142,17 +142,49 @@ test_that("merge dbls reverse", {
 
 }
 
-if (F) {
+## Raw Section
 
-## Other Section
+test_that("merge empty simple raws", {
+	open_db("test_db/9_merge_db/s_raws1", create = T)
+	close_db()
+
+	open_db("test_db/9_merge_db/s_raws2", create = T)
+	add_val(as.raw(3))
+	add_val(as.raw(4))
+	expect_true(size_db() == 2)
+	merge_db("test_db/9_merge_db/s_raws1")
+	expect_true(size_db() == 2)
+	close_db()
+})
+
+test_that("merge simple raws", {
+	open_db("test_db/9_merge_db/s_raws1")
+	add_val(as.raw(1))
+	add_val(as.raw(2))
+	expect_true(size_db() == 2)
+	close_db()
+
+	open_db("test_db/9_merge_db/s_raws2")
+	merge_db("test_db/9_merge_db/s_raws1")
+	expect_true(size_db() == 4)
+	close_db()
+})
+
+test_that("merge raws simple reverse", {
+	open_db("test_db/9_merge_db/s_raws1")
+	expect_true(size_db() == 2)
+	merge_db("test_db/9_merge_db/s_raws2")
+	expect_true(size_db() == 4)
+	close_db()
+})
 
 test_that("merge empty raws", {
 	open_db("test_db/9_merge_db/raws1", create = T)
 	close_db()
 
 	open_db("test_db/9_merge_db/raws2", create = T)
-	add_val(as.raw(3))
-	add_val(as.raw(4))
+	add_val(c(as.raw(3), as.raw(3), as.raw(3)))
+	add_val(c(as.raw(4), as.raw(4), as.raw(4)))
 	expect_true(size_db() == 2)
 	merge_db("test_db/9_merge_db/raws1")
 	expect_true(size_db() == 2)
@@ -161,8 +193,8 @@ test_that("merge empty raws", {
 
 test_that("merge raws", {
 	open_db("test_db/9_merge_db/raws1")
-	add_val(as.raw(1))
-	add_val(as.raw(2))
+	add_val(c(as.raw(1), as.raw(1), as.raw(1)))
+	add_val(c(as.raw(2), as.raw(2), as.raw(2)))
 	expect_true(size_db() == 2)
 	close_db()
 
@@ -179,6 +211,10 @@ test_that("merge raws reverse", {
 	expect_true(size_db() == 4)
 	close_db()
 })
+
+if (F) {
+
+## Other Section
 
 test_that("merge empty strs", {
 	open_db("test_db/9_merge_db/strs1", create = T)

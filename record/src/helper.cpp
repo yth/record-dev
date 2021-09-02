@@ -25,7 +25,6 @@ extern size_t bytes_serialized;
 extern size_t bytes_unserialized;
 
 // Useful lifetime generic store value counters
-extern size_t r_count;
 extern size_t s_count;
 
 FILE *open_file(SEXP filename) {
@@ -120,7 +119,6 @@ void close_file(FILE **fpp) {
 void track_type(SEXP val) {
 	switch(TYPEOF(val)) {
 		case STRSXP: s_count++; break;
-		case RAWSXP: r_count++; break;
 	}
 	return;
 }

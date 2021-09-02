@@ -16,7 +16,9 @@
 #include "dbl_store.h"
 #include "simple_dbl_store.h"
 
+#include "raw_store.h"
 #include "simple_raw_store.h"
+
 #include "simple_str_store.h"
 
 #include "record.h"
@@ -58,7 +60,7 @@ static const R_CallMethodDef callMethods[] = {
 	{"load_simple_int_store",	(DL_FUNC) &load_simple_int_store,	1},
 	{"merge_simple_int_store",	(DL_FUNC) &merge_simple_int_store,	1},	{"close_simple_int_store",	(DL_FUNC) &close_simple_int_store,	0},
 
-	// int value store related
+	// dbl value store related
 	{"init_dbl_index",			(DL_FUNC) &init_dbl_index,			1},
 	{"init_dbl_store",			(DL_FUNC) &init_dbl_store,			1},
 	{"load_dbl_index",			(DL_FUNC) &load_dbl_index,			1},
@@ -72,6 +74,16 @@ static const R_CallMethodDef callMethods[] = {
 	{"init_simple_dbl_store",	(DL_FUNC) &init_simple_dbl_store,	1},
 	{"load_simple_dbl_store",	(DL_FUNC) &load_simple_dbl_store,	1},
 	{"merge_simple_dbl_store",	(DL_FUNC) &merge_simple_dbl_store,	1},		{"close_simple_dbl_store",	(DL_FUNC) &close_simple_dbl_store,	0},
+
+	// raw value store related
+	{"init_raw_index",			(DL_FUNC) &init_raw_index,			1},
+	{"init_raw_store",			(DL_FUNC) &init_raw_store,			1},
+	{"load_raw_index",			(DL_FUNC) &load_raw_index,			1},
+	{"load_raw_store",			(DL_FUNC) &load_raw_store,			1},
+	{"merge_raw_store",			(DL_FUNC) &merge_raw_store,			2},
+	{"close_raw_index",			(DL_FUNC) &close_raw_index,			0},
+	{"close_raw_store",			(DL_FUNC) &close_raw_store,			0},
+	{"sample_raw",				(DL_FUNC) &sample_raw,				0},
 
 	// simple raw store related
 	{"init_simple_raw_store",	(DL_FUNC) &init_simple_raw_store,	1},

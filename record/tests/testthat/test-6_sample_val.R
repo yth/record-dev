@@ -1,7 +1,7 @@
 if (T) {
 
 test_that("get random val hello after adding hello", {
-	open_db("test_db/get_random_1", create = TRUE)
+	open_db("test_db/6_sample_val/get_random_1", create = TRUE)
 	s1 = "hello"
 	add_val(s1)
 	expect_equal(sample_val(), s1)
@@ -9,14 +9,14 @@ test_that("get random val hello after adding hello", {
 })
 
 test_that("get random val hello after adding hello redux", {
-	open_db("test_db/get_random_1")
+	open_db("test_db/6_sample_val/get_random_1")
 	s1 = "hello"
 	expect_equal(sample_val(), s1)
 	close_db()
 })
 
 test_that("get all three added vals by sample_val in a loop", {
-	open_db("test_db/get_random_2", create = TRUE)
+	open_db("test_db/6_sample_val/get_random_2", create = TRUE)
 	add_val(TRUE)
 	add_val(1)
 	add_val("hello")
@@ -36,7 +36,7 @@ test_that("get all three added vals by sample_val in a loop", {
 })
 
 test_that("get all three added vals by sample_val in a loop redux", {
-	open_db("test_db/get_random_2")
+	open_db("test_db/6_sample_val/get_random_2")
 	vals_added <- list(TRUE, 1, "hello")
 
 	rand_vals = vector('list', 100)
@@ -87,7 +87,7 @@ test_that("get random val from stringr::str_detect from existing db", {
 })
 
 test_that("get random val from a database with ints", {
-	open_db("test_db/int_value_get", T)
+	open_db("test_db/6_sample_val/int_value_get", T)
 
 	ints = as.integer(1:5)
 
@@ -114,7 +114,7 @@ test_that("get random val from a database with ints", {
 })
 
 test_that("get random val from a database with mix ints and vals", {
-	open_db("test_db/mix_int_value_get", T)
+	open_db("test_db/6_sample_val/mix_int_value_get", T)
 
 	ints = as.integer(1:5)
 	strings = as.character(1:5)

@@ -40,7 +40,7 @@ test_that("add 5000L again", {
 
 test_that("add 5001L", {
 	open_db("test_db/2_add_val/add-5001L", create = TRUE)
-  expect_equal(add_val(5001L), 5001L)
+	expect_equal(add_val(5001L), 5001L)
 	close_db()
 })
 
@@ -97,6 +97,38 @@ test_that("add attributed dbl", {
 	open_db("test_db/2_add_val/add-attributed-0", create = TRUE)
 
 	x <- 0
+	attr(x, "name") <- "attributed 0"
+
+	expect_equal(add_val(x), x)
+	expect_equal(size_db(), 1)
+	close_db()
+})
+
+## Raw Section
+
+test_that("add simple raw", {
+	open_db("test_db/2_add_val/simple_raw_1", create = T)
+	expect_equal(add_val(as.raw(1)), as.raw(1))
+	close_db()
+})
+
+test_that("add scalar raw", {
+	open_db("test_db/2_add_val/raw_1", create = T)
+	expect_equal(add_val(as.raw(2)), as.raw(2))
+	close_db()
+})
+
+test_that("add vector raw", {
+	open_db("test_db/2_add_val/raw_1")
+	expect_equal(add_val(c(as.raw(1), as.raw(2), as.raw(3))),
+				c(as.raw(1), as.raw(2), as.raw(3)))
+	close_db()
+})
+
+test_that("add attributed dbl", {
+	open_db("test_db/2_add_val/add-attributed-raw", create = TRUE)
+
+	x <- as.raw(0)
 	attr(x, "name") <- "attributed 0"
 
 	expect_equal(add_val(x), x)
