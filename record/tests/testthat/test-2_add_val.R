@@ -28,7 +28,7 @@ test_that("add -5000L", {
 
 test_that("add 5000L", {
 	open_db("test_db/2_add_val/add-5000L", create = TRUE)
-  expect_equal(add_val(5000L), 5000L)
+	expect_equal(add_val(5000L), 5000L)
 	close_db()
 })
 

@@ -7,6 +7,7 @@ FILE *s_raws_file = NULL;
 size_t raw_db[256] = { 0 };
 
 extern size_t size;     /* size of the database */
+extern size_t r_size;
 extern size_t s_r_size;   /* number of unique raw values in the store */
 
 /**
@@ -107,6 +108,7 @@ SEXP add_simple_raw(SEXP val) {
 	if(raw_db[*raw_val] == 0) {
 		raw_db[*raw_val] += 1;
 		s_r_size += 1;
+		r_size += 1;
 		size += 1;
 		return val;
 	} else {

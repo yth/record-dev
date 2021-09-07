@@ -79,22 +79,14 @@ SEXP teardown() {
 SEXP add_val(SEXP val) {
 	count += 1;
 
-	if (TYPEOF(val) == FREESXP) { return R_NilValue; }
-
-	if (is_simple_int(val)) {
-		return add_simple_int(val);
+	if (TYPEOF(val) == FREESXP) { // This should never happen
+		return R_NilValue;
 	} else if (is_int(val)) {
 		return add_int(val);
-	} else if (is_simple_dbl(val)) {
-		return add_simple_dbl(val);
 	} else if (is_dbl(val)) {
 		return add_dbl(val);
-	} else if (is_simple_raw(val)) {
-		return add_simple_raw(val);
 	} else if (is_raw(val)) {
 		return add_raw(val);
-	} else if (is_simple_str(val)) {
-		return add_simple_str(val);
 	} else if (is_str(val)) {
 		return add_str(val);
 	} else {
@@ -114,14 +106,12 @@ SEXP have_seen(SEXP val) {
 	int *res_ptr = LOGICAL(res);
 
 	// TODO: Add have_seen interface for the various databases
-	if (is_simple_int(val)) {
-		res_ptr[0] = have_seen_simple_int(val);
-	} else if (is_simple_dbl(val)) {
-		res_ptr[0] = have_seen_simple_dbl(val);
-	} else if (is_simple_raw(val)) {
-		res_ptr[0] = have_seen_simple_raw(val);
-	} else if (is_simple_str(val)) {
-		res_ptr[0] = have_seen_simple_str(val);
+	if (is_int(val)) {
+		res_ptr[0] = have_seen_int(val);
+	} else if (is_dbl(val)) {
+		res_ptr[0] = have_seen_dbl(val);
+	} else if (is_raw(val)) {
+		res_ptr[0] = have_seen_raw(val);
 	} else if (is_str(val)) {
 		res_ptr[0] = have_seen_str(val);
 	} else {
@@ -138,19 +128,34 @@ SEXP have_seen(SEXP val) {
  * @return R value in form of SEXP from the database
  */
 SEXP sample_val() {
+	// TODO: Add error checking
 	size_t random_index = rand_size_t() % size;
 
-	if (random_index < s_i_size + i_size) {
-		return sample_int();
-	} else if (random_index - (s_i_size + i_size) < s_d_size + d_size) {
-		return sample_dbl();
-	} else if (random_index - (s_i_size + i_size) - (s_d_size + d_size) < r_size + s_r_size) {
-		return sample_raw();
-	} else if (random_index - (s_i_size + i_size) - (s_d_size + d_size) - (r_size + s_r_size) < s_s_size) {
-		return get_simple_str(random_index - s_i_size - s_d_size - s_r_size);
+	if (random_index < i_size) {
+		return get_int(random_index);
 	} else {
-		return get_generic(random_index - s_i_size - s_d_size - s_r_size - s_s_size);
+		random_index -= i_size;
 	}
+
+	if (random_index < d_size) {
+		return get_dbl(random_index);
+	} else {
+		random_index -= d_size;
+	}
+
+	if (random_index < r_size) {
+		return get_raw(random_index);
+	} else {
+		random_index -= r_size;
+	}
+
+	if (random_index < s_size) {
+		return get_str(random_index);
+	} else {
+		random_index -= s_size;
+	}
+
+	return get_generic(random_index);
 }
 
 /**
@@ -161,25 +166,52 @@ SEXP sample_val() {
  * @return R value in form of SEXP from the database at ith position
  */
 SEXP get_val(SEXP i) {
+	// TODO: Add error checking
 	int index = asInteger(i);
 
 	// TODO: Let int db understand simple int db and etc
 
-	if (index < s_i_size) {
-		return get_simple_int(index);
-	} else if (index - s_i_size < i_size) {
-		return get_int(index - s_i_size);
-	} else if (index - s_i_size - i_size < s_d_size) {
-		return get_simple_dbl(index - s_i_size - i_size);
-	} else if (index - s_i_size - i_size - s_d_size < d_size) {
-		return get_dbl(index - s_i_size - i_size - s_d_size);
-	} else if (index - s_i_size - i_size - s_d_size - d_size < s_r_size) {
-		return get_simple_raw(index - s_i_size - i_size - s_d_size - d_size);
-	} else if (index - s_i_size - i_size - s_d_size - d_size - s_r_size < r_size) {
-		return get_raw(index - s_i_size - i_size - s_d_size - d_size - s_r_size);
-	} else if (index - s_i_size - i_size - s_d_size - d_size - s_r_size - r_size < s_s_size) {
-		return get_simple_str(index - s_i_size - i_size - s_d_size - d_size - s_r_size - r_size);
+	if (index < i_size) {
+		return get_int(index);
 	} else {
-		return get_generic(index - s_i_size - i_size - s_d_size - d_size - s_r_size - r_size - s_s_size);
+		index -= i_size;
 	}
+
+	if (index < d_size) {
+		return get_dbl(index);
+	} else {
+		index -= d_size;
+	}
+
+	if (index < r_size) {
+		return get_raw(index);
+	} else {
+		index -= r_size;
+	}
+
+	if (index < s_size) {
+		return get_str(index);
+	} else {
+		index -= s_size;
+	}
+
+	return get_generic(index);
+
+	// if (index < s_i_size) {
+	// 	return get_simple_int(index);
+	// } else if (index - s_i_size < i_size) {
+	// 	return get_int(index - s_i_size);
+	// } else if (index - s_i_size - i_size < s_d_size) {
+	// 	return get_simple_dbl(index - s_i_size - i_size);
+	// } else if (index - s_i_size - i_size - s_d_size < d_size) {
+	// 	return get_dbl(index - s_i_size - i_size - s_d_size);
+	// } else if (index - s_i_size - i_size - s_d_size - d_size < s_r_size) {
+	// 	return get_simple_raw(index - s_i_size - i_size - s_d_size - d_size);
+	// } else if (index - s_i_size - i_size - s_d_size - d_size - s_r_size < r_size) {
+	// 	return get_raw(index - s_i_size - i_size - s_d_size - d_size - s_r_size);
+	// } else if (index - s_i_size - i_size - s_d_size - d_size - s_r_size - r_size < s_s_size) {
+	// 	return get_simple_str(index - s_i_size - i_size - s_d_size - d_size - s_r_size - r_size);
+	// } else {
+	// 	return get_generic(index - s_i_size - i_size - s_d_size - d_size - s_r_size - r_size - s_s_size);
+	// }
 }

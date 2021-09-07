@@ -15,6 +15,7 @@ std::map<uint32_t, size_t> *s_str_index = NULL;
 size_t MAX_LENGTH = 8;
 
 extern size_t size;
+extern size_t s_size;
 extern size_t s_s_size;
 extern size_t s_s_offset;
 
@@ -187,6 +188,7 @@ SEXP add_simple_str(SEXP val) {
 	if (it == s_str_index->end()) { // TODO: Deal with collisions
 		(*s_str_index)[hash] = s_s_size;
 		s_s_size++;
+		s_size++;
 		size++;
 
 		size_t len = strlen(c_val);

@@ -77,7 +77,7 @@ SEXP load_int_index(SEXP index) {
 
 	size_t start = 0;
 	char hash[20];
-	for (size_t i = 0; i < i_size; ++i) {
+	for (size_t i = 0; i < (i_size - s_i_size); ++i) {
 		read_n(ints_index_file, hash, 20);
 		read_n(ints_index_file, &start, sizeof(size_t));
 		(*int_index)[std::string(hash, 20)] = start;
@@ -178,6 +178,10 @@ int is_int(SEXP value) {
  * @return val if val hasn't been added to store before, else R_NilValue
  */
 SEXP add_int(SEXP val) {
+	if (is_simple_int(val)) {
+		return add_simple_int(val);
+	}
+
 	serialize_val(vector, val);
 
 	// Get the sha1 hash of the serialized value
@@ -219,6 +223,10 @@ SEXP add_int(SEXP val) {
  * @return           1 if the value has been encountered before, else 0
  */
 int have_seen_int(SEXP val) {
+	if (is_simple_int(val)) {
+		return have_seen_simple_int(val);
+	}
+
 	serialize_val(vector, val);
 
 	// Get the sha1 hash of the serialized value
@@ -244,6 +252,12 @@ int have_seen_int(SEXP val) {
  * @return R value
  */
 SEXP get_int(int index) {
+	if (index < s_i_size) {
+		return get_simple_int(index);
+	} else {
+		index -= s_i_size;
+	}
+
 	std::map<std::string, size_t>::iterator it = int_index->begin();
 	std::advance(it, index);
 

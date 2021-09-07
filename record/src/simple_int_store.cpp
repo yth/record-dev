@@ -11,6 +11,7 @@ int INT_STORE_SIZE = INT_STORE_MAX - INT_STORE_MIN + 1;
 size_t int_db[10001] = { 0 };    // hard wired to accommodate -5000 to 5000
 
 extern size_t size;
+extern size_t i_size;
 extern size_t s_i_size;
 
 /**
@@ -119,6 +120,7 @@ SEXP add_simple_int(SEXP val) {
 	if(int_db[int_val] == 0) {
 		int_db[int_val] += 1;
 		s_i_size += 1;
+		i_size += 1;
 		size += 1;
 		return val;
 	} else {

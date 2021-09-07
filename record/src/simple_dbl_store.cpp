@@ -13,6 +13,7 @@ int DBL_STORE_SIZE = DBL_STORE_MAX - DBL_STORE_MIN + 1;
 size_t dbl_db[10001] = { 0 };
 
 extern size_t size;
+extern size_t d_size;
 extern size_t s_d_size;
 
 /**
@@ -124,6 +125,7 @@ SEXP add_simple_dbl(SEXP val) {
 	if(dbl_db[dbl_val] == 0) {
 		dbl_db[dbl_val] += 1;
 		s_d_size += 1;
+		d_size += 1;
 		size += 1;
 		return val;
 	} else {

@@ -77,7 +77,7 @@ SEXP load_str_index(SEXP index) {
 
 	size_t start = 0;
 	char hash[20];
-	for (size_t i = 0; i < s_size; ++i) {
+	for (size_t i = 0; i < s_size - s_s_size; ++i) {
 		read_n(strs_index_file, hash, 20);
 		read_n(strs_index_file, &start, sizeof(size_t));
 		(*str_index)[std::string(hash, 20)] = start;
@@ -178,6 +178,10 @@ int is_str(SEXP value) {
  * @return val if val hasn't been added to store before, else R_NilValue
  */
 SEXP add_str(SEXP val) {
+	if (is_simple_str(val)) {
+		return add_simple_str(val);
+	}
+
 	serialize_val(vector, val);
 
 	// Get the sha1 hash of the serialized value
@@ -219,6 +223,10 @@ SEXP add_str(SEXP val) {
  * @return           1 if the value has been encountered before, else 0
  */
 int have_seen_str(SEXP val) {
+	if (is_simple_str(val)) {
+		return have_seen_simple_str(val);
+	}
+
 	serialize_val(vector, val);
 
 	// Get the sha1 hash of the serialized value
@@ -244,6 +252,12 @@ int have_seen_str(SEXP val) {
  * @return R value
  */
 SEXP get_str(int index) {
+	if (index < s_s_size) {
+		return get_simple_str(index);
+	} else {
+		index -= s_s_size;
+	}
+
 	std::map<std::string, size_t>::iterator it = str_index->begin();
 	std::advance(it, index);
 
