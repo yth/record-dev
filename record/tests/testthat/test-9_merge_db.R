@@ -210,19 +210,49 @@ test_that("merge raws reverse", {
 	close_db()
 })
 
-}
+## String Section
 
-if (F) {
+test_that("merge empty simple strs", {
+	open_db("test_db/9_merge_db/s_strs1", create = T)
+	close_db()
 
-## Other Section
+	open_db("test_db/9_merge_db/s_strs2", create = T)
+	add_val("3")
+	add_val("4")
+	expect_true(size_db() == 2)
+	merge_db("test_db/9_merge_db/s_strs1")
+	expect_true(size_db() == 2)
+	close_db()
+})
+
+test_that("merge simple strs", {
+	open_db("test_db/9_merge_db/s_strs1")
+	add_val("1")
+	add_val("2")
+	expect_true(size_db() == 2)
+	close_db()
+
+	open_db("test_db/9_merge_db/s_strs2")
+	merge_db("test_db/9_merge_db/s_strs1")
+	expect_true(size_db() == 4)
+	close_db()
+})
+
+test_that("merge simple strs reverse", {
+	open_db("test_db/9_merge_db/s_strs1")
+	expect_true(size_db() == 2)
+	merge_db("test_db/9_merge_db/s_strs2")
+	expect_true(size_db() == 4)
+	close_db()
+})
 
 test_that("merge empty strs", {
 	open_db("test_db/9_merge_db/strs1", create = T)
 	close_db()
 
 	open_db("test_db/9_merge_db/strs2", create = T)
-	add_val("3")
-	add_val("4")
+	add_val("300000000")
+	add_val("400000000")
 	expect_true(size_db() == 2)
 	merge_db("test_db/9_merge_db/strs1")
 	expect_true(size_db() == 2)
@@ -231,8 +261,8 @@ test_that("merge empty strs", {
 
 test_that("merge strs", {
 	open_db("test_db/9_merge_db/strs1")
-	add_val("1")
-	add_val("2")
+	add_val("100000000")
+	add_val("200000000")
 	expect_true(size_db() == 2)
 	close_db()
 
@@ -249,6 +279,12 @@ test_that("merge strs reverse", {
 	expect_true(size_db() == 4)
 	close_db()
 })
+
+}
+
+if (F) {
+
+## Other Section
 
 test_that("merge empty generics", {
 	open_db("test_db/9_merge_db/generics1", create = T)

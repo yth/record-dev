@@ -214,8 +214,8 @@ merge_db <- function(other_db = "db") {
 		.Call(RCRD_merge_simple_raw_store, s_raws)
 
 		# Merge Strs
-		.Call(RCRD_merge_simple_str_store, s_strs, s_str_index)
 		.Call(RCRD_merge_str_store, strs, str_index)
+		.Call(RCRD_merge_simple_str_store, s_strs, s_str_index)
 
 		# Merge Rest
 		.Call(RCRD_merge_generic_store, generics, generic_index)
