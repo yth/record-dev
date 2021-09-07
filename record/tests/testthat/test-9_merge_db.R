@@ -140,8 +140,6 @@ test_that("merge dbls reverse", {
 	close_db()
 })
 
-}
-
 ## Raw Section
 
 test_that("merge empty simple raws", {
@@ -211,6 +209,8 @@ test_that("merge raws reverse", {
 	expect_true(size_db() == 4)
 	close_db()
 })
+
+}
 
 if (F) {
 

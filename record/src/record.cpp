@@ -18,6 +18,7 @@
 #include "raw_store.h"
 #include "simple_raw_store.h"
 
+#include "str_store.h"
 #include "simple_str_store.h"
 
 // Reusable buffer for everything
@@ -36,7 +37,9 @@ extern size_t s_d_size;
 extern size_t r_size;
 extern size_t s_r_size;
 
+extern size_t s_size;
 extern size_t s_s_size;
+
 extern size_t g_size;
 
 /**
@@ -92,6 +95,8 @@ SEXP add_val(SEXP val) {
 		return add_raw(val);
 	} else if (is_simple_str(val)) {
 		return add_simple_str(val);
+	} else if (is_str(val)) {
+		return add_str(val);
 	} else {
 		return add_generic(val);
 	}
@@ -117,6 +122,8 @@ SEXP have_seen(SEXP val) {
 		res_ptr[0] = have_seen_simple_raw(val);
 	} else if (is_simple_str(val)) {
 		res_ptr[0] = have_seen_simple_str(val);
+	} else if (is_str(val)) {
+		res_ptr[0] = have_seen_str(val);
 	} else {
 		res_ptr[0] = have_seen_generic(val);
 	}
@@ -137,9 +144,9 @@ SEXP sample_val() {
 		return sample_int();
 	} else if (random_index - (s_i_size + i_size) < s_d_size + d_size) {
 		return sample_dbl();
-	} else if (random_index - s_i_size - s_d_size < s_r_size) {
-		return get_simple_raw(random_index - s_i_size - s_d_size);
-	} else if (random_index - s_i_size - s_d_size - s_r_size < s_s_size) {
+	} else if (random_index - (s_i_size + i_size) - (s_d_size + d_size) < r_size + s_r_size) {
+		return sample_raw();
+	} else if (random_index - (s_i_size + i_size) - (s_d_size + d_size) - (r_size + s_r_size) < s_s_size) {
 		return get_simple_str(random_index - s_i_size - s_d_size - s_r_size);
 	} else {
 		return get_generic(random_index - s_i_size - s_d_size - s_r_size - s_s_size);

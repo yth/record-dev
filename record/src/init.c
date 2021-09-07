@@ -19,6 +19,7 @@
 #include "raw_store.h"
 #include "simple_raw_store.h"
 
+#include "str_store.h"
 #include "simple_str_store.h"
 
 #include "record.h"
@@ -89,6 +90,16 @@ static const R_CallMethodDef callMethods[] = {
 	{"init_simple_raw_store",	(DL_FUNC) &init_simple_raw_store,	1},
 	{"load_simple_raw_store",	(DL_FUNC) &load_simple_raw_store,	1},	{"merge_simple_raw_store",	(DL_FUNC) &merge_simple_raw_store,	1},
 	{"close_simple_raw_store",	(DL_FUNC) &close_simple_raw_store,	0},
+
+	// str value store related
+	{"init_str_index",			(DL_FUNC) &init_str_index,			1},
+	{"init_str_store",			(DL_FUNC) &init_str_store,			1},
+	{"load_str_index",			(DL_FUNC) &load_str_index,			1},
+	{"load_str_store",			(DL_FUNC) &load_str_store,			1},
+	{"merge_str_store",			(DL_FUNC) &merge_str_store,			2},
+	{"close_str_index",			(DL_FUNC) &close_str_index,			0},
+	{"close_str_store",			(DL_FUNC) &close_str_store,			0},
+	{"sample_str",				(DL_FUNC) &sample_str,				0},
 
 	// simple string store related
 	{"init_simple_str_index",	(DL_FUNC) &init_simple_str_index,	1},

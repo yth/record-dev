@@ -24,9 +24,7 @@ extern size_t bytes_written;
 extern size_t bytes_serialized;
 extern size_t bytes_unserialized;
 
-// Useful lifetime generic store value counters
-extern size_t s_count;
-
+// Help wrap fopen and create a file pointer based on a name in pass in from R
 FILE *open_file(SEXP filename) {
 	const char* cfilename = CHAR(STRING_ELT(filename, 0));
 
@@ -117,9 +115,7 @@ void close_file(FILE **fpp) {
 
 // Track how many values of a particular type was recorded in the generic store
 void track_type(SEXP val) {
-	switch(TYPEOF(val)) {
-		case STRSXP: s_count++; break;
-	}
+	switch(TYPEOF(val)) {}
 	return;
 }
 

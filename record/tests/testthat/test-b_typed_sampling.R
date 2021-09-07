@@ -72,6 +72,30 @@ test_that("sample raw database with some raw values", {
 	close_db()
 })
 
+## String Section
+
+test_that("sample str database with no values", {
+	open_db("test_db/b_sample_val/simple_str_sampling", create = T)
+	expect_error(sample_val("string"))
+	close_db()
+})
+
+test_that("sample str database with some str values", {
+	open_db("test_db/b_sample_val/simple_str_sampling")
+	add_val("string1")
+	expect_silent(sample_val("string"))
+	expect_equal(sample_val("string"), "string1")
+	close_db()
+})
+
+test_that("sample str database with some str values", {
+	open_db("test_db/b_sample_val/str_sampling", create = T)
+	add_val(c("string1", "string2", "string3"))
+	expect_silent(sample_val("string"))
+	expect_equal(sample_val("string"), c("string1", "string2", "string3"))
+	close_db()
+})
+
 }
 
 if (F) {
