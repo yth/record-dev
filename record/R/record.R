@@ -1,3 +1,8 @@
+## VERSION = major.minor.patch
+## Until major version is greater than 0, any changes in minor version number
+## signifies version breaking change.
+VERSION = "0.1.1"
+
 ## Primary Functionality
 
 #' @export
@@ -8,10 +13,18 @@ open_db <- function(db = "db", create = FALSE) {
 	if (dir.exists(db)) {
 		if (create) {
 			stop(paste0(db, " already exists."))
-		} else if (!file.exists(paste0(db, "/generics.bin"))) {
-			# TODO: Improve ways to see if we are working with a record db
+		} else if (!file.exists(paste0(db, "/RECORD_VERSION"))) {
 			stop(paste0(db, " is not a database."))
 		} else {# valid database
+			# Checking version
+			f <- file(paste0(db, "/RECORD_VERSION"))
+			v = readLines(f)
+			if (v != VERSION) {
+				stop("Version mismatch between database and program.")
+			}
+
+			close(f)
+
 			# This must be called first
 			.Call(RCRD_setup)
 
@@ -49,6 +62,9 @@ open_db <- function(db = "db", create = FALSE) {
 		} else {
 			dir.create(db, recursive = TRUE)
 
+			# Create version file
+			version_file = paste0(db, "/RECORD_VERSION")
+
 			# Create the stats store file
 			stats = paste0(db, "/stats.bin")
 
@@ -77,7 +93,8 @@ open_db <- function(db = "db", create = FALSE) {
 			generics = paste0(db, "/generics.bin")
 			generic_index = paste0(db, "/generic_index.bin")
 
-			file.create(ints,
+			file.create(version_file,
+						ints,
 						int_index,
 						s_ints,
 						dbls,
@@ -125,6 +142,11 @@ open_db <- function(db = "db", create = FALSE) {
 			# Initialize generic store
 			.Call(RCRD_init_generic_index, generic_index)
 			.Call(RCRD_init_generic_store, generics)
+
+			# Initialize version file
+			f <- file(version_file)
+			writeLines(VERSION, version_file)
+			close(f)
 		}
 	}
 }
