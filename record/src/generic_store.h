@@ -92,6 +92,13 @@ int have_seen_generic(SEXP val);
  */
 SEXP get_generic(int index);
 
+/**
+ * This function samples from the generic stores in the database
+ * @method sample_str
+ * @return R value in form of SEXP or throws an error if no generic in database
+ */
+SEXP sample_generic();
+
 #ifdef __cplusplus
 } // extern "C"
 #endif
