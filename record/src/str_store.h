@@ -93,7 +93,7 @@ int have_seen_str(SEXP val);
 SEXP get_str(int index);
 
 /**
- * This function samples from the stregers stores in the database
+ * This function samples from the strings stores in the database
  * @method sample_str
  * @return R value in form of SEXP or throws an error if no streger in database
  */
