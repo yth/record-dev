@@ -22,6 +22,8 @@
 #include "str_store.h"
 #include "simple_str_store.h"
 
+#include "log_store.h"
+
 #include "record.h"
 
 static const R_CallMethodDef callMethods[] = {
@@ -110,6 +112,16 @@ static const R_CallMethodDef callMethods[] = {
 	{"close_simple_str_index",	(DL_FUNC) &close_simple_str_index,	0},
 	{"close_simple_str_store",	(DL_FUNC) &close_simple_str_store,	0},
 
+	// logical R value store related
+	{"init_log_index",			(DL_FUNC) &init_log_index,			1},
+	{"init_log_store",			(DL_FUNC) &init_log_store,			1},
+	{"load_log_index",			(DL_FUNC) &load_log_index,			1},
+	{"load_log_store",			(DL_FUNC) &load_log_store,			1},
+	{"merge_log_store",			(DL_FUNC) &merge_log_store,			2},
+	{"close_log_index",			(DL_FUNC) &close_log_index,			0},
+	{"close_log_store",			(DL_FUNC) &close_log_store,			0},
+	{"sample_log",				(DL_FUNC) &sample_log,				0},
+
 	// generic R value store related
 	{"init_generic_index",		(DL_FUNC) &init_generic_index,		1},
 	{"init_generic_store",		(DL_FUNC) &init_generic_store,		1},
@@ -118,6 +130,7 @@ static const R_CallMethodDef callMethods[] = {
 	{"merge_generic_store",		(DL_FUNC) &merge_generic_store,		2},
 	{"close_generic_index",		(DL_FUNC) &close_generic_index,		0},
 	{"close_generic_store",		(DL_FUNC) &close_generic_store,		0},
+	{"sample_generic",			(DL_FUNC) &sample_generic,			0},
 
 	// Must have at the end
 	{NULL,						NULL,								0}

@@ -21,6 +21,8 @@
 #include "str_store.h"
 #include "simple_str_store.h"
 
+#include "log_store.h"
+
 // Reusable buffer for everything
 byte_vector_t vector = NULL;
 
@@ -39,6 +41,12 @@ extern size_t s_r_size;
 
 extern size_t s_size;
 extern size_t s_s_size;
+
+extern size_t o_size;
+
+extern size_t c_size;
+
+extern size_t l_size;
 
 extern size_t g_size;
 
@@ -89,6 +97,8 @@ SEXP add_val(SEXP val) {
 		return add_raw(val);
 	} else if (is_str(val)) {
 		return add_str(val);
+	} else if (is_log(val)) {
+		return add_log(val);
 	} else {
 		return add_generic(val);
 	}
@@ -114,6 +124,8 @@ SEXP have_seen(SEXP val) {
 		res_ptr[0] = have_seen_raw(val);
 	} else if (is_str(val)) {
 		res_ptr[0] = have_seen_str(val);
+	} else if (is_log(val)) {
+		res_ptr[0] = have_seen_log(val);
 	} else {
 		res_ptr[0] = have_seen_generic(val);
 	}
@@ -155,6 +167,12 @@ SEXP sample_val() {
 		random_index -= s_size;
 	}
 
+	if (random_index < o_size) {
+		return get_log(random_index);
+	} else {
+		random_index -= o_size;
+	}
+
 	return get_generic(random_index);
 }
 
@@ -191,6 +209,12 @@ SEXP get_val(SEXP i) {
 		return get_str(index);
 	} else {
 		index -= s_size;
+	}
+
+	if (index < o_size) {
+		return get_log(index);
+	} else {
+		index -= o_size;
 	}
 
 	return get_generic(index);

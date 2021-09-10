@@ -25,6 +25,15 @@ size_t s_offset = 0; // number of bytes in str store
 size_t s_s_size = 0; // number of unique simple strs encountered
 size_t s_s_offset = 0; // number of bytes in simple str store
 
+size_t o_size = 0; // number of unique logicals encountered
+size_t o_offset = 0; // number of bytes in logicals store
+
+size_t c_size = 0; // number of unique complexes encountered
+size_t c_offset = 0; // number of bytes in complexes store
+
+size_t l_size = 0; // number of unique list encountered
+size_t l_offset = 0; // number of bytes in list store
+
 size_t g_size = 0; // number of unique generic values encountered
 size_t g_offset = 0; // number of bytes in generic store
 
@@ -73,6 +82,15 @@ SEXP init_stats_store(SEXP stats) {
 	s_s_size = 0;
 	s_s_offset = 0;
 
+	o_size = 0;
+	o_offset = 0;
+
+	c_size = 0;
+	c_offset = 0;
+
+	l_size = 0;
+	l_offset = 0;
+
 	g_size = 0;
 	g_offset = 0;
 
@@ -116,6 +134,15 @@ SEXP load_stats_store(SEXP stats) {
 	read_n(stats_file, &s_offset, sizeof(size_t));
 	read_n(stats_file, &s_s_size, sizeof(size_t));
 	read_n(stats_file, &s_s_offset, sizeof(size_t));
+
+	read_n(stats_file, &o_size, sizeof(size_t));
+	read_n(stats_file, &o_offset, sizeof(size_t));
+
+	read_n(stats_file, &c_size, sizeof(size_t));
+	read_n(stats_file, &c_offset, sizeof(size_t));
+
+	read_n(stats_file, &l_size, sizeof(size_t));
+	read_n(stats_file, &l_offset, sizeof(size_t));
 
 	read_n(stats_file, &g_size, sizeof(size_t));
 	read_n(stats_file, &g_offset, sizeof(size_t));
@@ -200,6 +227,24 @@ SEXP close_stats_store() {
 		write_n(stats_file, &s_s_offset, sizeof(size_t));
 		s_s_offset = 0;
 
+		write_n(stats_file, &o_size, sizeof(size_t));
+		o_size = 0;
+
+		write_n(stats_file, &o_offset, sizeof(size_t));
+		o_offset = 0;
+
+		write_n(stats_file, &c_size, sizeof(size_t));
+		c_size = 0;
+
+		write_n(stats_file, &c_offset, sizeof(size_t));
+		c_offset = 0;
+
+		write_n(stats_file, &l_size, sizeof(size_t));
+		l_size = 0;
+
+		write_n(stats_file, &l_offset, sizeof(size_t));
+		l_offset = 0;
+
 		write_n(stats_file, &g_size, sizeof(size_t));
 		g_size = 0;
 
@@ -276,6 +321,9 @@ SEXP print_report() {
 	fprintf(stderr, "    Elements in raw store: %lu\n", r_size);
 	fprintf(stderr, "    Elements in string store: %lu\n", s_size);
 	fprintf(stderr, "    Elements in simple string store: %lu\n", s_s_size);
+	fprintf(stderr, "    Elements in logical store: %lu\n", o_size);
+	fprintf(stderr, "    Elements in complex store: %lu\n", c_size);
+	fprintf(stderr, "    Elements in list store: %lu\n", l_size);
 
 	fprintf(stderr, "  Database Generic Store Statistics\n");
 	fprintf(stderr, "    Elements in generic store: %lu\n", g_size);

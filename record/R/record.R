@@ -52,6 +52,10 @@ open_db <- function(db = "db", create = FALSE) {
 			.Call(RCRD_load_simple_str_index, paste0(db, "/s_str_index.bin"))
 			.Call(RCRD_load_simple_str_store, paste0(db, "/s_strs.bin"))
 
+			# Load Log store
+			.Call(RCRD_load_log_index, paste0(db, "/log_index.bin"))
+			.Call(RCRD_load_log_store, paste0(db, "/logs.bin"))
+
 			# Load generic store
 			.Call(RCRD_load_generic_index, paste0(db, "/generic_index.bin"))
 			.Call(RCRD_load_generic_store, paste0(db, "/generics.bin"))
@@ -78,16 +82,20 @@ open_db <- function(db = "db", create = FALSE) {
 			dbl_index = paste0(db, "/dbl_index.bin")
 			s_dbls = paste0(db, "/s_dbls.bin")
 
-			# Create the specialty store files
+			# Create Raw Stores
 			raws = paste0(db, "/raws.bin")
 			raw_index = paste0(db, "/raw_index.bin")
 			s_raws = paste0(db, "/s_raws.bin")
 
-			# Create specialty store with index
+			# Create Str Stores
 			strs = paste0(db, "/strs.bin")
 			str_index = paste0(db, "/str_index.bin")
 			s_strs = paste0(db, "/s_strs.bin")
 			s_str_index = paste0(db, "/s_str_index.bin")
+
+			# Create Log Store
+			logs = paste0(db, "/logs.bin")
+			log_index = paste0(db, "/log_index.bin")
 
 			# Create the generic store files
 			generics = paste0(db, "/generics.bin")
@@ -107,6 +115,8 @@ open_db <- function(db = "db", create = FALSE) {
 						str_index,
 						s_strs,
 						s_str_index,
+						logs,
+						log_index,
 						generics,
 						generic_index,
 						stats,
@@ -128,16 +138,20 @@ open_db <- function(db = "db", create = FALSE) {
 			.Call(RCRD_init_dbl_store, dbls)
 			.Call(RCRD_init_simple_dbl_store, s_dbls)
 
-			# Initialize specialty stores
+			# Initialize Raw Stores
 			.Call(RCRD_init_raw_index, raw_index)
 			.Call(RCRD_init_raw_store, raws)
 			.Call(RCRD_init_simple_raw_store, s_raws)
 
-			# Initialize specialty store with index
+			# Initialize Str Stores
 			.Call(RCRD_init_str_index, str_index)
 			.Call(RCRD_init_str_store, strs)
 			.Call(RCRD_init_simple_str_index, s_str_index)
 			.Call(RCRD_init_simple_str_store, s_strs)
+
+			# Initialize log store
+			.Call(RCRD_init_log_index, log_index)
+			.Call(RCRD_init_log_store, logs)
 
 			# Initialize generic store
 			.Call(RCRD_init_generic_index, generic_index)
@@ -178,6 +192,10 @@ close_db <- function() {
 	.Call(RCRD_close_simple_str_index)
 	.Call(RCRD_close_simple_str_store)
 
+	# Close Log store
+	.Call(RCRD_close_log_index)
+	.Call(RCRD_close_log_store)
+
 	# This must be called second to last
 	.Call(RCRD_close_stats_store)
 
@@ -195,6 +213,7 @@ merge_db <- function(other_db = "db") {
 	# TODO: Create a better way to see if we are working with a record db
 	# TODO: Create a better way to see if we are working with another record db
 	if (dir.exists(other_db) &&
+		# TODO: Change this to check for version
 		file.exists(paste0(other_db, "/generics.bin"))) {
 
 		# Create Int Store Names
@@ -218,6 +237,10 @@ merge_db <- function(other_db = "db") {
 		s_strs = paste0(other_db, "/s_strs.bin")
 		s_str_index = paste0(other_db, "/s_str_index.bin")
 
+		# Create Log Store Names
+		logs = paste0(other_db, "/logs.bin")
+		log_index = paste0(other_db, "/log_index.bin")
+
 		# Merge Specialty Stores
 		generics = paste0(other_db, "/generics.bin")
 		generic_index = paste0(other_db, "/generic_index.bin")
@@ -239,6 +262,9 @@ merge_db <- function(other_db = "db") {
 		.Call(RCRD_merge_str_store, strs, str_index)
 		.Call(RCRD_merge_simple_str_store, s_strs, s_str_index)
 
+		# Merge Logs
+		.Call(RCRD_merge_log_store, logs, log_index)
+
 		# Merge Rest
 		.Call(RCRD_merge_generic_store, generics, generic_index)
 		.Call(RCRD_merge_stats_store)
@@ -259,6 +285,10 @@ sample_val <- function(type = "any") {
 		.Call(RCRD_sample_raw)
 	} else if (type == "string") {
 		.Call(RCRD_sample_str)
+	} else if (type == "logical") {
+		.Call(RCRD_sample_log)
+	} else if (type == "generic") {
+		.Call(RCRD_sample_generic)
 	} else {
 		stop("Trying to sample unknown type")
 	}
