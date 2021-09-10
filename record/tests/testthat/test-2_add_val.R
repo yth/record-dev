@@ -168,4 +168,30 @@ test_that("add attributed str", {
 	close_db()
 })
 
+## Logical Section
+
+test_that("add scalar log", {
+	open_db("test_db/2_add_val/log_1", create = T)
+	expect_equal(add_val(T), T)
+	close_db()
+})
+
+test_that("add vector log", {
+	open_db("test_db/2_add_val/log_1")
+	expect_equal(add_val(c(T, F, as.logical(NA))),
+				c(T, F, as.logical(NA)))
+	close_db()
+})
+
+test_that("add attributed log", {
+	open_db("test_db/2_add_val/add-attributed-og", create = TRUE)
+
+	x <- T
+	attr(x, "name") <- "attributed 0"
+
+	expect_equal(add_val(x), x)
+	expect_equal(size_db(), 1)
+	close_db()
+})
+
 }

@@ -280,6 +280,72 @@ test_that("merge strs reverse", {
 	close_db()
 })
 
+## Logical Section
+
+test_that("merge empty simple logs", {
+	open_db("test_db/9_merge_db/s_logs1", create = T)
+	close_db()
+
+	open_db("test_db/9_merge_db/s_logs2", create = T)
+	add_val(T)
+	expect_true(size_db() == 1)
+	merge_db("test_db/9_merge_db/s_logs1")
+	expect_true(size_db() == 1)
+	close_db()
+})
+
+test_that("merge simple logs", {
+	open_db("test_db/9_merge_db/s_logs1")
+	add_val(F)
+	expect_true(size_db() == 1)
+	close_db()
+
+	open_db("test_db/9_merge_db/s_logs2")
+	merge_db("test_db/9_merge_db/s_logs1")
+	expect_true(size_db() == 2)
+	close_db()
+})
+
+test_that("merge simple logs reverse", {
+	open_db("test_db/9_merge_db/s_logs1")
+	expect_true(size_db() == 1)
+	merge_db("test_db/9_merge_db/s_logs2")
+	expect_true(size_db() == 2)
+	close_db()
+})
+
+test_that("merge empty logs", {
+	open_db("test_db/9_merge_db/logs1", create = T)
+	close_db()
+
+	open_db("test_db/9_merge_db/logs2", create = T)
+	add_val(c(T, F))
+	expect_true(size_db() == 1)
+	merge_db("test_db/9_merge_db/logs1")
+	expect_true(size_db() == 1)
+	close_db()
+})
+
+test_that("merge logs", {
+	open_db("test_db/9_merge_db/logs1")
+	add_val(c(F, T))
+	expect_true(size_db() == 1)
+	close_db()
+
+	open_db("test_db/9_merge_db/logs2")
+	merge_db("test_db/9_merge_db/logs1")
+	expect_true(size_db() == 2)
+	close_db()
+})
+
+test_that("merge logs reverse", {
+	open_db("test_db/9_merge_db/logs1")
+	expect_true(size_db() == 1)
+	merge_db("test_db/9_merge_db/logs2")
+	expect_true(size_db() == 2)
+	close_db()
+})
+
 }
 
 if (F) {

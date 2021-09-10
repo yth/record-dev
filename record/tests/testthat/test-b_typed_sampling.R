@@ -96,6 +96,47 @@ test_that("sample str database with some str values", {
 	close_db()
 })
 
+## Logical Section
+
+test_that("sample log database with no values", {
+	open_db("test_db/b_sample_val/simple_log_sampling", create = T)
+	expect_error(sample_val("logical"))
+	close_db()
+})
+
+test_that("sample log database with some log values", {
+	open_db("test_db/b_sample_val/simple_log_sampling")
+	add_val(T)
+	expect_silent(sample_val("logical"))
+	expect_equal(sample_val("logical"), T)
+	close_db()
+})
+
+test_that("sample log database with some log values", {
+	open_db("test_db/b_sample_val/log_sampling", create = T)
+	add_val(c(T, F, as.logical(NA)))
+	expect_silent(sample_val("logical"))
+	expect_equal(sample_val("logical"), c(T, F, as.logical(NA)))
+	close_db()
+})
+
+## Generic Section
+
+test_that("sample log database with no values", {
+	open_db("test_db/b_sample_val/generic_sampling", create = T)
+	expect_error(sample_val("generic"))
+	close_db()
+})
+
+test_that("sample log database with some log values", {
+	open_db("test_db/b_sample_val/generic_sampling")
+	add_val(function() (1 + 1))
+	expect_silent(sample_val("generic"))
+	f = sample_val("generic")
+	expect_equal(f(), 2)
+	close_db()
+})
+
 }
 
 if (F) {
