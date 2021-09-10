@@ -184,9 +184,35 @@ test_that("add vector log", {
 })
 
 test_that("add attributed log", {
-	open_db("test_db/2_add_val/add-attributed-og", create = TRUE)
+	open_db("test_db/2_add_val/add-attributed-log", create = TRUE)
 
 	x <- T
+	attr(x, "name") <- "attributed 0"
+
+	expect_equal(add_val(x), x)
+	expect_equal(size_db(), 1)
+	close_db()
+})
+
+## Complex Section
+
+test_that("add scalar cmp", {
+	open_db("test_db/2_add_val/cmp_1", create = T)
+	expect_equal(add_val(1+1i), 1+1i)
+	close_db()
+})
+
+test_that("add vector cmp", {
+	open_db("test_db/2_add_val/cmp_1")
+	expect_equal(add_val(c(2+2i, 3+3i, 3.14 + 2.72i)),
+				c(2+2i, 3+3i, 3.14 + 2.72i))
+	close_db()
+})
+
+test_that("add attributed cmp", {
+	open_db("test_db/2_add_val/add-attributed-cmp", create = TRUE)
+
+	x <- 4+4i
 	attr(x, "name") <- "attributed 0"
 
 	expect_equal(add_val(x), x)

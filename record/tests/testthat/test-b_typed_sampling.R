@@ -120,6 +120,30 @@ test_that("sample log database with some log values", {
 	close_db()
 })
 
+## Complex Section
+
+test_that("sample cmp database with no values", {
+	open_db("test_db/b_sample_val/simple_cmp_sampling", create = T)
+	expect_error(sample_val("complex"))
+	close_db()
+})
+
+test_that("sample cmp database with some cmp values", {
+	open_db("test_db/b_sample_val/simple_cmp_sampling")
+	add_val(1+1i)
+	expect_silent(sample_val("complex"))
+	expect_equal(sample_val("complex"), 1+1i)
+	close_db()
+})
+
+test_that("sample cmp database with some cmp values", {
+	open_db("test_db/b_sample_val/cmp_sampling", create = T)
+	add_val(c(1+2i, 3+0.4i, 5.5+6.7i))
+	expect_silent(sample_val("complex"))
+	expect_equal(sample_val("complex"), c(1+2i, 3+0.4i, 5.5+6.7i))
+	close_db()
+})
+
 ## Generic Section
 
 test_that("sample log database with no values", {

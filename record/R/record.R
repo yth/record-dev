@@ -1,7 +1,7 @@
 ## VERSION = major.minor.patch
 ## Until major version is greater than 0, any changes in minor version number
 ## signifies version breaking change.
-VERSION = "0.2.0"
+VERSION = "0.3.0"
 
 ## Primary Functionality
 
@@ -56,6 +56,10 @@ open_db <- function(db = "db", create = FALSE) {
 			.Call(RCRD_load_log_index, paste0(db, "/log_index.bin"))
 			.Call(RCRD_load_log_store, paste0(db, "/logs.bin"))
 
+			# Load Cmp store
+			.Call(RCRD_load_cmp_index, paste0(db, "/cmp_index.bin"))
+			.Call(RCRD_load_cmp_store, paste0(db, "/cmps.bin"))
+
 			# Load generic store
 			.Call(RCRD_load_generic_index, paste0(db, "/generic_index.bin"))
 			.Call(RCRD_load_generic_store, paste0(db, "/generics.bin"))
@@ -97,6 +101,10 @@ open_db <- function(db = "db", create = FALSE) {
 			logs = paste0(db, "/logs.bin")
 			log_index = paste0(db, "/log_index.bin")
 
+			# Create Cmp Store
+			cmps = paste0(db, "/cmps.bin")
+			cmp_index = paste0(db, "/cmp_index.bin")
+
 			# Create the generic store files
 			generics = paste0(db, "/generics.bin")
 			generic_index = paste0(db, "/generic_index.bin")
@@ -117,6 +125,8 @@ open_db <- function(db = "db", create = FALSE) {
 						s_str_index,
 						logs,
 						log_index,
+						cmps,
+						cmp_index,
 						generics,
 						generic_index,
 						stats,
@@ -152,6 +162,10 @@ open_db <- function(db = "db", create = FALSE) {
 			# Initialize log store
 			.Call(RCRD_init_log_index, log_index)
 			.Call(RCRD_init_log_store, logs)
+
+			# Initialize cmp store
+			.Call(RCRD_init_cmp_index, cmp_index)
+			.Call(RCRD_init_cmp_store, cmps)
 
 			# Initialize generic store
 			.Call(RCRD_init_generic_index, generic_index)
@@ -195,6 +209,10 @@ close_db <- function() {
 	# Close Log store
 	.Call(RCRD_close_log_index)
 	.Call(RCRD_close_log_store)
+
+	# Close Cmp store
+	.Call(RCRD_close_cmp_index)
+	.Call(RCRD_close_cmp_store)
 
 	# This must be called second to last
 	.Call(RCRD_close_stats_store)
@@ -241,6 +259,10 @@ merge_db <- function(other_db = "db") {
 		logs = paste0(other_db, "/logs.bin")
 		log_index = paste0(other_db, "/log_index.bin")
 
+		# Create Cmp Store Names
+		cmps = paste0(other_db, "/cmps.bin")
+		cmp_index = paste0(other_db, "/cmp_index.bin")
+
 		# Merge Specialty Stores
 		generics = paste0(other_db, "/generics.bin")
 		generic_index = paste0(other_db, "/generic_index.bin")
@@ -265,6 +287,9 @@ merge_db <- function(other_db = "db") {
 		# Merge Logs
 		.Call(RCRD_merge_log_store, logs, log_index)
 
+		# Merge Cmps
+		.Call(RCRD_merge_cmp_store, cmps, cmp_index)
+
 		# Merge Rest
 		.Call(RCRD_merge_generic_store, generics, generic_index)
 		.Call(RCRD_merge_stats_store)
@@ -287,6 +312,8 @@ sample_val <- function(type = "any") {
 		.Call(RCRD_sample_str)
 	} else if (type == "logical") {
 		.Call(RCRD_sample_log)
+	} else if (type == "complex") {
+		.Call(RCRD_sample_cmp)
 	} else if (type == "generic") {
 		.Call(RCRD_sample_generic)
 	} else {

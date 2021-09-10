@@ -24,6 +24,8 @@
 
 #include "log_store.h"
 
+#include "cmp_store.h"
+
 #include "record.h"
 
 static const R_CallMethodDef callMethods[] = {
@@ -121,6 +123,16 @@ static const R_CallMethodDef callMethods[] = {
 	{"close_log_index",			(DL_FUNC) &close_log_index,			0},
 	{"close_log_store",			(DL_FUNC) &close_log_store,			0},
 	{"sample_log",				(DL_FUNC) &sample_log,				0},
+
+	// complex R value store related
+	{"init_cmp_index",			(DL_FUNC) &init_cmp_index,			1},
+	{"init_cmp_store",			(DL_FUNC) &init_cmp_store,			1},
+	{"load_cmp_index",			(DL_FUNC) &load_cmp_index,			1},
+	{"load_cmp_store",			(DL_FUNC) &load_cmp_store,			1},
+	{"merge_cmp_store",			(DL_FUNC) &merge_cmp_store,			2},
+	{"close_cmp_index",			(DL_FUNC) &close_cmp_index,			0},
+	{"close_cmp_store",			(DL_FUNC) &close_cmp_store,			0},
+	{"sample_cmp",				(DL_FUNC) &sample_cmp,				0},
 
 	// generic R value store related
 	{"init_generic_index",		(DL_FUNC) &init_generic_index,		1},

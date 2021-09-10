@@ -346,6 +346,72 @@ test_that("merge logs reverse", {
 	close_db()
 })
 
+## Complex Section
+
+test_that("merge empty simple cmps", {
+	open_db("test_db/9_merge_db/s_cmps1", create = T)
+	close_db()
+
+	open_db("test_db/9_merge_db/s_cmps2", create = T)
+	add_val(1+1i)
+	expect_true(size_db() == 1)
+	merge_db("test_db/9_merge_db/s_cmps1")
+	expect_true(size_db() == 1)
+	close_db()
+})
+
+test_that("merge simple cmps", {
+	open_db("test_db/9_merge_db/s_cmps1")
+	add_val(2+2i)
+	expect_true(size_db() == 1)
+	close_db()
+
+	open_db("test_db/9_merge_db/s_cmps2")
+	merge_db("test_db/9_merge_db/s_cmps1")
+	expect_true(size_db() == 2)
+	close_db()
+})
+
+test_that("merge simple cmps reverse", {
+	open_db("test_db/9_merge_db/s_cmps1")
+	expect_true(size_db() == 1)
+	merge_db("test_db/9_merge_db/s_cmps2")
+	expect_true(size_db() == 2)
+	close_db()
+})
+
+test_that("merge empty cmps", {
+	open_db("test_db/9_merge_db/cmps1", create = T)
+	close_db()
+
+	open_db("test_db/9_merge_db/cmps2", create = T)
+	add_val(c(1+1i, 2+2i))
+	expect_true(size_db() == 1)
+	merge_db("test_db/9_merge_db/cmps1")
+	expect_true(size_db() == 1)
+	close_db()
+})
+
+test_that("merge cmps", {
+	open_db("test_db/9_merge_db/cmps1")
+	add_val(c(2+2i, 1+1i))
+	expect_true(size_db() == 1)
+	close_db()
+
+	open_db("test_db/9_merge_db/cmps2")
+	merge_db("test_db/9_merge_db/cmps1")
+	expect_true(size_db() == 2)
+	close_db()
+})
+
+test_that("merge cmps reverse", {
+	open_db("test_db/9_merge_db/cmps1")
+	expect_true(size_db() == 1)
+	merge_db("test_db/9_merge_db/cmps2")
+	expect_true(size_db() == 2)
+	close_db()
+})
+
 }
 
 if (F) {
