@@ -44,6 +44,14 @@ SEXP init_generic_index(SEXP index);
 SEXP load_generic_index(SEXP index);
 
 /**
+ * This function writes the index associated with the generics store to file
+ * and closes the file.
+ * @method close_generic_index
+ * @return R_NilValue
+ */
+SEXP close_generic_index();
+
+/**
  * This functions merges another str store into the current str store.
  * @param  other_generics is the path to the generics store of a different db.
  * @param  other_index is the path to the index of other_generics on disk.
@@ -51,14 +59,6 @@ SEXP load_generic_index(SEXP index);
  * @return R_NilValue on success
  */
 SEXP merge_generic_store(SEXP other_generics, SEXP other_index);
-
-/**
- * This function writes the index associated with the generics store to file
- * and closes the file.
- * @method close_generic_index
- * @return R_NilValue
- */
-SEXP close_generic_index();
 
 /**
  * This function assesses if the input is a generic.

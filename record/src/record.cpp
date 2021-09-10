@@ -169,8 +169,6 @@ SEXP get_val(SEXP i) {
 	// TODO: Add error checking
 	int index = asInteger(i);
 
-	// TODO: Let int db understand simple int db and etc
-
 	if (index < i_size) {
 		return get_int(index);
 	} else {
@@ -196,22 +194,4 @@ SEXP get_val(SEXP i) {
 	}
 
 	return get_generic(index);
-
-	// if (index < s_i_size) {
-	// 	return get_simple_int(index);
-	// } else if (index - s_i_size < i_size) {
-	// 	return get_int(index - s_i_size);
-	// } else if (index - s_i_size - i_size < s_d_size) {
-	// 	return get_simple_dbl(index - s_i_size - i_size);
-	// } else if (index - s_i_size - i_size - s_d_size < d_size) {
-	// 	return get_dbl(index - s_i_size - i_size - s_d_size);
-	// } else if (index - s_i_size - i_size - s_d_size - d_size < s_r_size) {
-	// 	return get_simple_raw(index - s_i_size - i_size - s_d_size - d_size);
-	// } else if (index - s_i_size - i_size - s_d_size - d_size - s_r_size < r_size) {
-	// 	return get_raw(index - s_i_size - i_size - s_d_size - d_size - s_r_size);
-	// } else if (index - s_i_size - i_size - s_d_size - d_size - s_r_size - r_size < s_s_size) {
-	// 	return get_simple_str(index - s_i_size - i_size - s_d_size - d_size - s_r_size - r_size);
-	// } else {
-	// 	return get_generic(index - s_i_size - i_size - s_d_size - d_size - s_r_size - r_size - s_s_size);
-	// }
 }
