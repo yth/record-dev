@@ -1,7 +1,7 @@
 ## VERSION = major.minor.patch
 ## Until major version is greater than 0, any changes in minor version number
 ## signifies version breaking change.
-VERSION = "0.1.1"
+VERSION = "0.2.0"
 
 ## Primary Functionality
 
