@@ -130,22 +130,35 @@ SEXP merge_generic_store(SEXP other_generics, SEXP other_index) {
 	size_t other_offset = 0;
 	for (long int i = 0; i < sz; ++i) {
 		read_n(other_generic_index_file, other_sha1sum, 20);
-		read_n(other_generic_index_file, &other_offset, sizeof(size_t));
+		std::string key((char *) other_sha1sum, 20);
+		std::map<std::string, size_t>::iterator it = generic_index->find(key);
+		if (it == generic_index->end()) { // TODO: Deal with collision
+			(*generic_index)[key] = g_offset;
+			g_size++;
+			size++;
 
-		size_t new_generic_size = 0;
-		fseek(other_generics_file, other_offset, SEEK_SET);
-		read_n(other_generics_file, &new_generic_size, sizeof(size_t));
+			read_n(other_generic_index_file, &other_offset, sizeof(size_t));
 
-		free_content(vector);
-		read_n(other_generics_file, vector->buf, new_generic_size);
-		vector->capacity = new_generic_size;
+			size_t new_generic_size = 0;
+			fseek(other_generics_file, other_offset, SEEK_SET);
+			read_n(other_generics_file, &new_generic_size, sizeof(size_t));
 
-		// TODO: Think about how to minimizing serializing and unserialize.
-		//       They are used in unserialize_val and add_generic.
-		SEXP val = unserialize_val(vector);
-		vector->capacity = 1 << 30;
+			free_content(vector);
+			read_n(other_generics_file, vector->buf, new_generic_size);
+			vector->capacity = new_generic_size;
 
-		add_generic(val);
+			// Write the blob
+			write_n(generics_file, &(vector->size), sizeof(size_t));
+			write_n(generics_file, vector->buf, vector->size);
+
+			// Acting as NULL for linked-list next pointer
+			write_n(generics_file, &(vector->size), sizeof(size_t));
+
+			// Modify g_offset here
+			g_offset += vector->size + sizeof(size_t) + sizeof(size_t);
+
+			vector->capacity = 1 << 30;
+		}
 	}
 
 	fseek(other_generics_file, -1, SEEK_END);
