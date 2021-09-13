@@ -412,51 +412,42 @@ test_that("merge cmps reverse", {
 	close_db()
 })
 
-}
-
-if (F) {
-
-## Other Section
+## Generics Section
 
 test_that("merge empty generics", {
 	open_db("test_db/9_merge_db/generics1", create = T)
 	close_db()
 
 	open_db("test_db/9_merge_db/generics2", create = T)
-	add_val("a very long string 3")
-	add_val("a very long string 4")
-	expect_true(size_db() == 2)
+	add_val(function() { 1 })
+	expect_true(size_db() == 1)
 	merge_db("test_db/9_merge_db/generics1")
-	expect_true(size_db() == 2)
+	expect_true(size_db() == 1)
 	close_db()
 })
 
 test_that("merge generics", {
 	open_db("test_db/9_merge_db/generics1")
-	add_val("a very long string 1")
-	add_val("a very long string 2")
-	expect_true(size_db() == 2)
+	add_val(function() { 2 })
+	expect_true(size_db() == 1)
 	close_db()
 
 	open_db("test_db/9_merge_db/generics2")
 	merge_db("test_db/9_merge_db/generics1")
-	expect_true(size_db() == 4)
+	expect_true(size_db() == 2)
 	close_db()
 })
 
 test_that("merge generics reverse", {
 	open_db("test_db/9_merge_db/generics1")
-	expect_true(size_db() == 2)
+	expect_true(size_db() == 1)
 	merge_db("test_db/9_merge_db/generics2")
-	expect_true(size_db() == 4)
-	close_db()
-})
-
-test_that("merge count", {
-	open_db("test_db/9_merge_db/generics1")
-	expect_silent(report())
+	expect_true(size_db() == 2)
 	close_db()
 })
 
 }
 
+if (F) {
+
+}
