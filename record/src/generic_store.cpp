@@ -130,14 +130,14 @@ SEXP merge_generic_store(SEXP other_generics, SEXP other_index) {
 	size_t other_offset = 0;
 	for (long int i = 0; i < sz; ++i) {
 		read_n(other_generic_index_file, other_sha1sum, 20);
+		read_n(other_generic_index_file, &other_offset, sizeof(size_t));
+
 		std::string key((char *) other_sha1sum, 20);
 		std::map<std::string, size_t>::iterator it = generic_index->find(key);
 		if (it == generic_index->end()) { // TODO: Deal with collision
 			(*generic_index)[key] = g_offset;
 			g_size++;
 			size++;
-
-			read_n(other_generic_index_file, &other_offset, sizeof(size_t));
 
 			size_t new_generic_size = 0;
 			fseek(other_generics_file, other_offset, SEEK_SET);
