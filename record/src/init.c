@@ -26,6 +26,8 @@
 
 #include "cmp_store.h"
 
+#include "lst_store.h"
+
 #include "record.h"
 
 static const R_CallMethodDef callMethods[] = {
@@ -133,6 +135,16 @@ static const R_CallMethodDef callMethods[] = {
 	{"close_cmp_index",			(DL_FUNC) &close_cmp_index,			0},
 	{"close_cmp_store",			(DL_FUNC) &close_cmp_store,			0},
 	{"sample_cmp",				(DL_FUNC) &sample_cmp,				0},
+
+	// list R value store related
+	{"init_lst_index",			(DL_FUNC) &init_lst_index,			1},
+	{"init_lst_store",			(DL_FUNC) &init_lst_store,			1},
+	{"load_lst_index",			(DL_FUNC) &load_lst_index,			1},
+	{"load_lst_store",			(DL_FUNC) &load_lst_store,			1},
+	{"merge_lst_store",			(DL_FUNC) &merge_lst_store,			2},
+	{"close_lst_index",			(DL_FUNC) &close_lst_index,			0},
+	{"close_lst_store",			(DL_FUNC) &close_lst_store,			0},
+	{"sample_lst",				(DL_FUNC) &sample_lst,				0},
 
 	// generic R value store related
 	{"init_generic_index",		(DL_FUNC) &init_generic_index,		1},

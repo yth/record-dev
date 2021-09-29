@@ -220,4 +220,24 @@ test_that("add attributed cmp", {
 	close_db()
 })
 
+## List Section
+
+test_that("add list", {
+	open_db("test_db/2_add_val/lst_1", T)
+	expect_equal(add_val(as.list(c(2+2i, 3+3i, 3.14 + 2.72i))),
+				as.list(c(2+2i, 3+3i, 3.14 + 2.72i)))
+	close_db()
+})
+
+test_that("add attributed list", {
+	open_db("test_db/2_add_val/add-attributed-lst", create = TRUE)
+
+	x <- as.list(c(1,2,3,4,5))
+	attr(x, "name") <- "attributed 0"
+
+	expect_equal(add_val(x), x)
+	expect_equal(size_db(), 1)
+	close_db()
+})
+
 }

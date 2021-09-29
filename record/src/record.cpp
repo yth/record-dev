@@ -25,6 +25,8 @@
 
 #include "cmp_store.h"
 
+#include "lst_store.h"
+
 // Reusable buffer for everything
 byte_vector_t vector = NULL;
 
@@ -103,6 +105,8 @@ SEXP add_val(SEXP val) {
 		return add_log(val);
 	} else if (is_cmp(val)) {
 		return add_cmp(val);
+	} else if (is_lst(val)) {
+		return add_lst(val);
 	} else {
 		return add_generic(val);
 	}
@@ -132,6 +136,8 @@ SEXP have_seen(SEXP val) {
 		res_ptr[0] = have_seen_log(val);
 	} else if (is_cmp(val)) {
 		res_ptr[0] = have_seen_cmp(val);
+	} else if (is_lst(val)) {
+		res_ptr[0] = have_seen_lst(val);
 	} else {
 		res_ptr[0] = have_seen_generic(val);
 	}
@@ -185,6 +191,12 @@ SEXP sample_val() {
 		random_index -= c_size;
 	}
 
+	if (random_index < l_size) {
+		return get_lst(random_index);
+	} else {
+		random_index -= l_size;
+	}
+
 
 	return get_generic(random_index);
 }
@@ -234,6 +246,12 @@ SEXP get_val(SEXP i) {
 		return get_cmp(index);
 	} else {
 		index -= c_size;
+	}
+
+	if (index < l_size) {
+		return get_cmp(index);
+	} else {
+		index -= l_size;
 	}
 
 	return get_generic(index);

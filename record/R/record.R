@@ -60,6 +60,10 @@ open_db <- function(db = "db", create = FALSE) {
 			.Call(RCRD_load_cmp_index, paste0(db, "/cmp_index.bin"))
 			.Call(RCRD_load_cmp_store, paste0(db, "/cmps.bin"))
 
+			# Load Lst store
+			.Call(RCRD_load_lst_index, paste0(db, "/lst_index.bin"))
+			.Call(RCRD_load_lst_store, paste0(db, "/lsts.bin"))
+
 			# Load generic store
 			.Call(RCRD_load_generic_index, paste0(db, "/generic_index.bin"))
 			.Call(RCRD_load_generic_store, paste0(db, "/generics.bin"))
@@ -105,6 +109,10 @@ open_db <- function(db = "db", create = FALSE) {
 			cmps = paste0(db, "/cmps.bin")
 			cmp_index = paste0(db, "/cmp_index.bin")
 
+			# Create Lst Store
+			lsts = paste0(db, "/lsts.bin")
+			lst_index = paste0(db, "/lst_index.bin")
+
 			# Create the generic store files
 			generics = paste0(db, "/generics.bin")
 			generic_index = paste0(db, "/generic_index.bin")
@@ -127,6 +135,8 @@ open_db <- function(db = "db", create = FALSE) {
 						log_index,
 						cmps,
 						cmp_index,
+						lsts,
+						lst_index,
 						generics,
 						generic_index,
 						stats,
@@ -166,6 +176,10 @@ open_db <- function(db = "db", create = FALSE) {
 			# Initialize cmp store
 			.Call(RCRD_init_cmp_index, cmp_index)
 			.Call(RCRD_init_cmp_store, cmps)
+
+			# Initialize lst store
+			.Call(RCRD_init_lst_index, lst_index)
+			.Call(RCRD_init_lst_store, lsts)
 
 			# Initialize generic store
 			.Call(RCRD_init_generic_index, generic_index)
@@ -213,6 +227,10 @@ close_db <- function() {
 	# Close Cmp store
 	.Call(RCRD_close_cmp_index)
 	.Call(RCRD_close_cmp_store)
+
+	# Close Lst store
+	.Call(RCRD_close_lst_index)
+	.Call(RCRD_close_lst_store)
 
 	# This must be called second to last
 	.Call(RCRD_close_stats_store)
@@ -263,6 +281,10 @@ merge_db <- function(other_db = "db") {
 		cmps = paste0(other_db, "/cmps.bin")
 		cmp_index = paste0(other_db, "/cmp_index.bin")
 
+		# Create Lst Store Names
+		lsts = paste0(other_db, "/lsts.bin")
+		lst_index = paste0(other_db, "/lst_index.bin")
+
 		# Merge Specialty Stores
 		generics = paste0(other_db, "/generics.bin")
 		generic_index = paste0(other_db, "/generic_index.bin")
@@ -290,6 +312,9 @@ merge_db <- function(other_db = "db") {
 		# Merge Cmps
 		.Call(RCRD_merge_cmp_store, cmps, cmp_index)
 
+		# Merge Lsts
+		.Call(RCRD_merge_lst_store, lsts, lst_index)
+
 		# Merge Rest
 		.Call(RCRD_merge_generic_store, generics, generic_index)
 		.Call(RCRD_merge_stats_store)
@@ -314,6 +339,8 @@ sample_val <- function(type = "any") {
 		.Call(RCRD_sample_log)
 	} else if (type == "complex") {
 		.Call(RCRD_sample_cmp)
+	} else if (type == "list") {
+		.Call(RCRD_sample_lst)
 	} else if (type == "generic") {
 		.Call(RCRD_sample_generic)
 	} else {

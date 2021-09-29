@@ -412,6 +412,40 @@ test_that("merge cmps reverse", {
 	close_db()
 })
 
+## List Section
+
+test_that("merge empty lsts", {
+	open_db("test_db/9_merge_db/lsts1", create = T)
+	close_db()
+
+	open_db("test_db/9_merge_db/lsts2", create = T)
+	add_val(list(1,2,3))
+	expect_true(size_db() == 1)
+	merge_db("test_db/9_merge_db/lsts1")
+	expect_true(size_db() == 1)
+	close_db()
+})
+
+test_that("merge lsts", {
+	open_db("test_db/9_merge_db/lsts1")
+	add_val(list(2,4,6))
+	expect_true(size_db() == 1)
+	close_db()
+
+	open_db("test_db/9_merge_db/lsts2")
+	merge_db("test_db/9_merge_db/lsts1")
+	expect_true(size_db() == 2)
+	close_db()
+})
+
+test_that("merge lsts reverse", {
+	open_db("test_db/9_merge_db/lsts1")
+	expect_true(size_db() == 1)
+	merge_db("test_db/9_merge_db/lsts2")
+	expect_true(size_db() == 2)
+	close_db()
+})
+
 ## Generics Section
 
 test_that("merge empty generics", {
