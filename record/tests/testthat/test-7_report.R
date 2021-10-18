@@ -16,6 +16,7 @@ test_that("print some report", {
 	add_val(T)
 	add_val(1+1i)
 	add_val(as.list(c(1,2,3)))
+	add_val(as.environment(1))
 	add_val(function() (1 + 1))
 	print("Call report() after opening a new database and after doing work")
 	expect_silent(report())

@@ -423,6 +423,7 @@ test_that("merge empty lsts", {
 	expect_true(size_db() == 1)
 	merge_db("test_db/9_merge_db/lsts1")
 	expect_true(size_db() == 1)
+
 	close_db()
 })
 
@@ -442,6 +443,76 @@ test_that("merge lsts reverse", {
 	open_db("test_db/9_merge_db/lsts1")
 	expect_true(size_db() == 1)
 	merge_db("test_db/9_merge_db/lsts2")
+	expect_true(size_db() == 2)
+	close_db()
+})
+
+## Environment Section
+
+test_that("merge empty envs", {
+	open_db("test_db/9_merge_db/envs1", create = T)
+	close_db()
+
+	open_db("test_db/9_merge_db/envs2", create = T)
+	add_val(as.environment(-1))
+	expect_true(size_db() == 1)
+	merge_db("test_db/9_merge_db/envs1")
+	expect_true(size_db() == 1)
+
+	close_db()
+})
+
+test_that("merge envs", {
+	open_db("test_db/9_merge_db/envs1")
+	add_val(as.environment(1))
+	expect_true(size_db() == 1)
+	close_db()
+
+	open_db("test_db/9_merge_db/envs2")
+	merge_db("test_db/9_merge_db/envs1")
+	expect_true(size_db() == 2)
+	close_db()
+})
+
+test_that("merge envs reverse", {
+	open_db("test_db/9_merge_db/envs1")
+	expect_true(size_db() == 1)
+	merge_db("test_db/9_merge_db/envs2")
+	expect_true(size_db() == 2)
+	close_db()
+})
+
+## Function Section
+
+test_that("merge empty funs", {
+	open_db("test_db/9_merge_db/funs1", create = T)
+	close_db()
+
+	open_db("test_db/9_merge_db/funs2", create = T)
+	add_val(function(x) {1})
+	expect_true(size_db() == 1)
+	merge_db("test_db/9_merge_db/funs1")
+	expect_true(size_db() == 1)
+
+	close_db()
+})
+
+test_that("merge funs", {
+	open_db("test_db/9_merge_db/funs1")
+	add_val(function(x) {2})
+	expect_true(size_db() == 1)
+	close_db()
+
+	open_db("test_db/9_merge_db/funs2")
+	merge_db("test_db/9_merge_db/funs1")
+	expect_true(size_db() == 2)
+	close_db()
+})
+
+test_that("merge funs reverse", {
+	open_db("test_db/9_merge_db/funs1")
+	expect_true(size_db() == 1)
+	merge_db("test_db/9_merge_db/funs2")
 	expect_true(size_db() == 2)
 	close_db()
 })
@@ -482,6 +553,3 @@ test_that("merge generics reverse", {
 
 }
 
-if (F) {
-
-}

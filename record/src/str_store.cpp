@@ -135,20 +135,33 @@ SEXP merge_str_store(SEXP other_strs, SEXP other_index) {
 		read_n(other_str_index_file, other_sha1sum, 20);
 		read_n(other_str_index_file, &other_offset, sizeof(size_t));
 
-		size_t new_str_size = 0;
-		fseek(other_strs_file, other_offset, SEEK_SET);
-		read_n(other_strs_file, &new_str_size, sizeof(size_t));
+		std::string key((char *) other_sha1sum, 20);
+		std::map<std::string, size_t>::iterator it = str_index->find(key);
+		if (it == str_index->end()) { // TODO: Deal with collision
+			(*str_index)[key] = s_offset;
+			s_size++;
+			size++;
 
-		free_content(vector);
-		read_n(other_strs_file, vector->buf, new_str_size);
-		vector->capacity = new_str_size;
+			size_t new_str_size = 0;
+			fseek(other_strs_file, other_offset, SEEK_SET);
+			read_n(other_strs_file, &new_str_size, sizeof(size_t));
 
-		// TODO: Think about how to minimizing serializing and unserialize.
-		//       They are used in unserialize_val and add_str.
-		SEXP val = unserialize_val(vector);
-		vector->capacity = 1 << 30;
+			free_content(vector);
+			read_n(other_strs_file, vector->buf, new_str_size);
+			vector->capacity = new_str_size;
 
-		add_str(val);
+			// Write the blob
+			write_n(strs_file, &(vector->size), sizeof(size_t));
+			write_n(strs_file, vector->buf, vector->size);
+
+			// Acting as NULL for linked-list next postrer
+			write_n(strs_file, &(vector->size), sizeof(size_t));
+
+			// Modify s_offset here
+			s_offset += vector->size + sizeof(size_t) + sizeof(size_t);
+
+			vector->capacity = 1 << 30;
+		}
 	}
 
 	fseek(other_strs_file, -1, SEEK_END);
@@ -294,5 +307,5 @@ SEXP sample_str() {
 		}
 	}
 
-	Rf_error("No doubles in this database.");
+	Rf_error("No strings in this database.");
 }

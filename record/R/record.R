@@ -1,7 +1,7 @@
 ## VERSION = major.minor.patch
 ## Until major version is greater than 0, any changes in minor version number
 ## signifies version breaking change.
-VERSION = "0.4.0"
+VERSION = "0.5.0"
 
 ## Primary Functionality
 
@@ -64,6 +64,14 @@ open_db <- function(db = "db", create = FALSE) {
 			.Call(RCRD_load_lst_index, paste0(db, "/lst_index.bin"))
 			.Call(RCRD_load_lst_store, paste0(db, "/lsts.bin"))
 
+			# Load Env store
+			.Call(RCRD_load_env_index, paste0(db, "/env_index.bin"))
+			.Call(RCRD_load_env_store, paste0(db, "/envs.bin"))
+
+			# Load Env store
+			.Call(RCRD_load_fun_index, paste0(db, "/fun_index.bin"))
+			.Call(RCRD_load_fun_store, paste0(db, "/funs.bin"))
+
 			# Load generic store
 			.Call(RCRD_load_generic_index, paste0(db, "/generic_index.bin"))
 			.Call(RCRD_load_generic_store, paste0(db, "/generics.bin"))
@@ -113,6 +121,14 @@ open_db <- function(db = "db", create = FALSE) {
 			lsts = paste0(db, "/lsts.bin")
 			lst_index = paste0(db, "/lst_index.bin")
 
+			# Create Env Store
+			envs = paste0(db, "/envs.bin")
+			env_index = paste0(db, "/env_index.bin")
+
+			# Create Fun Store
+			funs = paste0(db, "/funs.bin")
+			fun_index = paste0(db, "/fun_index.bin")
+
 			# Create the generic store files
 			generics = paste0(db, "/generics.bin")
 			generic_index = paste0(db, "/generic_index.bin")
@@ -137,6 +153,10 @@ open_db <- function(db = "db", create = FALSE) {
 						cmp_index,
 						lsts,
 						lst_index,
+						envs,
+						env_index,
+						funs,
+						fun_index,
 						generics,
 						generic_index,
 						stats,
@@ -180,6 +200,14 @@ open_db <- function(db = "db", create = FALSE) {
 			# Initialize lst store
 			.Call(RCRD_init_lst_index, lst_index)
 			.Call(RCRD_init_lst_store, lsts)
+
+			# Initialize env store
+			.Call(RCRD_init_env_index, env_index)
+			.Call(RCRD_init_env_store, envs)
+
+			# Initialize fun store
+			.Call(RCRD_init_fun_index, fun_index)
+			.Call(RCRD_init_fun_store, funs)
 
 			# Initialize generic store
 			.Call(RCRD_init_generic_index, generic_index)
@@ -232,6 +260,14 @@ close_db <- function() {
 	.Call(RCRD_close_lst_index)
 	.Call(RCRD_close_lst_store)
 
+	# Close Env store
+	.Call(RCRD_close_env_index)
+	.Call(RCRD_close_env_store)
+
+	# Close Fun store
+	.Call(RCRD_close_fun_index)
+	.Call(RCRD_close_fun_store)
+
 	# This must be called second to last
 	.Call(RCRD_close_stats_store)
 
@@ -242,6 +278,37 @@ close_db <- function() {
 #' @export
 add_val <- function(val) {
 	.Call(RCRD_add_val, val)
+}
+
+#' @export
+sample_val <- function(type = "any") {
+	if (type == "any") {
+		.Call(RCRD_sample_val)
+	} else if (type == "null") {
+		.Call(RCRD_sample_null)
+	} else if (type == "integer") {
+		.Call(RCRD_sample_int)
+	} else if (type == "double") {
+		.Call(RCRD_sample_dbl)
+	} else if (type == "raw") {
+		.Call(RCRD_sample_raw)
+	} else if (type == "string") {
+		.Call(RCRD_sample_str)
+	} else if (type == "logical") {
+		.Call(RCRD_sample_log)
+	} else if (type == "complex") {
+		.Call(RCRD_sample_cmp)
+	} else if (type == "list") {
+		.Call(RCRD_sample_lst)
+	} else if (type == "environment") {
+		.Call(RCRD_sample_env)
+	} else if (type == "function") {
+		.Call(RCRD_sample_fun)
+	} else if (type == "generic") {
+		.Call(RCRD_sample_generic)
+	} else {
+		stop("Trying to sample unknown type")
+	}
 }
 
 #' @export
@@ -285,10 +352,20 @@ merge_db <- function(other_db = "db") {
 		lsts = paste0(other_db, "/lsts.bin")
 		lst_index = paste0(other_db, "/lst_index.bin")
 
-		# Merge Specialty Stores
+		# Create Env Store Names
+		envs = paste0(other_db, "/envs.bin")
+		env_index = paste0(other_db, "/env_index.bin")
+
+		# Create Fun Store Names
+		funs = paste0(other_db, "/funs.bin")
+		fun_index = paste0(other_db, "/fun_index.bin")
+
+		# Create Generic Store Names
 		generics = paste0(other_db, "/generics.bin")
 		generic_index = paste0(other_db, "/generic_index.bin")
-		# stats = paste0(other_db, "/stats.bin") # No needed right now
+
+		# Create Stats Store Names
+		stats = paste0(other_db, "/stats.bin")
 
 		# Merge Ints
 		.Call(RCRD_merge_int_store, ints, int_index)
@@ -315,36 +392,15 @@ merge_db <- function(other_db = "db") {
 		# Merge Lsts
 		.Call(RCRD_merge_lst_store, lsts, lst_index)
 
+		# Merge Envs
+		.Call(RCRD_merge_env_store, envs, env_index)
+
+		# Merge Envs
+		.Call(RCRD_merge_fun_store, funs, fun_index)
+
 		# Merge Rest
 		.Call(RCRD_merge_generic_store, generics, generic_index)
-		.Call(RCRD_merge_stats_store)
-	}
-}
-
-#' @export
-sample_val <- function(type = "any") {
-	if (type == "any") {
-		.Call(RCRD_sample_val)
-	# } else if (type == "null") {
-	# 	.Call(RCRD_sample_null)
-	} else if (type == "integer") {
-		.Call(RCRD_sample_int)
-	} else if (type == "double") {
-		.Call(RCRD_sample_dbl)
-	} else if (type == "raw") {
-		.Call(RCRD_sample_raw)
-	} else if (type == "string") {
-		.Call(RCRD_sample_str)
-	} else if (type == "logical") {
-		.Call(RCRD_sample_log)
-	} else if (type == "complex") {
-		.Call(RCRD_sample_cmp)
-	} else if (type == "list") {
-		.Call(RCRD_sample_lst)
-	} else if (type == "generic") {
-		.Call(RCRD_sample_generic)
-	} else {
-		stop("Trying to sample unknown type")
+		.Call(RCRD_merge_stats_store, stats)
 	}
 }
 

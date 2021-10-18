@@ -135,20 +135,33 @@ SEXP merge_raw_store(SEXP other_raws, SEXP other_index) {
 		read_n(other_raw_index_file, other_sha1sum, 20);
 		read_n(other_raw_index_file, &other_offset, sizeof(size_t));
 
-		size_t new_raw_size = 0;
-		fseek(other_raws_file, other_offset, SEEK_SET);
-		read_n(other_raws_file, &new_raw_size, sizeof(size_t));
+		std::string key((char *) other_sha1sum, 20);
+		std::map<std::string, size_t>::iterator it = raw_index->find(key);
+		if (it == raw_index->end()) { // TODO: Deal with collision
+			(*raw_index)[key] = r_offset;
+			r_size++;
+			size++;
 
-		free_content(vector);
-		read_n(other_raws_file, vector->buf, new_raw_size);
-		vector->capacity = new_raw_size;
+			size_t new_raw_size = 0;
+			fseek(other_raws_file, other_offset, SEEK_SET);
+			read_n(other_raws_file, &new_raw_size, sizeof(size_t));
 
-		// TODO: Think about how to minimizing serializing and unserialize.
-		//       They are used in unserialize_val and add_raw.
-		SEXP val = unserialize_val(vector);
-		vector->capacity = 1 << 30;
+			free_content(vector);
+			read_n(other_raws_file, vector->buf, new_raw_size);
+			vector->capacity = new_raw_size;
 
-		add_raw(val);
+			// Write the blob
+			write_n(raws_file, &(vector->size), sizeof(size_t));
+			write_n(raws_file, vector->buf, vector->size);
+
+			// Acting as NULL for linked-list next porawer
+			write_n(raws_file, &(vector->size), sizeof(size_t));
+
+			// Modify r_offset here
+			r_offset += vector->size + sizeof(size_t) + sizeof(size_t);
+
+			vector->capacity = 1 << 30;
+		}
 	}
 
 	fseek(other_raws_file, -1, SEEK_END);
@@ -294,5 +307,5 @@ SEXP sample_raw() {
 		}
 	}
 
-	Rf_error("No raweger in this database.");
+	Rf_error("No raws in this database.");
 }

@@ -132,20 +132,33 @@ SEXP merge_lst_store(SEXP other_lsts, SEXP other_index) {
 		read_n(other_lst_index_file, other_sha1sum, 20);
 		read_n(other_lst_index_file, &other_offset, sizeof(size_t));
 
-		size_t new_lst_size = 0;
-		fseek(other_lsts_file, other_offset, SEEK_SET);
-		read_n(other_lsts_file, &new_lst_size, sizeof(size_t));
+		std::string key((char *) other_sha1sum, 20);
+		std::map<std::string, size_t>::iterator it = lst_index->find(key);
+		if (it == lst_index->end()) { // TODO: Deal with collision
+			(*lst_index)[key] = l_offset;
+			l_size++;
+			size++;
 
-		free_content(vector);
-		read_n(other_lsts_file, vector->buf, new_lst_size);
-		vector->capacity = new_lst_size;
+			size_t new_lst_size = 0;
+			fseek(other_lsts_file, other_offset, SEEK_SET);
+			read_n(other_lsts_file, &new_lst_size, sizeof(size_t));
 
-		// TODO: Think about how to minimizing serializing and unserialize.
-		//       They are used in unserialize_val and add_lst.
-		SEXP val = unserialize_val(vector);
-		vector->capacity = 1 << 30;
+			free_content(vector);
+			read_n(other_lsts_file, vector->buf, new_lst_size);
+			vector->capacity = new_lst_size;
 
-		add_lst(val);
+			// Write the blob
+			write_n(lsts_file, &(vector->size), sizeof(size_t));
+			write_n(lsts_file, vector->buf, vector->size);
+
+			// Acting as NULL for linked-list next polster
+			write_n(lsts_file, &(vector->size), sizeof(size_t));
+
+			// Modify l_offset here
+			l_offset += vector->size + sizeof(size_t) + sizeof(size_t);
+
+			vector->capacity = 1 << 30;
+		}
 	}
 
 	fseek(other_lsts_file, -1, SEEK_END);
@@ -272,5 +285,5 @@ SEXP sample_lst() {
 		return get_lst(random_index);
 	}
 
-	Rf_error("No doubles in this database.");
+	Rf_error("No list values in this database.");
 }

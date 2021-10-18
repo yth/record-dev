@@ -144,28 +144,55 @@ test_that("sample cmp database with some cmp values", {
 	close_db()
 })
 
-## Generic Section
+## List Section
 
-test_that("sample log database with no values", {
-	open_db("test_db/b_sample_val/generic_sampling", create = T)
-	expect_error(sample_val("generic"))
+test_that("sample lst database with no values", {
+	open_db("test_db/b_sample_val/simple_lst_sampling", create = T)
+	expect_error(sample_val("list"))
 	close_db()
 })
 
-test_that("sample log database with some log values", {
-	open_db("test_db/b_sample_val/generic_sampling")
-	add_val(function() (1 + 1))
-	expect_silent(sample_val("generic"))
-	f = sample_val("generic")
-	expect_equal(f(), 2)
+test_that("sample lst database with some lst values", {
+	open_db("test_db/b_sample_val/simple_lst_sampling")
+	add_val(list(1,2,3))
+	expect_silent(sample_val("list"))
+	expect_equal(sample_val("list"), list(1,2,3))
 	close_db()
 })
 
-}
+## Environment Section
 
-if (F) {
+test_that("sample env database with no values", {
+	open_db("test_db/b_sample_val/simple_env_sampling", create = T)
+	expect_error(sample_val("environment"))
+	close_db()
+})
 
-## Other Section
+test_that("sample env database with some env values", {
+	open_db("test_db/b_sample_val/simple_env_sampling")
+	add_val(as.environment(1))
+	expect_silent(sample_val("environment"))
+	expect_equal(sample_val("environment"), as.environment(1))
+	close_db()
+})
+
+## Function Section
+
+test_that("sample fun database with no values", {
+	open_db("test_db/b_sample_val/simple_fun_sampling", create = T)
+	expect_error(sample_val("function"))
+	close_db()
+})
+
+test_that("sample fun database with some fun values", {
+	open_db("test_db/b_sample_val/simple_fun_sampling")
+	add_val(function(x) {1})
+	expect_silent(sample_val("function"))
+	expect_equal(sample_val("function"), function(x) {1})
+	close_db()
+})
+
+## Null Section
 
 test_that("sample null empty database", {
 	open_db("test_db/b_sample_val/null_sampling", create = T)
@@ -181,5 +208,22 @@ test_that("sample null database with null", {
 	close_db()
 })
 
-}
+## Generic Section
 
+test_that("sample log database with no values", {
+	open_db("test_db/b_sample_val/generic_sampling", create = T)
+	expect_error(sample_val("generic"))
+	close_db()
+})
+
+test_that("sample log database with some log values", {
+	open_db("test_db/b_sample_val/generic_sampling")
+	f <- function(x) (x + 1)
+	add_val(formals(f))
+	expect_silent(sample_val("generic"))
+	args = sample_val("generic")
+	expect_equal(formals(f), args)
+	close_db()
+})
+
+}

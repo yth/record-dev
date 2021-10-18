@@ -34,6 +34,15 @@ size_t c_offset = 0; // number of bytes in complexes store
 size_t l_size = 0; // number of unique list encountered
 size_t l_offset = 0; // number of bytes in list store
 
+size_t e_size = 0; // number of unique environments encountered
+size_t e_offset = 0; // number of bytes in environments store
+
+size_t u_size = 0; // number of unique closure encountered
+size_t u_offset = 0; // number of bytes in closure store
+
+size_t n_size = 0; // number of unique nulls encountered
+size_t n_count = 0; // number of nulls encountered
+
 size_t g_size = 0; // number of unique generic values encountered
 size_t g_offset = 0; // number of bytes in generic store
 
@@ -91,6 +100,15 @@ SEXP init_stats_store(SEXP stats) {
 	l_size = 0;
 	l_offset = 0;
 
+	e_size = 0;
+	e_offset = 0;
+
+	u_size = 0;
+	u_offset = 0;
+
+	n_size = 0;
+	n_count = 0;
+
 	g_size = 0;
 	g_offset = 0;
 
@@ -116,7 +134,7 @@ SEXP load_stats_store(SEXP stats) {
 
 	// Database Information
 	read_n(stats_file, &size, sizeof(size_t));
-	read_n(stats_file, &count, sizeof(int));
+	read_n(stats_file, &count, sizeof(size_t));
 
 	read_n(stats_file, &i_size, sizeof(size_t));
 	read_n(stats_file, &i_offset, sizeof(size_t));
@@ -144,6 +162,15 @@ SEXP load_stats_store(SEXP stats) {
 	read_n(stats_file, &l_size, sizeof(size_t));
 	read_n(stats_file, &l_offset, sizeof(size_t));
 
+	read_n(stats_file, &e_size, sizeof(size_t));
+	read_n(stats_file, &e_offset, sizeof(size_t));
+
+	read_n(stats_file, &u_size, sizeof(size_t));
+	read_n(stats_file, &u_offset, sizeof(size_t));
+
+	read_n(stats_file, &n_size, sizeof(size_t));
+	read_n(stats_file, &n_count, sizeof(size_t));
+
 	read_n(stats_file, &g_size, sizeof(size_t));
 	read_n(stats_file, &g_offset, sizeof(size_t));
 
@@ -166,7 +193,16 @@ SEXP load_stats_store(SEXP stats) {
  * @method merge_stats_store
  * @return R_NilValue on success
  */
-SEXP merge_stats_store() {
+SEXP merge_stats_store(SEXP other_stats) {
+	FILE *other_stats_file = open_file(other_stats);
+
+	size_t statistics [34];
+
+	read_n(other_stats_file, statistics, 34 * sizeof(size_t));
+
+	n_size = n_size > statistics[25] ? n_size : statistics[25];
+	n_count += statistics[26];
+
 	m_count += 1;
 
 	return R_NilValue;
@@ -185,7 +221,7 @@ SEXP close_stats_store() {
 		write_n(stats_file, &size, sizeof(size_t));
 		size = 0;
 
-		write_n(stats_file, &count, sizeof(int));
+		write_n(stats_file, &count, sizeof(size_t));
 		count = 0;
 
 		write_n(stats_file, &i_size, sizeof(size_t));
@@ -245,6 +281,24 @@ SEXP close_stats_store() {
 		write_n(stats_file, &l_offset, sizeof(size_t));
 		l_offset = 0;
 
+		write_n(stats_file, &e_size, sizeof(size_t));
+		e_size = 0;
+
+		write_n(stats_file, &e_offset, sizeof(size_t));
+		e_offset = 0;
+
+		write_n(stats_file, &u_size, sizeof(size_t));
+		u_size = 0;
+
+		write_n(stats_file, &u_offset, sizeof(size_t));
+		u_offset = 0;
+
+		write_n(stats_file, &n_size, sizeof(size_t));
+		n_size = 0;
+
+		write_n(stats_file, &n_count, sizeof(size_t));
+		n_count = 0;
+
 		write_n(stats_file, &g_size, sizeof(size_t));
 		g_size = 0;
 
@@ -281,6 +335,19 @@ SEXP close_stats_store() {
 	}
 
 	return R_NilValue;
+}
+
+/**
+ * This function samples from the "null store" in the database
+ * @method sample_null
+ * @return R value in form of SEXP or throws an error if no generic in database
+ */
+SEXP sample_null() {
+	if (n_size) {
+		return R_NilValue;
+	}
+
+	Rf_error("No generic values in this database.");
 }
 
 /**
@@ -324,7 +391,9 @@ SEXP print_report() {
 	fprintf(stderr, "    Elements in logical store: %lu\n", o_size);
 	fprintf(stderr, "    Elements in complex store: %lu\n", c_size);
 	fprintf(stderr, "    Elements in list store: %lu\n", l_size);
-
+	fprintf(stderr, "    Elements in environment store: %lu\n", e_size);
+	fprintf(stderr, "    Elements in closure store: %lu\n", u_size);
+	fprintf(stderr, "    Elements in null store: %lu\n", n_size);
 	fprintf(stderr, "  Database Generic Store Statistics\n");
 	fprintf(stderr, "    Elements in generic store: %lu\n", g_size);
 	fprintf(stderr, "    Bytes in the generic database: %lu\n", g_offset);

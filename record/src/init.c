@@ -28,6 +28,10 @@
 
 #include "lst_store.h"
 
+#include "env_store.h"
+
+#include "fun_store.h"
+
 #include "record.h"
 
 static const R_CallMethodDef callMethods[] = {
@@ -46,7 +50,9 @@ static const R_CallMethodDef callMethods[] = {
 	// stats store related
 	{"init_stats_store",		(DL_FUNC) &init_stats_store,		1},
 	{"load_stats_store",		(DL_FUNC) &load_stats_store,		1},
-	{"merge_stats_store",		(DL_FUNC) &merge_stats_store,		0},		{"close_stats_store",		(DL_FUNC) &close_stats_store,		0},
+	{"merge_stats_store",		(DL_FUNC) &merge_stats_store,		1},
+	{"close_stats_store",		(DL_FUNC) &close_stats_store,		0},
+	{"sample_null",				(DL_FUNC) &sample_null,				0},
 	{"print_report",			(DL_FUNC) &print_report,			0},
 	{"size_db",					(DL_FUNC) &size_db,					0},
 	{"size_ints",				(DL_FUNC) &size_ints,				0},
@@ -145,6 +151,26 @@ static const R_CallMethodDef callMethods[] = {
 	{"close_lst_index",			(DL_FUNC) &close_lst_index,			0},
 	{"close_lst_store",			(DL_FUNC) &close_lst_store,			0},
 	{"sample_lst",				(DL_FUNC) &sample_lst,				0},
+
+	// environment R value store related
+	{"init_env_index",			(DL_FUNC) &init_env_index,			1},
+	{"init_env_store",			(DL_FUNC) &init_env_store,			1},
+	{"load_env_index",			(DL_FUNC) &load_env_index,			1},
+	{"load_env_store",			(DL_FUNC) &load_env_store,			1},
+	{"merge_env_store",			(DL_FUNC) &merge_env_store,			2},
+	{"close_env_index",			(DL_FUNC) &close_env_index,			0},
+	{"close_env_store",			(DL_FUNC) &close_env_store,			0},
+	{"sample_env",				(DL_FUNC) &sample_env,				0},
+
+	// function R value store related
+	{"init_fun_index",			(DL_FUNC) &init_fun_index,			1},
+	{"init_fun_store",			(DL_FUNC) &init_fun_store,			1},
+	{"load_fun_index",			(DL_FUNC) &load_fun_index,			1},
+	{"load_fun_store",			(DL_FUNC) &load_fun_store,			1},
+	{"merge_fun_store",			(DL_FUNC) &merge_fun_store,			2},
+	{"close_fun_index",			(DL_FUNC) &close_fun_index,			0},
+	{"close_fun_store",			(DL_FUNC) &close_fun_store,			0},
+	{"sample_fun",				(DL_FUNC) &sample_fun,				0},
 
 	// generic R value store related
 	{"init_generic_index",		(DL_FUNC) &init_generic_index,		1},

@@ -132,20 +132,33 @@ SEXP merge_log_store(SEXP other_logs, SEXP other_index) {
 		read_n(other_log_index_file, other_sha1sum, 20);
 		read_n(other_log_index_file, &other_offset, sizeof(size_t));
 
-		size_t new_loo_size = 0;
-		fseek(other_logs_file, other_offset, SEEK_SET);
-		read_n(other_logs_file, &new_loo_size, sizeof(size_t));
+		std::string key((char *) other_sha1sum, 20);
+		std::map<std::string, size_t>::iterator it = log_index->find(key);
+		if (it == log_index->end()) { // TODO: Deal with collision
+			(*log_index)[key] = o_offset;
+			o_size++;
+			size++;
 
-		free_content(vector);
-		read_n(other_logs_file, vector->buf, new_loo_size);
-		vector->capacity = new_loo_size;
+			size_t new_log_size = 0;
+			fseek(other_logs_file, other_offset, SEEK_SET);
+			read_n(other_logs_file, &new_log_size, sizeof(size_t));
 
-		// TODO: Think about how to minimizing serializing and unserialize.
-		//       They are used in unserialize_val and add_log.
-		SEXP val = unserialize_val(vector);
-		vector->capacity = 1 << 30;
+			free_content(vector);
+			read_n(other_logs_file, vector->buf, new_log_size);
+			vector->capacity = new_log_size;
 
-		add_log(val);
+			// Write the blob
+			write_n(logs_file, &(vector->size), sizeof(size_t));
+			write_n(logs_file, vector->buf, vector->size);
+
+			// Acting as NULL for linked-list next pologer
+			write_n(logs_file, &(vector->size), sizeof(size_t));
+
+			// Modify o_offset here
+			o_offset += vector->size + sizeof(size_t) + sizeof(size_t);
+
+			vector->capacity = 1 << 30;
+		}
 	}
 
 	fseek(other_logs_file, -1, SEEK_END);
@@ -271,5 +284,5 @@ SEXP sample_log() {
 		return get_log(random_index);
 	}
 
-	Rf_error("No doubles in this database.");
+	Rf_error("No logicals in this database.");
 }

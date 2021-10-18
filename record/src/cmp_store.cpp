@@ -132,20 +132,33 @@ SEXP merge_cmp_store(SEXP other_cmps, SEXP other_index) {
 		read_n(other_cmp_index_file, other_sha1sum, 20);
 		read_n(other_cmp_index_file, &other_offset, sizeof(size_t));
 
-		size_t new_loc_size = 0;
-		fseek(other_cmps_file, other_offset, SEEK_SET);
-		read_n(other_cmps_file, &new_loc_size, sizeof(size_t));
+		std::string key((char *) other_sha1sum, 20);
+		std::map<std::string, size_t>::iterator it = cmp_index->find(key);
+		if (it == cmp_index->end()) { // TODO: Deal with collision
+			(*cmp_index)[key] = c_offset;
+			c_size++;
+			size++;
 
-		free_content(vector);
-		read_n(other_cmps_file, vector->buf, new_loc_size);
-		vector->capacity = new_loc_size;
+			size_t new_cmp_size = 0;
+			fseek(other_cmps_file, other_offset, SEEK_SET);
+			read_n(other_cmps_file, &new_cmp_size, sizeof(size_t));
 
-		// TODO: Think about how to minimizing serializing and unserialize.
-		//       They are used in unserialize_val and add_cmp.
-		SEXP val = unserialize_val(vector);
-		vector->capacity = 1 << 30;
+			free_content(vector);
+			read_n(other_cmps_file, vector->buf, new_cmp_size);
+			vector->capacity = new_cmp_size;
 
-		add_cmp(val);
+			// Write the blob
+			write_n(cmps_file, &(vector->size), sizeof(size_t));
+			write_n(cmps_file, vector->buf, vector->size);
+
+			// Acting as NULL for linked-list next pointer
+			write_n(cmps_file, &(vector->size), sizeof(size_t));
+
+			// Modify c_offset here
+			c_offset += vector->size + sizeof(size_t) + sizeof(size_t);
+
+			vector->capacity = 1 << 30;
+		}
 	}
 
 	fseek(other_cmps_file, -1, SEEK_END);
@@ -271,5 +284,5 @@ SEXP sample_cmp() {
 		return get_cmp(random_index);
 	}
 
-	Rf_error("No doubles in this database.");
+	Rf_error("No complex values in this database.");
 }

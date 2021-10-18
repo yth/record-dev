@@ -240,4 +240,46 @@ test_that("add attributed list", {
 	close_db()
 })
 
+## Environment Section
+
+test_that("add environment", {
+	open_db("test_db/2_add_val/env_1", T)
+	expect_equal(add_val(as.environment(1)),
+				as.environment(1))
+	close_db()
+})
+
+test_that("add attributed environment", {
+	open_db("test_db/2_add_val/add-attributed-env", create = TRUE)
+
+	x <- as.environment(1)
+	attr(x, "name") <- "attributed 0"
+
+	expect_equal(add_val(x), x)
+	expect_equal(size_db(), 1)
+
+	close_db()
+})
+
+## Function Section
+
+test_that("add function", {
+	open_db("test_db/2_add_val/fun_1", T)
+	f = function(x) {x + 1}
+	expect_equal(add_val(f), f)
+	close_db()
+})
+
+test_that("add attributed function", {
+	open_db("test_db/2_add_val/add-attributed-fun", create = TRUE)
+
+	x <- function(x) {x + 1}
+	attr(x, "name") <- "attributed 0"
+
+	expect_equal(add_val(x), x)
+	expect_equal(size_db(), 1)
+
+	close_db()
+})
+
 }

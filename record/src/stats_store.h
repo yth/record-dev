@@ -27,7 +27,7 @@ SEXP load_stats_store(SEXP stats);
  * @method merge_stats_store
  * @return R_NilValue on success
  */
-SEXP merge_stats_store();
+SEXP merge_stats_store(SEXP other_stats);
 
 /**
  * This functions writes database statistics to file and closes the file.
@@ -35,6 +35,13 @@ SEXP merge_stats_store();
  * @return R_NilValue on success
  */
 SEXP close_stats_store();
+
+/**
+ * This function samples from the "null store" in the database
+ * @method sample_null
+ * @return R value in form of SEXP or throws an error if no generic in database
+ */
+SEXP sample_null();
 
 /**
  * Report database statistics

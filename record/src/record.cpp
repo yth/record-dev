@@ -27,6 +27,10 @@
 
 #include "lst_store.h"
 
+#include "env_store.h"
+
+#include "fun_store.h"
+
 // Reusable buffer for everything
 byte_vector_t vector = NULL;
 
@@ -51,6 +55,13 @@ extern size_t o_size;
 extern size_t c_size;
 
 extern size_t l_size;
+
+extern size_t e_size;
+
+extern size_t u_size;
+
+extern size_t n_size;
+extern size_t n_count;
 
 extern size_t g_size;
 
@@ -93,6 +104,13 @@ SEXP add_val(SEXP val) {
 
 	if (TYPEOF(val) == FREESXP) { // This should never happen
 		return R_NilValue;
+	} else if (TYPEOF(val) == NILSXP) {
+		if (n_count == 0) {
+			size++;
+			n_size++;
+		}
+		n_count++;
+		return R_NilValue;
 	} else if (is_int(val)) {
 		return add_int(val);
 	} else if (is_dbl(val)) {
@@ -107,6 +125,10 @@ SEXP add_val(SEXP val) {
 		return add_cmp(val);
 	} else if (is_lst(val)) {
 		return add_lst(val);
+	} else if (is_env(val)) {
+		return add_env(val);
+	} else if (is_fun(val)) {
+		return add_fun(val);
 	} else {
 		return add_generic(val);
 	}
@@ -124,7 +146,9 @@ SEXP have_seen(SEXP val) {
 	int *res_ptr = LOGICAL(res);
 
 	// TODO: Add have_seen interface for the various databases
-	if (is_int(val)) {
+	if (TYPEOF(val) == NILSXP) {
+		res_ptr[0] = n_size;
+	} else if (is_int(val)) {
 		res_ptr[0] = have_seen_int(val);
 	} else if (is_dbl(val)) {
 		res_ptr[0] = have_seen_dbl(val);
@@ -138,6 +162,10 @@ SEXP have_seen(SEXP val) {
 		res_ptr[0] = have_seen_cmp(val);
 	} else if (is_lst(val)) {
 		res_ptr[0] = have_seen_lst(val);
+	} else if (is_env(val)) {
+		res_ptr[0] = have_seen_env(val);
+	} else if (is_fun(val)) {
+		res_ptr[0] = have_seen_fun(val);
 	} else {
 		res_ptr[0] = have_seen_generic(val);
 	}
@@ -152,8 +180,14 @@ SEXP have_seen(SEXP val) {
  * @return R value in form of SEXP from the database
  */
 SEXP sample_val() {
-	// TODO: Add error checking
+	// TODO: Add error checking (e.g. size == 0)
 	size_t random_index = rand_size_t() % size;
+
+	if (random_index < n_size) {
+		return R_NilValue;
+	} else {
+		random_index -= n_size;
+	}
 
 	if (random_index < i_size) {
 		return get_int(random_index);
@@ -197,6 +231,17 @@ SEXP sample_val() {
 		random_index -= l_size;
 	}
 
+	if (random_index < e_size) {
+		return get_env(random_index);
+	} else {
+		random_index -= e_size;
+	}
+
+	if (random_index < u_size) {
+		return get_env(random_index);
+	} else {
+		random_index -= u_size;
+	}
 
 	return get_generic(random_index);
 }
@@ -209,8 +254,14 @@ SEXP sample_val() {
  * @return R value in form of SEXP from the database at ith position
  */
 SEXP get_val(SEXP i) {
-	// TODO: Add error checking
+	// TODO: Add error checking (e.g. size == 0)
 	int index = asInteger(i);
+
+	if (index < n_size) {
+		return R_NilValue;
+	} else {
+		index -= n_size;
+	}
 
 	if (index < i_size) {
 		return get_int(index);
@@ -249,9 +300,21 @@ SEXP get_val(SEXP i) {
 	}
 
 	if (index < l_size) {
-		return get_cmp(index);
+		return get_lst(index);
 	} else {
 		index -= l_size;
+	}
+
+	if (index < e_size) {
+		return get_env(index);
+	} else {
+		index -= e_size;
+	}
+
+	if (index < u_size) {
+		return get_env(index);
+	} else {
+		index -= u_size;
 	}
 
 	return get_generic(index);

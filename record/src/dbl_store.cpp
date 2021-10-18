@@ -135,20 +135,33 @@ SEXP merge_dbl_store(SEXP other_dbls, SEXP other_index) {
 		read_n(other_dbl_index_file, other_sha1sum, 20);
 		read_n(other_dbl_index_file, &other_offset, sizeof(size_t));
 
-		size_t new_dbl_size = 0;
-		fseek(other_dbls_file, other_offset, SEEK_SET);
-		read_n(other_dbls_file, &new_dbl_size, sizeof(size_t));
+		std::string key((char *) other_sha1sum, 20);
+		std::map<std::string, size_t>::iterator it = dbl_index->find(key);
+		if (it == dbl_index->end()) { // TODO: Deal with collision
+			(*dbl_index)[key] = d_offset;
+			d_size++;
+			size++;
 
-		free_content(vector);
-		read_n(other_dbls_file, vector->buf, new_dbl_size);
-		vector->capacity = new_dbl_size;
+			size_t new_dbl_size = 0;
+			fseek(other_dbls_file, other_offset, SEEK_SET);
+			read_n(other_dbls_file, &new_dbl_size, sizeof(size_t));
 
-		// TODO: Think about how to minimizing serializing and unserialize.
-		//       They are used in unserialize_val and add_dbl.
-		SEXP val = unserialize_val(vector);
-		vector->capacity = 1 << 30;
+			free_content(vector);
+			read_n(other_dbls_file, vector->buf, new_dbl_size);
+			vector->capacity = new_dbl_size;
 
-		add_dbl(val);
+			// Write the blob
+			write_n(dbls_file, &(vector->size), sizeof(size_t));
+			write_n(dbls_file, vector->buf, vector->size);
+
+			// Acting as NULL for linked-list next pointer
+			write_n(dbls_file, &(vector->size), sizeof(size_t));
+
+			// Modify d_offset here
+			d_offset += vector->size + sizeof(size_t) + sizeof(size_t);
+
+			vector->capacity = 1 << 30;
+		}
 	}
 
 	fseek(other_dbls_file, -1, SEEK_END);

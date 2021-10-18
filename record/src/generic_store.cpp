@@ -276,7 +276,7 @@ SEXP get_generic(int index) {
 
 /**
  * This function samples from the generic stores in the database
- * @method sample_str
+ * @method sample_generic
  * @return R value in form of SEXP or throws an error if no generic in database
  */
 SEXP sample_generic() {
@@ -285,5 +285,5 @@ SEXP sample_generic() {
 		return get_generic(random_index);
 	}
 
-	Rf_error("No doubles in this database.");
+	Rf_error("No generic values in this database.");
 }
