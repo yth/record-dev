@@ -198,7 +198,7 @@ SEXP merge_stats_store(SEXP other_stats) {
 
 	FILE *other_stats_file = open_file(other_stats);
 	read_n(other_stats_file, statistics, 34 * sizeof(size_t));
-	close_file(other_stats_file)
+	close_file(&other_stats_file)
 
 	n_size = n_size > statistics[25] ? n_size : statistics[25];
 	n_count += statistics[26];
