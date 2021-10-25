@@ -78,6 +78,31 @@ SEXP setup() {
 }
 
 /**
+ * This function sets up all the stores in the database except the stats store.
+ * @method RCRD_setup_stores
+ * @param  db_directory      Contain the information about the path of the database
+ * @return                   R_NilValue on success, errors otherwise
+ */
+SEXP RCRD_setup_stores(SEXP db_directory) {
+	/*
+	 * ints
+	 * double
+	 * logicals
+	 * complex
+	 * string
+	 * raws
+	 * lists
+	 * environment
+	 * functions
+	 * generics
+	 */
+
+	const char* path = CHAR(STRING_ELT(db_directory, 0));
+
+	return R_NilValue;
+}
+
+/**
  * This function tears down all traces of the database after running.
  * This function must be called last.
  * @method setup

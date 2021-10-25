@@ -16,6 +16,14 @@ extern "C" {
 SEXP setup();
 
 /**
+ * This function sets up all the stores in the database except the stats store.
+ * @method RCRD_setup_stores
+ * @param  db_directory      Contain the information about the path of the database
+ * @return                   R_NilValue on success, errors otherwise
+ */
+SEXP RCRD_setup_stores(SEXP db_directory);
+
+/**
  * This function tears down all traces of the database after running.
  * This function must be called last.
  * @method setup

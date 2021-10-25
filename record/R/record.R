@@ -22,14 +22,16 @@ open_db <- function(db = "db", create = FALSE) {
 			if (v != VERSION) {
 				stop("Version mismatch between database and program.")
 			}
-
 			close(f)
 
-			# This must be called first
+			# This must be called first (will become obsolete)
 			.Call(RCRD_setup)
 
 			# This must be called second
 			.Call(RCRD_load_stats_store, paste0(db, "/stats.bin"))
+
+			# When the transformation is complete, this will set up all the stores
+			# .Call(RCRD_setup_stores, db)
 
 			# Load Int Stores
 			.Call(RCRD_load_int_index, paste0(db, "/int_index.bin"))
