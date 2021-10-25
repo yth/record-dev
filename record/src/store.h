@@ -6,8 +6,6 @@ public:
 
 	~Store();
 
-	void Store::set_params();
-
 	void add_value(SEXP value);
 
 	int have_seen_value(SEXP value);
